@@ -1,6 +1,5 @@
-package lod.irongoon.entitymanager;
+package lod.irongoon.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DataTable {

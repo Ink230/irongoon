@@ -1,4 +1,4 @@
-package lod.irongoon.entitymanager;
+package lod.irongoon.models;
 
 public class DivineFruit {
     public int bodyAttack;

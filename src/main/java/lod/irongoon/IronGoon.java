@@ -3,16 +3,13 @@ package lod.irongoon;
 import legend.core.GameEngine;
 import legend.game.modding.Mod;
 import legend.game.modding.events.EventListener;
-import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
 
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.CharacterData;
 import lod.irongoon.data.ExternalData;
-import lod.irongoon.entitymanager.Characters;
-import lod.irongoon.entitymanager.DataTable;
-import lod.irongoon.entitymanager.DataTables;
-import lod.irongoon.entitymanager.DivineFruit;
+import lod.irongoon.services.Characters;
+import lod.irongoon.services.DataTables;
 import lod.irongoon.parse.CSVParser;
 import lod.irongoon.parse.DataParser;
 

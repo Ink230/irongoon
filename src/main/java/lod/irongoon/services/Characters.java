@@ -1,6 +1,7 @@
-package lod.irongoon.entitymanager;
+package lod.irongoon.services;
 
 import lod.irongoon.data.CharacterData;
+import lod.irongoon.models.DivineFruit;
 
 import java.util.HashMap;
 import java.util.Map;
