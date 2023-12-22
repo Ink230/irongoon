@@ -36,6 +36,11 @@ public class Irongoon {
         }
     }
 
+    @EventListener
+    public void gameLoaded(final GameLoadedEvent game) {
+        refreshState();
+    }
+
     private void refreshState() {
         loadExternalData();
         updateState();
@@ -50,10 +55,5 @@ public class Irongoon {
 
     private void updateState() {
 
-    }
-
-    @EventListener
-    public void gameLoaded(final GameLoadedEvent game) {
-        refreshState();
     }
 }
