@@ -11,4 +11,6 @@ public class IrongoonConfig {
 
     public final String ExternalDataLoadPath = "./mods/data/US/";
     public final String ExternalDataLoadExtension = ".csv";
+    public final String PublicSeed = "7963AC95E13873B6";
+    public final long Seed = Long.parseUnsignedLong(getInstance().PublicSeed, 16);
 }
