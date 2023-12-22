@@ -3,6 +3,7 @@ package lod.irongoon;
 import legend.core.GameEngine;
 import legend.game.modding.Mod;
 import legend.game.modding.events.EventListener;
+import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
 
 import lod.irongoon.config.IrongoonConfig;
@@ -34,5 +35,14 @@ public class Irongoon {
     private void refreshState() {
         characters.initialize(CharacterData.values());
         dataTables.initialize(ExternalData.values(), dataParser, config);
+    }
+
+    @EventListener
+    public void characterStats(final CharacterStatsEvent character) {
+        for(CharacterData value : CharacterData.values()){
+            if (value.getValue() == character.characterId) {
+                System.out.println(value);
+            }
+        }
     }
 }

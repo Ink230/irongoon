@@ -24,7 +24,7 @@ public class DataTables {
 
     public void initialize(ExternalData[] values, DataParser dataParser, IrongoonConfig config) {
         for(ExternalData data : values) {
-            var list = dataParser.load(config.ExternalDataLoadPath + data.getValue() + config.ExternalDataLoadExtension);
+            var list = dataParser.load(config.externalDataLoadPath + data.getValue() + config.externalDataLoadExtension);
             addDataTable(data, list);
         }
     }
