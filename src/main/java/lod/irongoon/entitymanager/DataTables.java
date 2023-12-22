@@ -1,6 +1,8 @@
 package lod.irongoon.entitymanager;
 
+import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.ExternalData;
+import lod.irongoon.parse.DataParser;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +20,13 @@ public class DataTables {
     }
 
     private final Map<String, DataTable> dataTables;
+
+    public void initialize(ExternalData[] values, DataParser dataParser, IrongoonConfig config) {
+        for(ExternalData data : values) {
+            var list = dataParser.load(config.ExternalDataLoadPath + data.getValue() + config.ExternalDataLoadExtension);
+            addDataTable(data, list);
+        }
+    }
 
     private void addDataTable(ExternalData name, DataTable dataTable) {
         dataTables.put(String.valueOf(name), dataTable);

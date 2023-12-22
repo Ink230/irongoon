@@ -8,15 +8,21 @@ import java.util.Map;
 public class Characters {
     private static final Characters instance = new Characters();
 
-    private Characters() {
-        this.characters = new HashMap<>();
-    }
-
     public static Characters getInstance() {
         return instance;
     }
 
+    private Characters() {
+        this.characters = new HashMap<>();
+    }
+
     private final Map<String, DivineFruit> characters;
+
+    public void initialize(CharacterData[] values) {
+        for(CharacterData character : values) {
+            addCharacter(character, new DivineFruit());
+        }
+    }
 
     public void addCharacter(CharacterData name, DivineFruit character) {
         characters.put(String.valueOf(name), character);

@@ -27,13 +27,6 @@ public class Irongoon {
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
-        initialize();
-    }
-
-    private void initialize() {
-        for(CharacterData character : CharacterData.values()) {
-            characters.addCharacter(character, new DivineFruit());
-        }
     }
 
     @EventListener
@@ -42,18 +35,7 @@ public class Irongoon {
     }
 
     private void refreshState() {
-        loadExternalData();
-        updateState();
-    }
-
-    private void loadExternalData() {
-        for(ExternalData data : ExternalData.values()) {
-            var list = dataParser.load(config.ExternalDataLoadPath + data.getValue() + config.ExternalDataLoadExtension);
-            dataTables.addDataTable(data, list);
-        }
-    }
-
-    private void updateState() {
-
+        characters.initialize(CharacterData.values());
+        dataTables.initialize(ExternalData.values(), dataParser, config);
     }
 }
