@@ -6,11 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Characters {
-    private final Map<String, DivineFruit> characters;
+    private static final Characters instance = new Characters();
 
-    public Characters() {
+    private Characters() {
         this.characters = new HashMap<>();
     }
+
+    public static Characters getInstance() {
+        return instance;
+    }
+
+    private final Map<String, DivineFruit> characters;
 
     public void addCharacter(CharacterData name, DivineFruit character) {
         characters.put(String.valueOf(name), character);

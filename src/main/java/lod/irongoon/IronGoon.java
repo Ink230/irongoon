@@ -22,8 +22,8 @@ public class Irongoon {
 
     private final DataParser dataParser = CSVParser.getInstance();
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final Characters characters = new Characters();
-    private final DataTables dataTables = new DataTables();
+    private final Characters characters = Characters.getInstance();
+    private final DataTables dataTables = DataTables.getInstance();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);

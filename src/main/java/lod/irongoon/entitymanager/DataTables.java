@@ -7,11 +7,17 @@ import java.util.List;
 import java.util.Map;
 
 public class DataTables {
-    private final Map<String, DataTable> dataTables;
+    private static final DataTables instance = new DataTables();
 
-    public DataTables() {
+    public static DataTables getInstance() {
+        return instance;
+    }
+
+    private DataTables() {
         this.dataTables = new HashMap<>();
     }
+
+    private final Map<String, DataTable> dataTables;
 
     private void addDataTable(ExternalData name, DataTable dataTable) {
         dataTables.put(String.valueOf(name), dataTable);
