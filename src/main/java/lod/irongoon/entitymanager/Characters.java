@@ -24,7 +24,7 @@ public class Characters {
         }
     }
 
-    public void addCharacter(CharacterData name, DivineFruit character) {
+    private void addCharacter(CharacterData name, DivineFruit character) {
         characters.put(String.valueOf(name), character);
     }
 

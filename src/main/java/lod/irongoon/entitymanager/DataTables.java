@@ -28,12 +28,8 @@ public class DataTables {
         }
     }
 
-    private void addDataTable(ExternalData name, DataTable dataTable) {
-        dataTables.put(String.valueOf(name), dataTable);
-    }
-
-    public void addDataTable(ExternalData name, List<String[]> list) {
-        addDataTable(name, new DataTable(list));
+    private void addDataTable(ExternalData name, List<String[]> list) {
+        dataTables.put(String.valueOf(name), new DataTable(list));
     }
 
     public DataTable getDataTable(ExternalData name) {
