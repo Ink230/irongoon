@@ -3,6 +3,7 @@ package lod.irongoon;
 import legend.core.GameEngine;
 import legend.game.modding.Mod;
 import legend.game.modding.events.EventListener;
+import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
 
 import lod.irongoon.config.IrongoonConfig;

@@ -1,7 +1,9 @@
 package lod.irongoon.data;
 
 public enum ExternalData implements Data<String> {
-    CHARACTER_STATS("scdk-character-stats");
+    ADDITION_STATS("scdk-addition-stats"),
+    CHARACTER_STATS("scdk-character-stats"),
+    DRAGOON_STATS("scdk-dragoon-stats");
 
     private final String externalData;
 
