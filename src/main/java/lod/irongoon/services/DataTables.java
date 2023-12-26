@@ -3,7 +3,7 @@ package lod.irongoon.services;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.ExternalData;
 import lod.irongoon.models.DataTable;
-import lod.irongoon.parse.DataParser;
+import lod.irongoon.parse.external.DataParser;
 
 import java.util.HashMap;
 import java.util.List;

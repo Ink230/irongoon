@@ -1,4 +1,4 @@
-package lod.irongoon.parse;
+package lod.irongoon.parse.external;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;

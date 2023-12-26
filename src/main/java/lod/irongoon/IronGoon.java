@@ -9,10 +9,11 @@ import legend.game.modding.events.gamestate.GameLoadedEvent;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.CharacterData;
 import lod.irongoon.data.ExternalData;
+import lod.irongoon.parse.game.CharacterStatsParser;
 import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
-import lod.irongoon.parse.CSVParser;
-import lod.irongoon.parse.DataParser;
+import lod.irongoon.parse.external.CSVParser;
+import lod.irongoon.parse.external.DataParser;
 
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
