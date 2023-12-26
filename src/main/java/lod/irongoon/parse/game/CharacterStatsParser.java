@@ -27,7 +27,7 @@ public class CharacterStatsParser {
     }
 
     public int getTotalStatsOfCharacterByLevel(int character, int level) {
-        return getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.TOTALSTATS));
+        return getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.TOTAL_STATS));
     }
 
     public int[] getTotalStatsOfAllCharactersByLevel(int level) {
