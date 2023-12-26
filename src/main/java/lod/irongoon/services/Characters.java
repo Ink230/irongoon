@@ -1,6 +1,7 @@
 package lod.irongoon.services;
 
 import lod.irongoon.data.CharacterData;
+import lod.irongoon.models.DataTable;
 import lod.irongoon.models.DivineFruit;
 
 import java.util.HashMap;
@@ -26,10 +27,10 @@ public class Characters {
     }
 
     private void addCharacter(CharacterData name, DivineFruit character) {
-        characters.put(String.valueOf(name), character);
+        characters.put(String.valueOf(name), new DivineFruit(character));
     }
 
     public DivineFruit getCharacter(CharacterData name) {
-        return characters.get(name);
+        return new DivineFruit(characters.get(String.valueOf(name)));
     }
 }

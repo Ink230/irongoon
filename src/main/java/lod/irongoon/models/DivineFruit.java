@@ -12,4 +12,20 @@ public class DivineFruit {
     public int dragoonMagicDefense;
     public int maxHP;
     public int maxMP;
+
+    public DivineFruit() {}
+
+    public DivineFruit (DivineFruit divineFruit) {
+        this.bodyAttack = divineFruit.bodyAttack;
+        this.bodyMagicAttack = divineFruit.bodyMagicAttack;
+        this.bodyDefense = divineFruit.bodyDefense;
+        this.bodyMagicDefense = divineFruit.bodyMagicDefense;
+        this.bodySpeed = divineFruit.bodySpeed;
+        this.dragoonAttack = divineFruit.dragoonAttack;
+        this.dragoonMagicAttack = divineFruit.dragoonMagicAttack;
+        this.dragoonDefense = divineFruit.dragoonDefense;
+        this.dragoonMagicDefense = divineFruit.dragoonMagicDefense;
+        this.maxHP = divineFruit.maxHP;
+        this.maxMP = divineFruit.maxMP;
+    }
 }

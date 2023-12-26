@@ -34,6 +34,6 @@ public class DataTables {
     }
 
     public DataTable getDataTable(ExternalData name) {
-        return dataTables.get(name);
+        return new DataTable(dataTables.get(String.valueOf(name)).data);
     }
 }
