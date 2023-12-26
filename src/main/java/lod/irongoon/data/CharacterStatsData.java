@@ -8,7 +8,7 @@ public enum CharacterStatsData implements Data<Integer>{
     MAGIC_DEFENSE(4),
     MAX_HP(5),
     TOTAL_STATS(7),
-    TOTAL_STAT_SNOSPEED(8);
+    TOTAL_STATS_NO_SPEED(8);
 
     private final int characterStatsData;
 
