@@ -9,7 +9,9 @@ import legend.game.modding.events.gamestate.GameLoadedEvent;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.CharacterData;
 import lod.irongoon.data.ExternalData;
+import lod.irongoon.models.DivineFruit;
 import lod.irongoon.parse.game.CharacterStatsParser;
+import lod.irongoon.services.randomizer.Randomizer;
 import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 import lod.irongoon.parse.external.CSVParser;
@@ -23,6 +25,7 @@ public class Irongoon {
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
+    private final Randomizer randomizer = Randomizer.getInstance();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
@@ -40,10 +43,19 @@ public class Irongoon {
 
     @EventListener
     public void characterStats(final CharacterStatsEvent character) {
-        for(CharacterData value : CharacterData.values()){
-            if (value.getValue() == character.characterId) {
-                System.out.println(value);
-            }
-        }
+        DivineFruit bodyStatsRandomized = randomizer.doCharacterStats(character.level);
+        DivineFruit dragoonStatsRandomized = randomizer.doDragoonStats(character.dlevel);
+        //todo HP
+
+        character.bodyAttack = bodyStatsRandomized.bodyAttack;
+        character.bodyDefence = bodyStatsRandomized.bodyDefense;
+        character.bodyMagicAttack = bodyStatsRandomized.bodyMagicAttack;
+        character.bodyMagicDefence = bodyStatsRandomized.bodyMagicDefense;
+        character.bodySpeed = bodyStatsRandomized.bodySpeed;
+
+        character.dragoonAttack = dragoonStatsRandomized.dragoonAttack;
+        character.dragoonDefence = dragoonStatsRandomized.dragoonDefense;
+        character.dragoonMagicAttack = dragoonStatsRandomized.dragoonMagicAttack;
+        character.dragoonMagicDefence = dragoonStatsRandomized.dragoonMagicDefense;
     }
 }
