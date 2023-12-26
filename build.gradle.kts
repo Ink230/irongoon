@@ -1,8 +1,10 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
   id("java")
   id("org.openjfx.javafxplugin") version "0.0.13"
+  id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "scdk-irongoon"
@@ -73,6 +75,7 @@ buildscript {
   }*/
 }
 
+apply(plugin = "com.github.johnrengelman.shadow")
 apply(plugin = "java")
 
 tasks.jar {
