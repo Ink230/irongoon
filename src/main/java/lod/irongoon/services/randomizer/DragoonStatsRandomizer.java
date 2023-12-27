@@ -15,15 +15,16 @@ public class DragoonStatsRandomizer {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final DragoonStatsParser parser = DragoonStatsParser.getInstance();
+    private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
-    public DivineFruit randomizeMaintainStock(int dragoonId, int level) {
-        var totalStatsOfCharacterByLevel = parser.getTotalStatsOfDragoonByLevel(dragoonId, level);
+    public DivineFruit randomizeMaintainStock(int dragoonId, int dLevel) {
+        var totalStatsOfCharacterByLevel = parser.getTotalStatsOfDragoonByLevel(dragoonId, dLevel);
 
         return null;
     }
 
-    public DivineFruit randomizeWithBounds(int level) {
-        var totalStatsOfAllDragoonsByLevel = parser.getTotalStatsOfAllDragoonsByLevel(level);
+    public DivineFruit randomizeWithBounds(int dragoonId, int dLevel) {
+        var totalStatsOfAllDragoonsByLevel = parser.getTotalStatsOfAllDragoonsByLevel(dLevel);
         var minValue = Arrays.stream(totalStatsOfAllDragoonsByLevel).min().orElseThrow();
         var maxValue = Arrays.stream(totalStatsOfAllDragoonsByLevel).max().orElseThrow();
 
@@ -33,8 +34,8 @@ public class DragoonStatsRandomizer {
         return null;
     }
 
-    public DivineFruit randomizeAverage(int level) {
-        var totalStatsPerCharacterByLevel = parser.getAverageTotalStatsOfAllDragoonsByLevel(level);
+    public DivineFruit randomizeAverage(int dragoonId, int dLevel) {
+        var totalStatsPerCharacterByLevel = parser.getAverageTotalStatsOfAllDragoonsByLevel(dLevel);
 
         return null;
     }
