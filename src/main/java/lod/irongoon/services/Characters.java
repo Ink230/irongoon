@@ -1,7 +1,6 @@
 package lod.irongoon.services;
 
 import lod.irongoon.data.CharacterData;
-import lod.irongoon.models.DataTable;
 import lod.irongoon.models.DivineFruit;
 
 import java.util.HashMap;

@@ -19,8 +19,7 @@ public class CSVParser implements DataParser {
     public List<String[]> load(String filePath) {
         try (FileReader fileReader = new FileReader(filePath);
              CSVReader csv = new CSVReader(fileReader)) {
-            List<String[]> list = csv.readAll();
-            return list;
+            return csv.readAll();
         } catch (IOException | CsvException exception) {
             throw new RuntimeException(exception);
         }
