@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class Characters {
     private static final Characters instance = new Characters();
-
     public static Characters getInstance() {
         return instance;
     }
@@ -20,8 +19,8 @@ public class Characters {
 
     private final Map<String, DivineFruit> characters;
 
-    public void initialize(CharacterData[] values) {
-        for(CharacterData character : values) {
+    public void initialize() {
+        for(CharacterData character : CharacterData.values()) {
             addCharacter(character, new DivineFruit());
         }
     }

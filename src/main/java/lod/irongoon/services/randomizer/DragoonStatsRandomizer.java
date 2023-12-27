@@ -8,15 +8,15 @@ public class DragoonStatsRandomizer {
 
     private DragoonStatsRandomizer() {}
 
-    public DivineFruit randomizeMaintainStock() {
+    public DivineFruit randomizeMaintainStock(int dragoonId, int level) {
         return null;
     }
 
-    public DivineFruit randomizeWithBounds() {
+    public DivineFruit randomizeWithBounds(int dragoonId, int level) {
         return null;
     }
 
-    public DivineFruit randomizeAverage() {
+    public DivineFruit randomizeAverage(int dragoonId, int level) {
         return null;
     }
 }

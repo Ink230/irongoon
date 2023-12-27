@@ -3,6 +3,7 @@ package lod.irongoon.services;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.ExternalData;
 import lod.irongoon.models.DataTable;
+import lod.irongoon.parse.external.CSVParser;
 import lod.irongoon.parse.external.DataParser;
 
 import java.util.HashMap;
@@ -11,7 +12,6 @@ import java.util.Map;
 
 public class DataTables {
     private static final DataTables instance = new DataTables();
-
     public static DataTables getInstance() {
         return instance;
     }
@@ -20,10 +20,12 @@ public class DataTables {
         this.dataTables = new HashMap<>();
     }
 
+    private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final Map<String, DataTable> dataTables;
+    private final DataParser dataParser = CSVParser.getInstance();
 
-    public void initialize(ExternalData[] values, DataParser dataParser, IrongoonConfig config) {
-        for(ExternalData data : values) {
+    public void initialize() {
+        for(ExternalData data : ExternalData.values()) {
             var list = dataParser.load(config.externalDataLoadPath + data.getValue() + config.externalDataLoadExtension);
             addDataTable(data, list);
         }

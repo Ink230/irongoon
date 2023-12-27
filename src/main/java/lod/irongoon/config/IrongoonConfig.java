@@ -4,7 +4,6 @@ import lod.irongoon.data.*;
 
 public class IrongoonConfig {
     private static final IrongoonConfig INSTANCE = new IrongoonConfig();
-
     public static IrongoonConfig getInstance() {
         return INSTANCE;
     }

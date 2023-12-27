@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 public class CharacterStatsParser {
     private static final CharacterStatsParser INSTANCE = new CharacterStatsParser();
-
     public static CharacterStatsParser getInstance() {
         return INSTANCE;
     }
@@ -19,7 +18,7 @@ public class CharacterStatsParser {
     private final DataTables dataTables = DataTables.getInstance();
     private final int chunkSize = 61;
 
-    public final ExternalData dataTableKey = ExternalData.CHARACTER_STATS;
+    private final ExternalData dataTableKey = ExternalData.CHARACTER_STATS;
 
     private int getValueFromDataTable(int index, int column) {
         var table = dataTables.getDataTable(dataTableKey);
