@@ -15,20 +15,20 @@ public class StatsRandomizer {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
 
-    public int[] calculateDistributionOfTotalStats(int level, int characterId) {
+    public int[] calculateDistributionOfTotalStats(int level, int fruitId) {
         return switch(config.totalStatsDistributionPerLevel) {
-            case RANDOM -> calculateDistribution(calculateFixedSeedByLevel(level, characterId), characterId);
-            case DABAS_FIXED -> calculateDistribution(config.seed, characterId);
-            case DABAS_PER_LEVEL -> shuffleDistributionFixedPerLevel(calculateDistribution(config.seed, characterId), level, characterId);
-            case DABAS_FIXED_CUSTOM -> calculateDistribution(config.seed, characterId);
-            case DABAS_PER_LEVEL_CUSTOM -> shuffleDistributionRandomEverytime(calculateDistribution(config.seed, characterId));
+            case RANDOM -> calculateDistribution(calculateFixedSeedByLevel(level, fruitId), fruitId);
+            case DABAS_FIXED -> calculateDistribution(config.seed, fruitId);
+            case DABAS_PER_LEVEL -> shuffleDistributionFixedPerLevel(calculateDistribution(config.seed, fruitId), level, fruitId);
+            case DABAS_FIXED_CUSTOM -> calculateDistribution(config.seed, fruitId);
+            case DABAS_PER_LEVEL_CUSTOM -> shuffleDistributionRandomEverytime(calculateDistribution(config.seed, fruitId));
         };
     }
 
-    private int[] calculateDistribution(long seed, long characterId) {
-        Random random = new Random(seed + characterId);
+    private int[] calculateDistribution(long seed, long fruitId) {
+        Random random = new Random(seed + fruitId);
 
-        var distribution = new int[config.bodyStatsAmount];
+        var distribution = new int[config.divineFruitStatsAmount];
         var sum = 0;
         for (int i = 0; i < distribution.length; i++) {
             distribution[i] = random.nextInt(101);
@@ -54,14 +54,14 @@ public class StatsRandomizer {
         return order.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    private int[] shuffleDistributionFixedPerLevel(int[] distribution, int level, int characterId) {
+    private int[] shuffleDistributionFixedPerLevel(int[] distribution, int level, int fruitId) {
         List<Integer> order = new ArrayList<>();
 
         for (int j : distribution) {
             order.add(j);
         }
 
-        Collections.shuffle(order, new Random(calculateFixedSeedByLevel(level, characterId)));
+        Collections.shuffle(order, new Random(calculateFixedSeedByLevel(level, fruitId)));
 
         return order.stream().mapToInt(Integer::intValue).toArray();
     }
@@ -70,8 +70,8 @@ public class StatsRandomizer {
         return (int) Math.ceil(((double) distribution / 100) * totalStats);
     }
 
-    private int calculateFixedSeedByLevel(int level, int characterId) {
-        Random random = new Random(config.seed + 1 + characterId);
+    private int calculateFixedSeedByLevel(int level, int fruitId) {
+        Random random = new Random(config.seed + 1 + fruitId);
 
         var value = 0;
         for (int i = 0; i <= level; i++) {
