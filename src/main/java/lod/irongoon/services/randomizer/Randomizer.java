@@ -10,9 +10,9 @@ public class Randomizer {
 
     private Randomizer() {}
 
+    private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final CharacterStatsRandomizer characterStatsRandomizer = CharacterStatsRandomizer.getInstance();
     private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
-    private final IrongoonConfig config = IrongoonConfig.getInstance();
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
         return switch (config.totalStatsPerLevel) {
@@ -28,9 +28,9 @@ public class Randomizer {
     public DivineFruit doDragoonStats(CharacterStatsEvent dragoon) {
         return switch (config.totalStatsPerLevel) {
             case RANDOMIZE_BOUNDS_PER_LEVEL ->
-                    dragoonStatsRandomizer.randomizeWithBounds(dragoon.characterId, dragoon.level);
+                    dragoonStatsRandomizer.randomizeWithBounds(dragoon.level);
             case MAINTAIN_STOCK -> dragoonStatsRandomizer.randomizeMaintainStock(dragoon.characterId, dragoon.level);
-            case AVERAGE_ALL_CHARACTERS -> dragoonStatsRandomizer.randomizeAverage(dragoon.characterId, dragoon.level);
+            case AVERAGE_ALL_CHARACTERS -> dragoonStatsRandomizer.randomizeAverage(dragoon.level);
         };
     }
 }

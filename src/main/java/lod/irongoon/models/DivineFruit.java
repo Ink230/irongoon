@@ -15,6 +15,20 @@ public class DivineFruit {
 
     public DivineFruit() {}
 
+    public DivineFruit(int bodyAttack, int bodyDefense, int bodyMagicAttack, int bodyMagicDefense) {
+        this.bodyAttack = bodyAttack;
+        this.bodyDefense = bodyDefense;
+        this.bodyMagicAttack = bodyMagicAttack;
+        this.bodyMagicDefense = bodyMagicDefense;
+    }
+
+    public DivineFruit(int dragoonAttack, int dragoonDefense, int dragoonMagicAttack, int dragoonMagicDefense, boolean isDragoon) {
+        this.dragoonAttack = dragoonAttack;
+        this.dragoonDefense = dragoonDefense;
+        this.dragoonMagicAttack = dragoonMagicAttack;
+        this.dragoonMagicDefense = dragoonMagicDefense;
+    }
+
     public DivineFruit (DivineFruit divineFruit) {
         this.bodyAttack = divineFruit.bodyAttack;
         this.bodyMagicAttack = divineFruit.bodyMagicAttack;

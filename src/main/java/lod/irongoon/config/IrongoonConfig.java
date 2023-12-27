@@ -14,6 +14,8 @@ public class IrongoonConfig {
     public final String externalDataLoadExtension = ".csv";
     public final String publicSeed = "7963AC95E13873B6";
     public final long seed = Long.parseUnsignedLong(publicSeed, 16);
+    public final int bodyStatsAmount = 4;
+    public final int dragoonStatsAmount = 4;
     public final TotalStatsPerLevel totalStatsPerLevel = TotalStatsPerLevel.RANDOMIZE_BOUNDS_PER_LEVEL;
     public final TotalStatsBounds totalStatsBounds = TotalStatsBounds.STOCK;
     public final TotalStatsDistributionPerLevel totalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.RANDOM;
