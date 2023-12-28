@@ -88,7 +88,8 @@ dependencies {
 
   implementation group: 'net.java.dev.jna', name: 'jna', version: '5.13.0'
   implementation("com.opencsv:opencsv:5.7.1")
-  implementation(files("$projectDir/lod-game-snapshot.jar"))
+  //implementation(files("$projectDir/lod-game-opengl-snapshot.jar"))
+  implementation(files("$projectDir/lod-game-software-snapshot.jar"))
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
