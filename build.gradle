@@ -1,0 +1,200 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+  id 'java'
+  id 'org.openjfx.javafxplugin' version '0.0.14'
+  id 'java-library'
+  id 'maven-publish'
+  id("com.github.johnrengelman.shadow") version "7.1.2"
+}
+
+project.ext.hash = System.getenv("GITHUB_SHA");
+
+if(project.ext.hash == null) {
+  project.ext.hash = 'snapshot'
+}
+
+group 'legend'
+version project.ext.hash
+
+        sourceCompatibility = targetCompatibility = 1.17
+compileJava.options.encoding = 'UTF-8'
+
+project.ext.lwjglVersion = "3.3.2"
+project.ext.jomlVersion = "1.10.5"
+
+final def operatingSystem = hasProperty("os") ? OperatingSystem.forName(os) : OperatingSystem.current()
+final def architecture = hasProperty("arch") ? arch : System.getProperty("os.arch")
+final def isArm = architecture.startsWith("arm") || architecture.startsWith("aarch64")
+final def isSteamDeck = hasProperty("steamdeck") && "true" == steamdeck;
+
+switch(operatingSystem) {
+  case OperatingSystem.LINUX:
+  project.ext.lwjglNatives = "natives-linux"
+  break
+
+  case OperatingSystem.MAC_OS:
+  project.ext.lwjglNatives = "natives-macos"
+  break
+
+  case OperatingSystem.WINDOWS:
+  project.ext.lwjglNatives = "natives-windows"
+  break
+}
+
+if(isArm) {
+  project.ext.lwjglNatives += "-arm64"
+}
+
+println "Building for " + operatingSystem.familyName + " " + architecture
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+dependencies {
+  api group: 'org.legendofdragoon', name: 'mod-loader', version: '1.0'
+
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+  implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.3.2'
+
+  api platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+
+  api "org.lwjgl:lwjgl"
+  api "org.lwjgl:lwjgl-glfw"
+  api "org.lwjgl:lwjgl-nuklear"
+  api "org.lwjgl:lwjgl-opengl"
+  api "org.lwjgl:lwjgl-stb"
+  runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-nuklear::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+  api "org.joml:joml:${jomlVersion}"
+
+  api group: 'com.github.slugify', name: 'slugify', version: '3.0.4'
+
+  api group: 'it.unimi.dsi', name: 'fastutil', version: '8.5.12'
+
+  implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
+  // To quiet no logger found for reflections
+  implementation group: 'org.slf4j', name: 'slf4j-nop', version: '2.0.7'
+
+  implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
+  implementation group: 'net.java.dev.jna', name: 'jna', version: '5.13.0'
+  implementation("com.opencsv:opencsv:5.7.1")
+  implementation(files("$projectDir/lod-game-snapshot.jar"))
+
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+}
+
+javafx {
+  version = "18.0.2"
+  modules = ['javafx.controls', 'javafx.fxml']
+}
+
+if(hasProperty("os")) {
+  javafx.platform = os + (!operatingSystem.windows && isArm ? "-aarch64" : "");
+}
+
+jar {
+  manifest {
+    attributes(
+            'Main-Class': 'legend.game.Main'
+    )
+  }
+}
+
+task sourceJar(type: Jar) {
+  from sourceSets.main.allJava
+}
+
+task clearOutput(type: Delete) {
+  delete "${buildDir}/libs/libs"
+  delete "${buildDir}/libs/**"
+}
+
+task copyLibs(type: Copy) {
+  from configurations.compileClasspath + configurations.runtimeClasspath
+  into "${buildDir}/libs/libs"
+}
+
+task copySupportFiles(type: Copy) {
+  into "${buildDir}/libs"
+
+  into("gfx") {
+    from 'gfx'
+  }
+
+  into(".") {
+    switch(operatingSystem) {
+      case OperatingSystem.LINUX:
+      from(isSteamDeck ? 'launch-steamdeck' : 'launch-linux') {
+      filter(ReplaceTokens, tokens: [version: project.ext.hash])
+      rename("-\\w+", "")
+    }
+      from('download-java') {
+        filter(ReplaceTokens, tokens: [os: 'linux', arch: isArm ? "aarch64" : "x64"])
+      }
+      break
+
+      case OperatingSystem.MAC_OS:
+      from('launch-macos') {
+        filter(ReplaceTokens, tokens: [version: project.ext.hash])
+        rename("-macos", "")
+      }
+      from('download-java') {
+        filter(ReplaceTokens, tokens: [os: 'macosx', arch: isArm ? "aarch64" : "x64"])
+      }
+      break
+
+      case OperatingSystem.WINDOWS:
+      from('launch.bat') {
+        filter(ReplaceTokens, tokens: [version: project.ext.hash])
+      }
+      break
+    }
+
+    from 'log4j2.xml'
+    from 'gamecontrollerdb.txt'
+    from 'README.md'
+    from 'LICENSE'
+  }
+}
+
+jar.dependsOn(clearOutput, copyLibs, copySupportFiles)
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      artifactId = 'lod'
+      from components.java
+              pom {
+                name = 'LoD Engine'
+              }
+
+      artifact sourceJar {
+        classifier "sources"
+      }
+    }
+  }
+}
+
+test {
+  useJUnitPlatform()
+}
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ["src/main/java"]
+      exclude ".gradle", "build", "files"
+    }
+  }
+}

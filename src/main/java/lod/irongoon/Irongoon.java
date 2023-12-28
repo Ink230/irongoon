@@ -1,8 +1,10 @@
 package lod.irongoon;
 
+import com.github.slugify.Slugify;
 import legend.core.GameEngine;
-import legend.game.modding.Mod;
-import legend.game.modding.events.EventListener;
+import org.legendofdragoon.modloader.events.EventListener;
+import org.legendofdragoon.modloader.registries.RegistryId;
+import org.legendofdragoon.modloader.Mod;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
 
@@ -14,6 +16,10 @@ import lod.irongoon.services.DataTables;
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
     public static final String MOD_ID = "Irongoon";
+    private static final Slugify slug = Slugify.builder().underscoreSeparator(true).customReplacement("'", "").customReplacement("-", "_").build();
+    public static RegistryId id(final String entryId) {
+        return new RegistryId(MOD_ID, entryId);
+    }
 
     private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
