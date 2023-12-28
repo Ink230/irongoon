@@ -15,7 +15,7 @@ public class Randomizer {
     private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
-        return switch (config.totalStatsPerLevel) {
+        return switch (config.bodyTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS_PER_LEVEL ->
                     characterStatsRandomizer.randomizeWithBounds(character.characterId, character.level);
             case MAINTAIN_STOCK ->
@@ -26,7 +26,7 @@ public class Randomizer {
     }
 
     public DivineFruit doDragoonStats(CharacterStatsEvent dragoon) {
-        return switch (config.totalStatsPerLevel) {
+        return switch (config.bodyTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS_PER_LEVEL ->
                     dragoonStatsRandomizer.randomizeWithBounds(dragoon.characterId, dragoon.dlevel);
             case MAINTAIN_STOCK -> dragoonStatsRandomizer.randomizeMaintainStock(dragoon.characterId, dragoon.dlevel);

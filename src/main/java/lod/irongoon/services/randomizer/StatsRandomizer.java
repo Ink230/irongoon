@@ -1,6 +1,8 @@
 package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.TotalStatsDistributionPerLevel;
+import lod.irongoon.data.TotalStatsPerLevel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,20 +17,20 @@ public class StatsRandomizer {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
 
-    public int[] calculateDistributionOfTotalStats(int level, int fruitId) {
-        return switch(config.totalStatsDistributionPerLevel) {
-            case RANDOM -> calculateDistribution(calculateFixedSeedByLevel(level, fruitId), fruitId);
-            case DABAS_FIXED -> calculateDistribution(config.seed, fruitId);
-            case DABAS_PER_LEVEL -> shuffleDistributionFixedPerLevel(calculateDistribution(config.seed, fruitId), level, fruitId);
-            case DABAS_FIXED_CUSTOM -> calculateDistribution(config.seed, fruitId);
-            case DABAS_PER_LEVEL_CUSTOM -> shuffleDistributionRandomEverytime(calculateDistribution(config.seed, fruitId));
+    public int[] calculateDistributionOfTotalStats(int level, int fruitId, TotalStatsDistributionPerLevel distribution, int statAmount) {
+        return switch(distribution) {
+            case RANDOM -> calculateDistribution(calculateFixedSeedByLevel(level, fruitId), fruitId, statAmount);
+            case DABAS_FIXED -> calculateDistribution(config.seed, fruitId, statAmount);
+            case DABAS_PER_LEVEL -> shuffleDistributionFixedPerLevel(calculateDistribution(config.seed, fruitId, statAmount), level, fruitId);
+            case DABAS_FIXED_CUSTOM -> calculateDistribution(config.seed, fruitId, statAmount);
+            case DABAS_PER_LEVEL_CUSTOM -> shuffleDistributionRandomEverytime(calculateDistribution(config.seed, fruitId, statAmount));
         };
     }
 
-    private int[] calculateDistribution(long seed, long fruitId) {
+    private int[] calculateDistribution(long seed, long fruitId, int statAmount) {
         Random random = new Random(seed + fruitId);
 
-        var distribution = new int[config.divineFruitStatsAmount];
+        var distribution = new int[statAmount];
         var sum = 0;
         for (int i = 0; i < distribution.length; i++) {
             distribution[i] = random.nextInt(101);

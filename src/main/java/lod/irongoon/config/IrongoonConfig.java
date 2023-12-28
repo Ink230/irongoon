@@ -14,10 +14,14 @@ public class IrongoonConfig {
     public final String externalDataLoadExtension = ".csv";
     public final String publicSeed = "7963AC95E13873B6";
     public final long seed = Long.parseUnsignedLong(publicSeed, 16);
-    public final int divineFruitStatsAmount = 4;
-    public final TotalStatsPerLevel totalStatsPerLevel = TotalStatsPerLevel.RANDOMIZE_BOUNDS_PER_LEVEL;
-    public final TotalStatsBounds totalStatsBounds = TotalStatsBounds.STOCK;
-    public final TotalStatsDistributionPerLevel totalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.RANDOM;
+    public final int bodyNumberOfStatsAmount = 4;
+    public final int dragoonNumberOfStatsAmount = 4;
+    public final TotalStatsPerLevel bodyTotalStatsPerLevel = TotalStatsPerLevel.RANDOMIZE_BOUNDS_PER_LEVEL;
+    public final TotalStatsPerLevel dragoonTotalStatsPerLevel = TotalStatsPerLevel.RANDOMIZE_BOUNDS_PER_LEVEL;
+    public final TotalStatsBounds bodyTotalStatsBounds = TotalStatsBounds.STOCK;
+    public final TotalStatsBounds dragoonStatsBounds = TotalStatsBounds.STOCK;
+    public final TotalStatsDistributionPerLevel bodyTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.RANDOM;
+    public final TotalStatsDistributionPerLevel dragoonTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.RANDOM;
     public final HPStatPerLevel hpStatPerLevel = HPStatPerLevel.RANDOM;
     public final SpeedStatPerLevel speedStatPerLevel = SpeedStatPerLevel.RANDOM;
 }
