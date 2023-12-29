@@ -28,14 +28,12 @@ Speed excluded.
   - At each level, we use the average of all character total stat points
 
 ### Total Stats Bounds
-How the bounds for Random with Bounds works.
+How the bounds for Random with Bounds works. See #6.
 
 - Stock
   - Bounds are as described in Random with Bounds
 - Random Modifier
-  - We use 0% to 200% of the randomly chosen amount between the lowest and highest total stats of all characters for the current level
 - Random Modifier Custom
-  - Enter your custom upper bound
 
 ### Total Stats Distribution
 How the total stat points are distributed among the various stats.
