@@ -32,7 +32,7 @@ public class CharacterStatsRandomizer {
         for(int subLevel = 1; subLevel <= level; subLevel++) {
             var totalStatsOfCharacterByLevel = parser.getTotalStatsOfCharacterByLevel(characterId, subLevel) - parser.getTotalStatsOfCharacterByLevel(characterId, subLevel - 1);
 
-            var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount);
+            var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount, 0);
 
             divineTree.add(growDivineFruit(distribution, totalStatsOfCharacterByLevel, divineTree.get(divineTree.size() - 1)));
         }
@@ -58,7 +58,7 @@ public class CharacterStatsRandomizer {
             Random random = new Random(config.seed);
             int totalStats = minValue + random.nextInt(maxValue - minValue + 1);
 
-            var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount);
+            var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount, 0);
 
             divineTree.add(growDivineFruit(distribution, totalStats, divineTree.get(divineTree.size() - 1)));
         }
@@ -73,7 +73,7 @@ public class CharacterStatsRandomizer {
         for (int subLevel = 1; subLevel <= level; subLevel++) {
             var totalStatsPerCharacterByLevel = parser.getAverageTotalStatsOfAllCharactersByLevel(subLevel) - parser.getAverageTotalStatsOfAllCharactersByLevel(subLevel - 1);
 
-            var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount);
+            var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount, 0);
 
             divineTree.add(growDivineFruit(distribution, totalStatsPerCharacterByLevel, divineTree.get(divineTree.size() - 1)));
         }
