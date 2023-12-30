@@ -38,7 +38,7 @@ public class StatsRandomizer {
         }
 
         for (int i = 0; i < distribution.length; i++) {
-            distribution[i] = (int) Math.ceil((double) distribution[i] / sum * 100) ;
+            distribution[i] = (int) Math.round((double) distribution[i] / sum * 100) ;
         }
 
         return distribution;
@@ -81,5 +81,20 @@ public class StatsRandomizer {
         }
 
         return value;
+    }
+
+    public int calculatePercentModifiedBoundedStat(int percentPointsLower, int percentPointsUpper, int stat, int monsterId) {
+        Random random = new Random(config.seed + monsterId + 24);
+        percentPointsLower += 20;
+        percentPointsUpper += 20;
+
+        var modifier = stat >= 10 ? (random.nextInt(percentPointsUpper - percentPointsLower + 1) + percentPointsLower) / 100.0 : random.nextInt(4);
+
+        return (stat >= 10) ? ((int) Math.max(1, Math.round((stat * modifier)))) : ((int) (stat + (random.nextBoolean() ? 1 : -1) * modifier));
+    }
+
+    public int calculateRandomNumberWithLimit(int limit, int uniqueModifier) {
+        Random random = new Random(config.seed + uniqueModifier + 24);
+        return random.nextInt(1, limit + 1);
     }
 }

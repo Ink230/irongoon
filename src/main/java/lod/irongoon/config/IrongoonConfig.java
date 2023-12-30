@@ -19,6 +19,8 @@ public class IrongoonConfig {
     public final TotalStatsPerLevel bodyTotalStatsPerLevel = TotalStatsPerLevel.RANDOMIZE_BOUNDS_PER_LEVEL;
     public final TotalStatsPerLevel dragoonTotalStatsPerLevel = TotalStatsPerLevel.RANDOMIZE_BOUNDS_PER_LEVEL;
     public final TotalStatsMonsters monsterTotalStatsPerLevel = TotalStatsMonsters.RANDOMIZE_BOUNDS;
+    public final int TotalStatsMonstersUpperPercentBound = 150;
+    public final int TotalStatsMonstersLowerPercentBound = 50;
     public final TotalStatsBounds bodyTotalStatsBounds = TotalStatsBounds.STOCK;
     public final TotalStatsBounds dragoonStatsBounds = TotalStatsBounds.STOCK;
     public final TotalStatsDistributionPerLevel bodyTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.RANDOM;

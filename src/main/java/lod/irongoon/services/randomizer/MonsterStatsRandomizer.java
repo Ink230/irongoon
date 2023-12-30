@@ -22,11 +22,24 @@ public class MonsterStatsRandomizer {
     }
 
     public DivineFruit randomizeWithBounds(int monsterId) {
-        var monster = createDivineFruit(monsterId);
-        return null;
+        var divineFruit = createDivineFruit(monsterId);
+
+        var resultAttacks = statRandomizer.calculatePercentModifiedBoundedStat(config.TotalStatsMonstersLowerPercentBound, config.TotalStatsMonstersUpperPercentBound, divineFruit.bodyAttack + divineFruit.bodyMagicAttack, monsterId);
+        var resultAttackSplit = statRandomizer.calculateRandomNumberWithLimit(resultAttacks, monsterId);
+
+        var resultDefenses = statRandomizer.calculatePercentModifiedBoundedStat(config.TotalStatsMonstersLowerPercentBound, config.TotalStatsMonstersUpperPercentBound, divineFruit.bodyDefense + divineFruit.bodyMagicDefense, monsterId);
+        var resultDefenseSplit = statRandomizer.calculateRandomNumberWithLimit(resultDefenses, monsterId);
+
+        divineFruit.bodyAttack = resultAttackSplit;
+        divineFruit.bodyDefense = resultDefenseSplit;
+
+        divineFruit.bodyMagicAttack = Math.max(1, resultAttacks - resultAttackSplit);
+        divineFruit.bodyMagicDefense = Math.max(1, resultDefenses - resultDefenseSplit);
+
+        return new DivineFruit(divineFruit);
     }
 
-    public DivineFruit randomizeMaintainStock() {
-        return null;
+    public DivineFruit randomizeMaintainStock(int monsterId) {
+        return createDivineFruit(monsterId);
     }
 }

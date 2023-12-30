@@ -21,7 +21,7 @@ public class DataTableParser {
         var values = table.data.get(index + 1);
 
         int[] result = new int[values.length];
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 0; i < values.length - 1; i++) {
             result[i] = Integer.parseInt(values[i]);
         }
 
