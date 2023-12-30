@@ -1,5 +1,6 @@
 package lod.irongoon.services.randomizer;
 
+import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
@@ -32,5 +33,9 @@ public class Randomizer {
             case MAINTAIN_STOCK -> dragoonStatsRandomizer.randomizeMaintainStock(dragoon.characterId, dragoon.dlevel);
             case AVERAGE_ALL_CHARACTERS -> dragoonStatsRandomizer.randomizeAverage(dragoon.characterId, dragoon.dlevel);
         };
+    }
+
+    public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
+        return new DivineFruit();
     }
 }

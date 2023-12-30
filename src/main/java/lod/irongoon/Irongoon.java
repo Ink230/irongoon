@@ -2,6 +2,7 @@ package lod.irongoon;
 
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
+import legend.game.modding.events.battle.MonsterStatsEvent;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import org.legendofdragoon.modloader.Mod;
@@ -53,5 +54,15 @@ public class Irongoon {
         character.dragoonDefence = dragoonStatsRandomized.dragoonDefense;
         character.dragoonMagicAttack = dragoonStatsRandomized.dragoonMagicAttack;
         character.dragoonMagicDefence = dragoonStatsRandomized.dragoonMagicDefense;
+    }
+
+    @EventListener
+    public void monsterStats(final MonsterStatsEvent monster) {
+        DivineFruit monsterStatsRandomized = randomizer.doMonsterStats(monster);
+
+        monster.attack = monsterStatsRandomized.bodyAttack;
+        monster.defence = monsterStatsRandomized.bodyDefense;
+        monster.magicAttack = monsterStatsRandomized.bodyMagicAttack;
+        monster.magicDefence = monsterStatsRandomized.bodyMagicDefense;
     }
 }
