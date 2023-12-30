@@ -88,6 +88,7 @@ dependencies {
 
   implementation group: 'net.java.dev.jna', name: 'jna', version: '5.13.0'
   implementation("com.opencsv:opencsv:5.7.1")
+  api 'org.yaml:snakeyaml:2.2'
   //implementation(files("$projectDir/lod-game-opengl-snapshot.jar"))
   implementation(files("$projectDir/lod-game-software-snapshot.jar"))
 
