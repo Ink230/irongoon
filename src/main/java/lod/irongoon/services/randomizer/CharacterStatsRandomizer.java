@@ -7,8 +7,8 @@ import lod.irongoon.parse.game.CharacterStatsParser;
 import java.util.*;
 
 public class CharacterStatsRandomizer {
-    private static final CharacterStatsRandomizer instance = new CharacterStatsRandomizer();
-    public static CharacterStatsRandomizer getInstance() { return instance; }
+    private static final CharacterStatsRandomizer INSTANCE = new CharacterStatsRandomizer();
+    public static CharacterStatsRandomizer getInstance() { return INSTANCE; }
 
     private CharacterStatsRandomizer() {}
 

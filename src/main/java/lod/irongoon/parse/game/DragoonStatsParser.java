@@ -16,18 +16,13 @@ public class DragoonStatsParser {
 
     private DragoonStatsParser() {}
 
-    private final DataTables dataTables = DataTables.getInstance();
+    private final DataTableParser dataTableAccessor = DataTableParser.getInstance();
     private final int chunkSize = 6;
 
     public final ExternalData dataTableKey = ExternalData.DRAGOON_STATS;
 
-    private int getValueFromDataTable(int index, int column) {
-        var table = dataTables.getDataTable(dataTableKey);
-        return Integer.parseInt((table.data.get(index + 1)[column]));
-    }
-
     public int getTotalStatsOfDragoonByLevel(int character, int level) {
-        return getValueFromDataTable((character * chunkSize) + level, DragoonStatsData.getValue(DragoonStatsData.TOTAL_STATS));
+        return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, DragoonStatsData.getValue(DragoonStatsData.TOTAL_STATS), dataTableKey);
     }
 
     public int[] getTotalStatsOfAllDragoonsByLevel(int level) {

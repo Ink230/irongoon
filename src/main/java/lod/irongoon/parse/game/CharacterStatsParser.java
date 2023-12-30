@@ -3,7 +3,6 @@ package lod.irongoon.parse.game;
 import lod.irongoon.data.CharacterData;
 import lod.irongoon.data.CharacterStatsData;
 import lod.irongoon.data.ExternalData;
-import lod.irongoon.services.DataTables;
 
 import java.util.Arrays;
 
@@ -15,18 +14,13 @@ public class CharacterStatsParser {
 
     private CharacterStatsParser() {}
 
-    private final DataTables dataTables = DataTables.getInstance();
+    private final DataTableParser dataTableAccessor = DataTableParser.getInstance();
     private final int chunkSize = 61;
 
     private final ExternalData dataTableKey = ExternalData.CHARACTER_STATS;
 
-    private int getValueFromDataTable(int index, int column) {
-        var table = dataTables.getDataTable(dataTableKey);
-        return Integer.parseInt((table.data.get(index + 1)[column]));
-    }
-
     public int getTotalStatsOfCharacterByLevel(int character, int level) {
-        return getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.TOTAL_STATS_NO_SPEED));
+        return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.TOTAL_STATS_NO_SPEED), dataTableKey);
     }
 
     public int[] getTotalStatsOfAllCharactersByLevel(int level) {

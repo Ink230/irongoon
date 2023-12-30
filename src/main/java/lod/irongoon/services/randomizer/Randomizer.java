@@ -36,6 +36,10 @@ public class Randomizer {
     }
 
     public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
-        return new DivineFruit();
+        return switch (config.monsterTotalStatsPerLevel) {
+            case RANDOMIZE_BOUNDS -> null;
+            case MAINTAIN_STOCK -> null;
+            case RANDOMIZE_BOUNDS_CUSTOM -> null;
+        };
     }
 }

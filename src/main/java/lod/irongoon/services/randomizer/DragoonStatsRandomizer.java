@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class DragoonStatsRandomizer {
-    private static final DragoonStatsRandomizer instance = new DragoonStatsRandomizer();
-    public static DragoonStatsRandomizer getInstance() { return instance; }
+    private static final DragoonStatsRandomizer INSTANCE = new DragoonStatsRandomizer();
+    public static DragoonStatsRandomizer getInstance() { return INSTANCE; }
 
     private DragoonStatsRandomizer() {}
 
