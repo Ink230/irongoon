@@ -15,4 +15,16 @@ public class DataTableParser {
         var table = dataTables.getDataTable(dataTableKey);
         return Integer.parseInt((table.data.get(index + 1)[column]));
     }
+
+    protected int[] getRowFromDataTable(int index, ExternalData dataTableKey) {
+        var table = dataTables.getDataTable(dataTableKey);
+        var values = table.data.get(index + 1);
+
+        int[] result = new int[values.length];
+        for (int i = 0; i < values.length; i++) {
+            result[i] = Integer.parseInt(values[i]);
+        }
+
+        return result;
+    }
 }

@@ -4,6 +4,7 @@ import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
+import lod.irongoon.parse.game.MonsterStatsParser;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -14,6 +15,7 @@ public class Randomizer {
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final CharacterStatsRandomizer characterStatsRandomizer = CharacterStatsRandomizer.getInstance();
     private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
+    private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
         return switch (config.bodyTotalStatsPerLevel) {
@@ -37,9 +39,8 @@ public class Randomizer {
 
     public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
         return switch (config.monsterTotalStatsPerLevel) {
-            case RANDOMIZE_BOUNDS -> null;
+            case RANDOMIZE_BOUNDS, RANDOMIZE_BOUNDS_CUSTOM -> null;
             case MAINTAIN_STOCK -> null;
-            case RANDOMIZE_BOUNDS_CUSTOM -> null;
         };
     }
 }
