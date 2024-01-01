@@ -83,8 +83,8 @@ public class StatsRandomizer {
         return value;
     }
 
-    public int calculatePercentModifiedBoundedStat(int percentPointsLower, int percentPointsUpper, int stat, int monsterId) {
-        Random random = new Random(config.seed + monsterId + 24);
+    public int calculatePercentModifiedBoundedStat(int percentPointsLower, int percentPointsUpper, int stat, int uniqueModifier) {
+        Random random = new Random(config.seed + uniqueModifier + 24);
         percentPointsLower += 20;
         percentPointsUpper += 20;
 

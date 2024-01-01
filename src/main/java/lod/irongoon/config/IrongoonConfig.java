@@ -26,6 +26,8 @@ public class IrongoonConfig {
     public final TotalStatsPerLevel bodyTotalStatsPerLevel;
     public final TotalStatsPerLevel dragoonTotalStatsPerLevel;
     public final TotalStatsMonsters monsterTotalStatsPerLevel;
+    public final int NonBaselineStatsUpperPercentBound;
+    public final int NonBaselineStatsLowerPercentBound;
     public final int TotalStatsMonstersUpperPercentBound;
     public final int TotalStatsMonstersLowerPercentBound;
     public final TotalStatsBounds bodyTotalStatsBounds;
@@ -54,6 +56,8 @@ public class IrongoonConfig {
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.monsterTotalStatsPerLevel = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStatsPerLevel", "RANDOMIZE_BOUNDS"));
+        this.NonBaselineStatsUpperPercentBound = (int) yamlConfig.getOrDefault("nonBaselineStatsUpperPercentBound", 150);
+        this.NonBaselineStatsLowerPercentBound = (int) yamlConfig.getOrDefault("nonBaselineStatsLowerPercentBound", 50);
         this.TotalStatsMonstersUpperPercentBound = (int) yamlConfig.getOrDefault("TotalStatsMonstersUpperPercentBound", 150);
         this.TotalStatsMonstersLowerPercentBound = (int) yamlConfig.getOrDefault("TotalStatsMonstersLowerPercentBound", 50);
         this.bodyTotalStatsBounds = TotalStatsBounds.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsBounds", "STOCK"));
