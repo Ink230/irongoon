@@ -16,13 +16,13 @@ public class DragoonStatsRandomizer {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final DragoonStatsParser parser = DragoonStatsParser.getInstance();
-    private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
+    private final StatsRandomizer statsRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit growDivineFruit(int[] distribution, int totalStats, DivineFruit previousFruit) {
-        int attack = statRandomizer.calculateFinalStat(distribution[0], totalStats) + previousFruit.dragoonAttack;
-        int defense = statRandomizer.calculateFinalStat(distribution[1], totalStats) + previousFruit.dragoonDefense;
-        int magicAttack = statRandomizer.calculateFinalStat(distribution[2], totalStats) + previousFruit.dragoonMagicAttack;
-        int magicDefense = statRandomizer.calculateFinalStat(distribution[3], totalStats) + previousFruit.dragoonMagicDefense;
+        int attack = statsRandomizer.calculateFinalStat(distribution[0], totalStats) + previousFruit.dragoonAttack;
+        int defense = statsRandomizer.calculateFinalStat(distribution[1], totalStats) + previousFruit.dragoonDefense;
+        int magicAttack = statsRandomizer.calculateFinalStat(distribution[2], totalStats) + previousFruit.dragoonMagicAttack;
+        int magicDefense = statsRandomizer.calculateFinalStat(distribution[3], totalStats) + previousFruit.dragoonMagicDefense;
 
         return new DivineFruit(attack, defense, magicAttack, magicDefense, true);
     }
@@ -34,7 +34,7 @@ public class DragoonStatsRandomizer {
         for(int subDLevel = 1; subDLevel <= dLevel; subDLevel++) {
             var totalStatsOfDragoonByLevel = parser.getTotalStatsOfDragoonByLevel(dragoonId, subDLevel) - parser.getTotalStatsOfDragoonByLevel(dragoonId, subDLevel - 1);
 
-            var distribution = statRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999);
+            var distribution = statsRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999);
 
             divineTree.add(growDivineFruit(distribution, totalStatsOfDragoonByLevel, divineTree.get(divineTree.size() - 1)));
         }
@@ -57,10 +57,9 @@ public class DragoonStatsRandomizer {
             var minValue = Arrays.stream(totalStatsOfAllDragoonsByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(totalStatsOfAllDragoonsByLevel).max().orElseThrow();
 
-            Random random = new Random(config.seed);
-            int totalStats = minValue + random.nextInt(maxValue - minValue + 1);
+            var totalStats = statsRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 404);
 
-            var distribution = statRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999);
+            var distribution = statsRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999);
 
             divineTree.add(growDivineFruit(distribution, totalStats, divineTree.get(divineTree.size() - 1)));
         }
@@ -75,7 +74,7 @@ public class DragoonStatsRandomizer {
         for (int subDLevel = 1; subDLevel <= dLevel; subDLevel++) {
             var totalStatsPerDragoonByLevel = parser.getAverageTotalStatsOfAllDragoonsByLevel(subDLevel) - parser.getAverageTotalStatsOfAllDragoonsByLevel(subDLevel - 1);
 
-            var distribution = statRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999);
+            var distribution = statsRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999);
 
             divineTree.add(growDivineFruit(distribution, totalStatsPerDragoonByLevel, divineTree.get(divineTree.size() - 1)));
         }

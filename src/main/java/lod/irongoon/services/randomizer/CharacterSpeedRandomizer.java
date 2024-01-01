@@ -30,8 +30,7 @@ public class CharacterSpeedRandomizer {
         var minValue = Arrays.stream(speedOfAllCharacters).min().orElseThrow();
         var maxValue = Arrays.stream(speedOfAllCharacters).max().orElseThrow();
 
-        Random random = new Random(config.seed + 787);
-        var randomizedSpeed = minValue + random.nextInt(maxValue - minValue + 1);
+        var randomizedSpeed = statsRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 787);
 
         return createDivineFruit(randomizedSpeed);
     }

@@ -40,8 +40,7 @@ public class CharacterHPRandomizer {
             var minValue = Arrays.stream(hpOfCharactersByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(hpOfCharactersByLevel).max().orElseThrow();
 
-            Random random = new Random(config.seed + 909);
-            int hp = minValue + random.nextInt(maxValue - minValue + 1);
+            var hp = statsRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }
