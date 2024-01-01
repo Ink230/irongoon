@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
@@ -35,6 +34,8 @@ public class IrongoonConfig {
     public final TotalStatsDistributionPerLevel dragoonTotalStatsDistributionPerLevel;
     public final HPStatPerLevel hpStatPerLevel;
     public final SpeedStatPerLevel speedStatPerLevel;
+    public final HPStatMonsters hpStatMonsters;
+    public final SpeedStatMonsters speedStatMonsters;
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -61,5 +62,7 @@ public class IrongoonConfig {
         this.dragoonTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsDistributionPerLevel", "RANDOM"));
         this.hpStatPerLevel = HPStatPerLevel.valueOf((String) yamlConfig.getOrDefault("hpStatPerLevel", "RANDOM"));
         this.speedStatPerLevel = SpeedStatPerLevel.valueOf((String) yamlConfig.getOrDefault("speedStatPerLevel", "RANDOM"));
+        this.hpStatMonsters = HPStatMonsters.valueOf((String) yamlConfig.getOrDefault("hpStatMonster", "RANDOMIZE_BOUNDS"));
+        this.speedStatMonsters = SpeedStatMonsters.valueOf((String) yamlConfig.getOrDefault("speedStatMonster", "RANDOMIZE_BOUNDS"));
     }
 }

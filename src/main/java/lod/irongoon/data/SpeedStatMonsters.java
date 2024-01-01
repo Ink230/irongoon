@@ -1,13 +1,13 @@
 package lod.irongoon.data;
 
-public enum SpeedStatPerLevelMonster implements Data<Integer> {
+public enum SpeedStatMonsters implements Data<Integer> {
     MAINTAIN_STOCK(0),
     RANDOMIZE_BOUNDS(1),
     RANDOMIZE_RANDOM_BOUNDS(2);
 
     private final int speedStatPerLevelMonster;
 
-    SpeedStatPerLevelMonster(int speedStatPerLevelMonster) {
+    SpeedStatMonsters(int speedStatPerLevelMonster) {
         this.speedStatPerLevelMonster = speedStatPerLevelMonster;
     }
 

@@ -19,6 +19,8 @@ public class Randomizer {
     private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
     private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
     private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
+    private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
+    private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
         return switch (config.bodyTotalStatsPerLevel) {
@@ -60,6 +62,21 @@ public class Randomizer {
         return switch (config.monsterTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS -> monsterStatsRandomizer.randomizeWithBounds(monster.enemyId);
             case MAINTAIN_STOCK -> monsterStatsRandomizer.randomizeMaintainStock(monster.enemyId);
+        };
+    }
+
+    public DivineFruit doMonsterHP (MonsterStatsEvent monster){
+        return switch (config.hpStatMonsters) {
+            case MAINTAIN_STOCK -> monsterHPRandomizer.randomizeMaintainStock(monster.enemyId);
+            case RANDOMIZE_BOUNDS -> monsterHPRandomizer.randomizeStockWithBounds(monster.enemyId);
+        };
+    }
+
+    public DivineFruit doMonsterSpeed (MonsterStatsEvent monster) {
+        return switch (config.speedStatMonsters) {
+            case MAINTAIN_STOCK -> monsterSpeedRandomizer.randomizeMaintainStock(monster.enemyId);
+            case RANDOMIZE_BOUNDS -> monsterSpeedRandomizer.randomizeWithBounds(monster.enemyId);
+            case RANDOMIZE_RANDOM_BOUNDS -> monsterSpeedRandomizer.randomizeRandomWithBounds(monster.enemyId);
         };
     }
 }

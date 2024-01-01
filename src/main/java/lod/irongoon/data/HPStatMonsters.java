@@ -1,12 +1,12 @@
 package lod.irongoon.data;
 
-public enum HPStatPerLevelMonsters implements Data<Integer> {
+public enum HPStatMonsters implements Data<Integer> {
     MAINTAIN_STOCK(0),
     RANDOMIZE_BOUNDS(1);
 
     private final int hpStatPerLevelMonster;
 
-    HPStatPerLevelMonsters (int hpStatPerLevelMonster) {
+    HPStatMonsters(int hpStatPerLevelMonster) {
         this.hpStatPerLevelMonster = hpStatPerLevelMonster;
     }
 

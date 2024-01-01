@@ -64,10 +64,15 @@ public class Irongoon {
     @EventListener
     public void monsterStats(final MonsterStatsEvent monster) {
         DivineFruit monsterStatsRandomized = randomizer.doMonsterStats(monster);
+        DivineFruit monsterHPRandomized = randomizer.doMonsterHP(monster);
+        DivineFruit monsterSpeedRandomized = randomizer.doMonsterSpeed(monster);
 
         monster.attack = monsterStatsRandomized.bodyAttack;
         monster.defence = monsterStatsRandomized.bodyDefense;
         monster.magicAttack = monsterStatsRandomized.bodyMagicAttack;
         monster.magicDefence = monsterStatsRandomized.bodyMagicDefense;
+
+        monster.maxHp = monsterHPRandomized.maxHP;
+        monster.speed = monsterSpeedRandomized.bodySpeed;
     }
 }
