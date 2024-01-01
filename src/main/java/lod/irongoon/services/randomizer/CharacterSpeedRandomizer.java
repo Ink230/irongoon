@@ -24,21 +24,21 @@ public class CharacterSpeedRandomizer {
         return createDivineFruit(parser.getSpeedOfCharacterByLevel(character, level));
     }
 
-    public DivineFruit randomizeWithBounds(int level) {
+    public DivineFruit randomizeWithBounds(int characterId, int level) {
         var speedOfAllCharacters = parser.getCharactersSpeedStats(level);
 
         var minValue = Arrays.stream(speedOfAllCharacters).min().orElseThrow();
         var maxValue = Arrays.stream(speedOfAllCharacters).max().orElseThrow();
 
-        var randomizedSpeed = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 787);
+        var randomizedSpeed = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 787 + characterId);
 
         return createDivineFruit(randomizedSpeed);
     }
 
-    public DivineFruit randomizeStockWithBounds(int character, int level) {
-        var speedOfCharacter = parser.getSpeedOfCharacterByLevel(character, level);
+    public DivineFruit randomizeStockWithBounds(int characterId, int level) {
+        var speedOfCharacter = parser.getSpeedOfCharacterByLevel(characterId, level);
 
-        var randomizedSpeed = statRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, speedOfCharacter, 801);
+        var randomizedSpeed = statRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, speedOfCharacter, 801 + characterId);
 
         return createDivineFruit(randomizedSpeed);
     }

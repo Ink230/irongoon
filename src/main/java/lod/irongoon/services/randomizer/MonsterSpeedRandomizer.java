@@ -24,8 +24,8 @@ public class MonsterSpeedRandomizer {
         return createDivineFruit(speed);
     }
 
-    public DivineFruit randomizeWithBounds() {
-        var speed = statRandomizer.calculateRandomNumberBetweenBounds(config.speedStatMonstersLowerBound, config.speedStatMonstersUpperBound, 989);
+    public DivineFruit randomizeWithBounds(int monsterId) {
+        var speed = statRandomizer.calculateRandomNumberBetweenBounds(config.speedStatMonstersLowerBound, config.speedStatMonstersUpperBound, 989 + monsterId);
 
         return createDivineFruit(speed);
     }

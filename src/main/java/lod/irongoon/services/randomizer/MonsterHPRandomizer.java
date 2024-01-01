@@ -27,7 +27,7 @@ public class MonsterHPRandomizer {
     public DivineFruit randomizeStockWithBounds(int monsterId) {
         var monsterHp = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.HP.name());
 
-        var hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatMonstersLowerPercentBound, config.hpStatMonstersUpperPercentBound, monsterHp, 959);
+        var hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatMonstersLowerPercentBound, config.hpStatMonstersUpperPercentBound, monsterHp, 959 + monsterId);
 
         return createDivineFruit(hp);
     }

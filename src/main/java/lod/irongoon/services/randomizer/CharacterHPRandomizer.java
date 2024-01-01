@@ -25,7 +25,7 @@ public class CharacterHPRandomizer {
         return new DivineFruit(parser.getHPOfCharacterByLevel(characterId, level), 0);
     }
 
-    public DivineFruit randomizeWithBounds(int level) {
+    public DivineFruit randomizeWithBounds(int characterId, int level) {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0));
 
@@ -40,7 +40,7 @@ public class CharacterHPRandomizer {
             var minValue = Arrays.stream(hpOfCharactersByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(hpOfCharactersByLevel).max().orElseThrow();
 
-            var hp = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909);
+            var hp = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909 + characterId);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }
@@ -57,7 +57,7 @@ public class CharacterHPRandomizer {
             var hpOfCharacterByLevelMinusOne = parser.getHPOfCharacterByLevel(characterId,subLevel - 1);
             var hpAvailable = hpOfCharacterByLevel - hpOfCharacterByLevelMinusOne;
 
-            int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, hpAvailable, 939);
+            int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, hpAvailable, 939 + characterId);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }

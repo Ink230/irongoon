@@ -8,5 +8,5 @@ bodyTotalStatsBounds: STOCK
 dragoonStatsBounds: STOCK
 bodyTotalStatsDistributionPerLevel: RANDOM
 dragoonTotalStatsDistributionPerLevel: RANDOM
-hpStatPerLevel: RANDOM
-speedStatPerLevel: RANDOM
+hpStatPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
+speedStatPerLevel: RANDOMIZE_BOUNDS
