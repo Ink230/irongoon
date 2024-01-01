@@ -24,7 +24,7 @@ public class CharacterSpeedRandomizer {
         return createDivineFruit(parser.getSpeedOfCharacterByLevel(character, level));
     }
 
-    public DivineFruit randomizeWithBounds(int character, int level) {
+    public DivineFruit randomizeWithBounds(int level) {
         var speedOfAllCharacters = parser.getCharactersSpeedStats(level);
 
         var minValue = Arrays.stream(speedOfAllCharacters).min().orElseThrow();

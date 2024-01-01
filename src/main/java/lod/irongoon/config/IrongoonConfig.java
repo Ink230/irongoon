@@ -37,6 +37,8 @@ public class IrongoonConfig {
     public final HPStatPerLevel hpStatPerLevel;
     public final SpeedStatPerLevel speedStatPerLevel;
     public final HPStatMonsters hpStatMonsters;
+    public final int hpStatMonstersUpperPercentBound;
+    public final int hpStatMonstersLowerPercentBound;
     public final SpeedStatMonsters speedStatMonsters;
     public final int speedStatMonstersUpperBound;
     public final int speedStatMonstersLowerBound;
@@ -69,6 +71,8 @@ public class IrongoonConfig {
         this.hpStatPerLevel = HPStatPerLevel.valueOf((String) yamlConfig.getOrDefault("hpStatPerLevel", "RANDOM"));
         this.speedStatPerLevel = SpeedStatPerLevel.valueOf((String) yamlConfig.getOrDefault("speedStatPerLevel", "RANDOM"));
         this.hpStatMonsters = HPStatMonsters.valueOf((String) yamlConfig.getOrDefault("hpStatMonster", "RANDOMIZE_BOUNDS"));
+        this.hpStatMonstersUpperPercentBound = (int) yamlConfig.getOrDefault("hpStatMonstersUpperPercentBound", 150);
+        this.hpStatMonstersLowerPercentBound = (int) yamlConfig.getOrDefault("hpStatMonstersLowerPercentBound", 50);
         this.speedStatMonsters = SpeedStatMonsters.valueOf((String) yamlConfig.getOrDefault("speedStatMonster", "RANDOMIZE_BOUNDS"));
         this.speedStatMonstersUpperBound = (int) yamlConfig.getOrDefault("speedStatMonstersUpperBound", 100);
         this.speedStatMonstersLowerBound = (int) yamlConfig.getOrDefault("speedStatMonstersLowerBound", 30);

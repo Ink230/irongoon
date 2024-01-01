@@ -5,8 +5,6 @@ import lod.irongoon.data.EnemyStatsData;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.parse.game.MonsterStatsParser;
 
-import java.util.*;
-
 public class MonsterSpeedRandomizer {
     private static final MonsterSpeedRandomizer INSTANCE = new MonsterSpeedRandomizer();
     public static MonsterSpeedRandomizer getInstance() { return INSTANCE; }

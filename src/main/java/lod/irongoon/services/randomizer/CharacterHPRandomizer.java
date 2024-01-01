@@ -25,7 +25,7 @@ public class CharacterHPRandomizer {
         return new DivineFruit(parser.getHPOfCharacterByLevel(characterId, level), 0);
     }
 
-    public DivineFruit randomizeWithBounds(int characterId, int level) {
+    public DivineFruit randomizeWithBounds(int level) {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0));
 

@@ -5,8 +5,6 @@ import lod.irongoon.data.EnemyStatsData;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.parse.game.MonsterStatsParser;
 
-import java.util.*;
-
 public class MonsterHPRandomizer {
     private static final MonsterHPRandomizer INSTANCE = new MonsterHPRandomizer();
     public static MonsterHPRandomizer getInstance() { return INSTANCE; }
@@ -27,6 +25,10 @@ public class MonsterHPRandomizer {
     }
 
     public DivineFruit randomizeStockWithBounds(int monsterId) {
-        return null;
+        var monsterHp = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.HP.name());
+
+        var hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatMonstersLowerPercentBound, config.hpStatMonstersUpperPercentBound, monsterHp, 959);
+
+        return createDivineFruit(hp);
     }
 }
