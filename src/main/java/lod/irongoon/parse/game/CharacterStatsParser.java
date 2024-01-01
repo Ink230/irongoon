@@ -39,4 +39,12 @@ public class CharacterStatsParser {
 
         return (int) Math.ceil(average);
     }
+
+    public int getHPOfCharacterByLevel(int character, int level) {
+        return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.MAX_HP), dataTableKey);
+    }
+
+    public int getSpeedOfCharacterByLevel(int character, int level) {
+        return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.SPEED), dataTableKey);
+    }
 }

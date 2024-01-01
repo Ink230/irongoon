@@ -1,12 +1,9 @@
 package lod.irongoon.data;
 
 public enum HPStatPerLevel implements Data<Integer> {
-    RANDOM(0),
-    RPG(1),
-    RPG_RANDOM(2),
-    RPG_RANDOM_RANDOM(3),
-    RPG_RANDOM_ULTRA(4),
-    STOCK(5);
+    MAINTAIN_STOCK(0),
+    RANDOMIZE_BOUNDS_PER_LEVEL(1),
+    RANDOMIZE_STOCK_BOUNDS(2);
 
     private final int hpStatPerLevel;
 

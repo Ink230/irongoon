@@ -44,6 +44,7 @@ public class Irongoon {
     public void characterStats(final CharacterStatsEvent character) {
         DivineFruit bodyStatsRandomized = randomizer.doCharacterStats(character);
         DivineFruit dragoonStatsRandomized = randomizer.doDragoonStats(character);
+        DivineFruit hpStatRandomized = randomizer.doCharacterHP(character);
 
         character.bodyAttack = bodyStatsRandomized.bodyAttack;
         character.bodyDefence = bodyStatsRandomized.bodyDefense;
@@ -54,6 +55,8 @@ public class Irongoon {
         character.dragoonDefence = dragoonStatsRandomized.dragoonDefense;
         character.dragoonMagicAttack = dragoonStatsRandomized.dragoonMagicAttack;
         character.dragoonMagicDefence = dragoonStatsRandomized.dragoonMagicDefense;
+
+        character.maxHp = hpStatRandomized.maxHP;
     }
 
     @EventListener
