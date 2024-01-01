@@ -14,7 +14,7 @@ public class CharacterHPRandomizer {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final CharacterStatsParser parser = CharacterStatsParser.getInstance();
-    private final StatsRandomizer statsRandomizer = StatsRandomizer.getInstance();
+    private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit growDivineFruit(int HP, DivineFruit previousFruit) {
         int hp = HP + previousFruit.maxHP;
@@ -40,7 +40,7 @@ public class CharacterHPRandomizer {
             var minValue = Arrays.stream(hpOfCharactersByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(hpOfCharactersByLevel).max().orElseThrow();
 
-            var hp = statsRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909);
+            var hp = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }
@@ -57,7 +57,7 @@ public class CharacterHPRandomizer {
             var hpOfCharacterByLevelMinusOne = parser.getHPOfCharacterByLevel(characterId,subLevel - 1);
             var hpAvailable = hpOfCharacterByLevel - hpOfCharacterByLevelMinusOne;
 
-            int hp = statsRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, hpAvailable, 939);
+            int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, hpAvailable, 939);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }

@@ -14,7 +14,7 @@ public class CharacterSpeedRandomizer {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final CharacterStatsParser parser = CharacterStatsParser.getInstance();
-    private final StatsRandomizer statsRandomizer = StatsRandomizer.getInstance();
+    private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int speed) {
         return new DivineFruit(speed);
@@ -30,7 +30,7 @@ public class CharacterSpeedRandomizer {
         var minValue = Arrays.stream(speedOfAllCharacters).min().orElseThrow();
         var maxValue = Arrays.stream(speedOfAllCharacters).max().orElseThrow();
 
-        var randomizedSpeed = statsRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 787);
+        var randomizedSpeed = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 787);
 
         return createDivineFruit(randomizedSpeed);
     }
@@ -38,7 +38,7 @@ public class CharacterSpeedRandomizer {
     public DivineFruit randomizeStockWithBounds(int character, int level) {
         var speedOfCharacter = parser.getSpeedOfCharacterByLevel(character, level);
 
-        var randomizedSpeed = statsRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, speedOfCharacter, 801);
+        var randomizedSpeed = statRandomizer.calculatePercentModifiedBoundedStat(config.NonBaselineStatsLowerPercentBound, config.NonBaselineStatsUpperPercentBound, speedOfCharacter, 801);
 
         return createDivineFruit(randomizedSpeed);
     }
