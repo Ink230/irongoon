@@ -4,6 +4,7 @@ import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
+import lod.irongoon.parse.game.CharacterStatsParser;
 import lod.irongoon.parse.game.MonsterStatsParser;
 
 public class Randomizer {
@@ -15,6 +16,7 @@ public class Randomizer {
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final CharacterStatsRandomizer characterStatsRandomizer = CharacterStatsRandomizer.getInstance();
     private final CharacterHPRandomizer characterHPRandomizer = CharacterHPRandomizer.getInstance();
+    private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
     private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
     private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
 
@@ -34,6 +36,14 @@ public class Randomizer {
             case MAINTAIN_STOCK -> characterHPRandomizer.randomizeMaintainStock(character.characterId, character.level);
             case RANDOMIZE_BOUNDS_PER_LEVEL -> characterHPRandomizer.randomizeWithBounds(character.characterId, character.level);
             case RANDOMIZE_STOCK_BOUNDS -> characterHPRandomizer.randomizeStockWithBounds(character.characterId, character.level);
+        };
+    }
+
+    public DivineFruit doCharacterSpeed(CharacterStatsEvent character) {
+        return switch(config.speedStatPerLevel) {
+            case MAINTAIN_STOCK -> characterSpeedRandomizer.randomizeMaintainStock(character.characterId, character.level);
+            case RANDOMIZE_BOUNDS -> characterSpeedRandomizer.randomizeWithBounds(character.characterId, character.level);
+            case RANDOMIZE_RANDOM_BOUNDS -> characterSpeedRandomizer.randomizeStockWithBounds(character.characterId, character.level);
         };
     }
 

@@ -45,6 +45,7 @@ public class Irongoon {
         DivineFruit bodyStatsRandomized = randomizer.doCharacterStats(character);
         DivineFruit dragoonStatsRandomized = randomizer.doDragoonStats(character);
         DivineFruit hpStatRandomized = randomizer.doCharacterHP(character);
+        DivineFruit speedStatRandomized = randomizer.doCharacterSpeed(character);
 
         character.bodyAttack = bodyStatsRandomized.bodyAttack;
         character.bodyDefence = bodyStatsRandomized.bodyDefense;
@@ -57,6 +58,7 @@ public class Irongoon {
         character.dragoonMagicDefence = dragoonStatsRandomized.dragoonMagicDefense;
 
         character.maxHp = hpStatRandomized.maxHP;
+        character.bodySpeed = speedStatRandomized.bodySpeed;
     }
 
     @EventListener

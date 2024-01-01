@@ -47,4 +47,14 @@ public class CharacterStatsParser {
     public int getSpeedOfCharacterByLevel(int character, int level) {
         return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.SPEED), dataTableKey);
     }
+
+    public int[] getCharactersSpeedStats(int character, int level) {
+        var allCharactersSpeedStats = new int[CharacterData.values().length];
+
+        for(CharacterData value : CharacterData.values()) {
+            allCharactersSpeedStats[value.getValue()] = getSpeedOfCharacterByLevel(character, level);
+        }
+
+        return allCharactersSpeedStats;
+    }
 }

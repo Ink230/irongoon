@@ -1,12 +1,9 @@
 package lod.irongoon.data;
 
 public enum SpeedStatPerLevel implements Data<Integer> {
-    RANDOM(0),
-    RANDOM_CUSTOM(1),
-    STOCK(2),
-    STOCK_SHUFFLE(3),
-    CHAOS_STOCK_SHUFFLE(4),
-    CHAOS_RANDOM_SHUFFLE(5);
+    MAINTAIN_STOCK(0),
+    RANDOMIZE_BOUNDS(1),
+    RANDOMIZE_RANDOM_BOUNDS(2);
 
     private final int speedStatPerLevel;
 
