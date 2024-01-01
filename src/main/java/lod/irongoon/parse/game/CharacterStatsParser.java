@@ -44,6 +44,16 @@ public class CharacterStatsParser {
         return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.MAX_HP), dataTableKey);
     }
 
+    public int[] getHPOfAllCharactersByLevel(int level) {
+        var hpOfAllCharactersByLevel = new int[CharacterData.values().length];
+
+        for(CharacterData value : CharacterData.values()) {
+            hpOfAllCharactersByLevel[value.getValue()] = getHPOfCharacterByLevel(value.getValue(), level);
+        }
+
+        return hpOfAllCharactersByLevel;
+    }
+
     public int getSpeedOfCharacterByLevel(int character, int level) {
         return dataTableAccessor.getValueFromDataTable((character * chunkSize) + level, CharacterStatsData.getValue(CharacterStatsData.SPEED), dataTableKey);
     }
