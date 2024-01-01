@@ -97,4 +97,18 @@ public class StatsRandomizer {
         Random random = new Random(config.seed + uniqueModifier + 24);
         return random.nextInt(1, limit + 1);
     }
+
+    public int calculateRandomNumberBetweenBounds(int lowerBound, int upperBound, int uniqueModifier) {
+        Random random = new Random(config.seed + uniqueModifier);
+        var result = lowerBound + random.nextInt(upperBound - lowerBound + 1);
+
+        return result;
+    }
+
+    public int calculateRandomNumberBetweenBoundsNoSeed(int lowerBound, int upperBound) {
+        Random random = new Random();
+        var result = lowerBound + random.nextInt(upperBound - lowerBound + 1);
+
+        return result;
+    }
 }

@@ -75,8 +75,8 @@ public class Randomizer {
     public DivineFruit doMonsterSpeed (MonsterStatsEvent monster) {
         return switch (config.speedStatMonsters) {
             case MAINTAIN_STOCK -> monsterSpeedRandomizer.randomizeMaintainStock(monster.enemyId);
-            case RANDOMIZE_BOUNDS -> monsterSpeedRandomizer.randomizeWithBounds(monster.enemyId);
-            case RANDOMIZE_RANDOM_BOUNDS -> monsterSpeedRandomizer.randomizeRandomWithBounds(monster.enemyId);
+            case RANDOMIZE_BOUNDS -> monsterSpeedRandomizer.randomizeWithBounds();
+            case RANDOMIZE_RANDOM_BOUNDS -> monsterSpeedRandomizer.randomizeRandomWithBounds();
         };
     }
 }
