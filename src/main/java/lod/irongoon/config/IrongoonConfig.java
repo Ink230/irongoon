@@ -35,6 +35,8 @@ public class IrongoonConfig {
     public final TotalStatsDistributionPerLevel bodyTotalStatsDistributionPerLevel;
     public final TotalStatsDistributionPerLevel dragoonTotalStatsDistributionPerLevel;
     public final HPStatPerLevel hpStatPerLevel;
+    public final int hpStatUpperPercentBound;
+    public final int hpStatLowerPercentBound;
     public final SpeedStatPerLevel speedStatPerLevel;
     public final HPStatMonsters hpStatMonsters;
     public final int hpStatMonstersUpperPercentBound;
@@ -68,7 +70,9 @@ public class IrongoonConfig {
         this.dragoonStatsBounds = TotalStatsBounds.valueOf((String) yamlConfig.getOrDefault("dragoonStatsBounds", "STOCK"));
         this.bodyTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsDistributionPerLevel", "RANDOM"));
         this.dragoonTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsDistributionPerLevel", "RANDOM"));
-        this.hpStatPerLevel = HPStatPerLevel.valueOf((String) yamlConfig.getOrDefault("hpStatPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
+        this.hpStatPerLevel = HPStatPerLevel.valueOf((String) yamlConfig.getOrDefault("hpStatPerLevel", "RANDOMIZE_BOUNDS_PERCENT_MODIFIED_PER_LEVEL"));
+        this.hpStatUpperPercentBound = (int) yamlConfig.getOrDefault("hpStatUpperPercentBound", 150);
+        this.hpStatLowerPercentBound = (int) yamlConfig.getOrDefault("hpStatLowerPercentBound", 50);
         this.speedStatPerLevel = SpeedStatPerLevel.valueOf((String) yamlConfig.getOrDefault("speedStatPerLevel", "RANDOMIZE_BOUNDS"));
         this.hpStatMonsters = HPStatMonsters.valueOf((String) yamlConfig.getOrDefault("hpStatMonster", "RANDOMIZE_BOUNDS"));
         this.hpStatMonstersUpperPercentBound = (int) yamlConfig.getOrDefault("hpStatMonstersUpperPercentBound", 150);
