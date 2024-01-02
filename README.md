@@ -2,6 +2,11 @@
 
 The Irongoon mod for [Severed Chains](https://github.com/Legend-of-Dragoon-Modding/Legend-of-Dragoon-Java) allows an "Ironmon" style of play for Legend of Dragoon.
 
+# Alpha
+I expect some things to break or weird behaviours. Please report them as an issue.
+
+Aside from that, experiment with the config settings (different randomizer options) and see what is fun.
+
 # Irongoon Rules
 The [Irongoon Rules](https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124) is a WIP goal of capturing the Ironmon essence.
 
