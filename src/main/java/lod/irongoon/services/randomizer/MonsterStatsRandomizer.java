@@ -24,10 +24,10 @@ public class MonsterStatsRandomizer {
     public DivineFruit randomizeWithBounds(int monsterId) {
         var divineFruit = createDivineFruit(monsterId);
 
-        var resultAttacks = statRandomizer.calculatePercentModifiedBoundedStat(config.TotalStatsMonstersLowerPercentBound, config.TotalStatsMonstersUpperPercentBound, divineFruit.bodyAttack + divineFruit.bodyMagicAttack, monsterId);
+        var resultAttacks = statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyAttack + divineFruit.bodyMagicAttack, monsterId);
         var resultAttackSplit = statRandomizer.calculateRandomNumberWithLimit(resultAttacks, monsterId);
 
-        var resultDefenses = statRandomizer.calculatePercentModifiedBoundedStat(config.TotalStatsMonstersLowerPercentBound, config.TotalStatsMonstersUpperPercentBound, divineFruit.bodyDefense + divineFruit.bodyMagicDefense, monsterId);
+        var resultDefenses = statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyDefense + divineFruit.bodyMagicDefense, monsterId);
         var resultDefenseSplit = statRandomizer.calculateRandomNumberWithLimit(resultDefenses, monsterId);
 
         divineFruit.bodyAttack = resultAttackSplit;

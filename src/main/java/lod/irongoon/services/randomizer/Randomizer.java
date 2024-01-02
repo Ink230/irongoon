@@ -58,7 +58,7 @@ public class Randomizer {
     }
 
     public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
-        return switch (config.monsterTotalStatsPerLevel) {
+        return switch (config.monsterTotalStats) {
             case RANDOMIZE_BOUNDS -> monsterStatsRandomizer.randomizeWithBounds(monster.enemyId);
             case MAINTAIN_STOCK -> monsterStatsRandomizer.randomizeMaintainStock(monster.enemyId);
         };
