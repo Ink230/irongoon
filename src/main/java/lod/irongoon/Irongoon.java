@@ -16,7 +16,7 @@ import lod.irongoon.services.DataTables;
 
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
-    public static final String MOD_ID = "Irongoon";
+    public static final String MOD_ID = "irongoon";
     private static final Slugify slug = Slugify.builder().underscoreSeparator(true).customReplacement("'", "").customReplacement("-", "_").build();
     public static RegistryId id(final String entryId) {
         return new RegistryId(MOD_ID, entryId);
