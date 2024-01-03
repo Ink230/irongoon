@@ -73,6 +73,7 @@ public class Irongoon {
         monster.magicDefence = monsterStatsRandomized.bodyMagicDefense;
 
         monster.maxHp = monsterHPRandomized.maxHP;
+        monster.hp = monsterHPRandomized.maxHP;
         monster.speed = monsterSpeedRandomized.bodySpeed;
     }
 }
