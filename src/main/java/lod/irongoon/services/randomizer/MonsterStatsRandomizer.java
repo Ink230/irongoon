@@ -31,10 +31,10 @@ public class MonsterStatsRandomizer {
         var resultDefenseSplit = statRandomizer.calculateRandomNumberWithLimit(resultDefenses, monsterId);
 
         divineFruit.bodyAttack = resultAttackSplit;
-        divineFruit.bodyDefense = Math.max(50, resultDefenseSplit);
+        divineFruit.bodyDefense = Math.max(config.monsterDefenseFloor, resultDefenseSplit);
 
         divineFruit.bodyMagicAttack = Math.max(1, resultAttacks - resultAttackSplit);
-        divineFruit.bodyMagicDefense = Math.max(50, resultDefenses - resultDefenseSplit);
+        divineFruit.bodyMagicDefense = Math.max(config.monsterMagicDefenseFloor, resultDefenses - resultDefenseSplit);
 
         return new DivineFruit(divineFruit);
     }
@@ -47,9 +47,9 @@ public class MonsterStatsRandomizer {
         var divineFruit = createDivineFruit(monsterId);
 
         divineFruit.bodyAttack = statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyAttack, monsterId);
-        divineFruit.bodyDefense = Math.max(50, statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyDefense, monsterId));
+        divineFruit.bodyDefense = Math.max(config.monsterDefenseFloor, statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyDefense, monsterId));
         divineFruit.bodyMagicAttack = statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyMagicAttack, monsterId);
-        divineFruit.bodyMagicDefense = Math.max(50, statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyMagicDefense, monsterId));
+        divineFruit.bodyMagicDefense = Math.max(config.monsterMagicDefenseFloor, statRandomizer.calculatePercentModifiedBoundedStat(config.totalStatsMonstersLowerPercentBound, config.totalStatsMonstersUpperPercentBound, divineFruit.bodyMagicDefense, monsterId));
 
         return new DivineFruit(divineFruit);
     }

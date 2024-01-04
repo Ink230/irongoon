@@ -2,6 +2,8 @@ publicSeed: "7963AC95E13873B6"
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 monsterTotalStats: RANDOMIZE_BOUNDS
+monsterDefenseFloor: 50
+monsterMagicDefenseFloor: 50
 NonBaselineStatsUpperPercentBound: 150
 NonBaselineStatsLowerPercentBound: 50
 totalStatsMonstersUpperPercentBound: 150
