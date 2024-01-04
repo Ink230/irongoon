@@ -44,7 +44,10 @@ public class Irongoon {
 
     @EventListener
     public void characterStats(final CharacterStatsEvent character) {
-        if(!staleStats.isCharacterStale(character)) { return; }
+        if(!staleStats.isCharacterStale(character)) {
+            characters.updateCharacterByReferenceCharacter(character);
+            return;
+        }
 
         DivineFruit bodyStatsRandomized = randomizer.doCharacterStats(character);
         DivineFruit dragoonStatsRandomized = randomizer.doDragoonStats(character);
@@ -64,9 +67,7 @@ public class Irongoon {
         character.maxHp = hpStatRandomized.maxHP;
         character.bodySpeed = speedStatRandomized.bodySpeed;
 
-        var referenceCharacter = characters.getCharacterById(character.characterId);
-        referenceCharacter.level = character.level;
-        referenceCharacter.dLevel = character.dlevel;
+        characters.saveCharacter(character);
     }
 
     @EventListener
