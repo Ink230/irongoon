@@ -12,6 +12,8 @@ public class DivineFruit {
     public int dragoonMagicDefense;
     public int maxHP;
     public int maxMP;
+    public int level;
+    public int dLevel;
 
     public DivineFruit() {}
 

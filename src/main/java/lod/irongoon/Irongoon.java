@@ -3,6 +3,7 @@ package lod.irongoon;
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import org.legendofdragoon.modloader.Mod;
@@ -25,6 +26,7 @@ public class Irongoon {
     private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
     private final Randomizer randomizer = Randomizer.getInstance();
+    private final StaleStats staleStats = StaleStats.getInstance();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
@@ -42,6 +44,8 @@ public class Irongoon {
 
     @EventListener
     public void characterStats(final CharacterStatsEvent character) {
+        if(!staleStats.isCharacterStale(character)) { return; }
+
         DivineFruit bodyStatsRandomized = randomizer.doCharacterStats(character);
         DivineFruit dragoonStatsRandomized = randomizer.doDragoonStats(character);
         DivineFruit hpStatRandomized = randomizer.doCharacterHP(character);
@@ -59,6 +63,10 @@ public class Irongoon {
 
         character.maxHp = hpStatRandomized.maxHP;
         character.bodySpeed = speedStatRandomized.bodySpeed;
+
+        var referenceCharacter = characters.getCharacterById(character.characterId);
+        referenceCharacter.level = character.level;
+        referenceCharacter.dLevel = character.dlevel;
     }
 
     @EventListener

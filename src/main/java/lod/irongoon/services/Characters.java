@@ -29,6 +29,10 @@ public class Characters {
     }
 
     public DivineFruit getCharacter(CharacterData name) {
-        return new DivineFruit(characters.get(String.valueOf(name)));
+        return characters.get(String.valueOf(name));
+    }
+
+    public DivineFruit getCharacterById(int id) {
+        return getCharacter(CharacterData.getEnumByIndex(id));
     }
 }

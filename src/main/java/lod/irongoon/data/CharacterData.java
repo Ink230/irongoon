@@ -20,4 +20,13 @@ public enum CharacterData implements Data<Integer> {
     public Integer getValue() {
         return characterData;
     }
+
+    public static CharacterData getEnumByIndex(int index) {
+        for(CharacterData character : CharacterData.values()) {
+            if(character.getValue() == index) {
+                return character;
+            }
+        }
+        throw new IllegalArgumentException("No index for character found");
+    }
 }
