@@ -111,4 +111,11 @@ public class StatsRandomizer {
 
         return result;
     }
+
+    public int calculateVarianceOfStat(int stat) {
+        Random random = new Random();
+        var result = calculatePercentModifiedBoundedStat(60, 100, stat, random.nextInt());
+
+        return result;
+    }
 }

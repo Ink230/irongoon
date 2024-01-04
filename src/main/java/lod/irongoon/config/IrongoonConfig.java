@@ -46,6 +46,7 @@ public class IrongoonConfig {
     public final SpeedStatMonsters speedStatMonsters;
     public final int speedStatMonstersUpperBound;
     public final int speedStatMonstersLowerBound;
+    public final StatsVarianceMonsters statsVarianceMonsters;
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -84,5 +85,6 @@ public class IrongoonConfig {
         this.speedStatMonsters = SpeedStatMonsters.valueOf((String) yamlConfig.getOrDefault("speedStatMonster", "RANDOMIZE_BOUNDS"));
         this.speedStatMonstersUpperBound = (int) yamlConfig.getOrDefault("speedStatMonstersUpperBound", 100);
         this.speedStatMonstersLowerBound = (int) yamlConfig.getOrDefault("speedStatMonstersLowerBound", 30);
+        this.statsVarianceMonsters = StatsVarianceMonsters.valueOf((String) yamlConfig.getOrDefault("statsVarianceMonsters", "RANDOM_PERCENT_BOUNDS"));
     }
 }

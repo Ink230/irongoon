@@ -79,4 +79,14 @@ public class Randomizer {
             case RANDOMIZE_RANDOM_BOUNDS -> monsterSpeedRandomizer.randomizeRandomWithBounds();
         };
     }
+
+    public void doMonsterVariance(DivineFruit monsterStats, DivineFruit monsterHP, DivineFruit monsterSpeed) {
+        switch (config.statsVarianceMonsters) {
+            case STOCK:
+                break;
+            case RANDOM_PERCENT_BOUNDS:
+                monsterStatsRandomizer.varianceStats(monsterStats, monsterHP, monsterSpeed);
+                break;
+        }
+    }
 }

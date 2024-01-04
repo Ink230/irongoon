@@ -76,6 +76,8 @@ public class Irongoon {
         DivineFruit monsterHPRandomized = randomizer.doMonsterHP(monster);
         DivineFruit monsterSpeedRandomized = randomizer.doMonsterSpeed(monster);
 
+        randomizer.doMonsterVariance(monsterStatsRandomized, monsterHPRandomized, monsterSpeedRandomized);
+
         monster.attack = monsterStatsRandomized.bodyAttack;
         monster.defence = monsterStatsRandomized.bodyDefense;
         monster.magicAttack = monsterStatsRandomized.bodyMagicAttack;

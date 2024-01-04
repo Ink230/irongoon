@@ -53,4 +53,14 @@ public class MonsterStatsRandomizer {
 
         return new DivineFruit(divineFruit);
     }
+
+    public void varianceStats(DivineFruit monsterStats, DivineFruit monsterHP, DivineFruit monsterSpeed) {
+        monsterStats.bodyAttack = statRandomizer.calculateVarianceOfStat(monsterStats.bodyAttack);
+        monsterStats.bodyDefense = statRandomizer.calculateVarianceOfStat(monsterStats.bodyDefense);
+        monsterStats.bodyMagicAttack = statRandomizer.calculateVarianceOfStat(monsterStats.bodyMagicAttack);
+        monsterStats.bodyMagicDefense = statRandomizer.calculateVarianceOfStat(monsterStats.bodyMagicDefense);
+
+        monsterHP.maxHP = statRandomizer.calculateVarianceOfStat(monsterHP.maxHP);
+        monsterSpeed.bodySpeed = statRandomizer.calculateVarianceOfStat(monsterSpeed.bodySpeed);
+    }
 }
