@@ -55,7 +55,6 @@ public class Characters {
 
         character.level = referenceCharacter.level;
         character.dlevel = referenceCharacter.dLevel;
-
     }
 
     public void saveCharacter(CharacterStatsEvent referenceCharacter) {

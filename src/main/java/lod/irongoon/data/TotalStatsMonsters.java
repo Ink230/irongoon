@@ -2,7 +2,8 @@ package lod.irongoon.data;
 
 public enum TotalStatsMonsters {
     RANDOMIZE_BOUNDS(0),
-    MAINTAIN_STOCK(1);
+    MAINTAIN_STOCK(1),
+    RANDOMIZE_STOCK_BOUNDS(2);
 
     private final int totalStatsMonsters;
 
