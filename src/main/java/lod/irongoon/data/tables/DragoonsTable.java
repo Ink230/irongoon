@@ -27,7 +27,7 @@ public class DragoonsTable implements Table {
         final Map<String, List<Dragoon.StatsPerLevel>> dragoons = new HashMap<>();
         for (final var i : l) {
             final Dragoon.CsvStatsPerLevel stats = (Dragoon.CsvStatsPerLevel) i;
-            final String name = stats.name().split(" ")[0];
+            final String name = stats.name.split(" ")[0];
             if (!dragoons.containsKey(name)) {
                 dragoons.put(name, new ArrayList<>());
             }

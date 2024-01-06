@@ -30,35 +30,38 @@ public class Dragoon {
     ) {
         public StatsPerLevel(CsvStatsPerLevel csvStatsPerLevel) {
             this(
-                    csvStatsPerLevel.maxMp(),
-                    csvStatsPerLevel.spellLearned(),
-                    csvStatsPerLevel.attack(),
-                    csvStatsPerLevel.magicAttack(),
-                    csvStatsPerLevel.defense(),
-                    csvStatsPerLevel.magicDefense(),
-                    csvStatsPerLevel.totalStatPoints()
+                    csvStatsPerLevel.maxMp,
+                    csvStatsPerLevel.spellLearned,
+                    csvStatsPerLevel.attack,
+                    csvStatsPerLevel.magicAttack,
+                    csvStatsPerLevel.defense,
+                    csvStatsPerLevel.magicDefense,
+                    csvStatsPerLevel.totalStatPoints
             );
         }
     }
 
-    public record CsvStatsPerLevel(
-            @CsvBindByName(column = "Max Mp", required = true)
-            int maxMp,
-            @CsvBindByName(column = "Spell Learned", required = true)
-            int spellLearned,
-            @CsvBindByName(column = "UK1", required = true)
-            int unknown,
-            @CsvBindByName(column = "AT", required = true)
-            int attack,
-            @CsvBindByName(column = "MAT", required = true)
-            int magicAttack,
-            @CsvBindByName(column = "DF", required = true)
-            int defense,
-            @CsvBindByName(column = "MDF", required = true)
-            int magicDefense,
-            @CsvBindByName(column = "Total Stats", required = true)
-            int totalStatPoints,
-            @CsvBindByName(column = "Name", required = true)
-            String name
-    ) {}
+    public static class CsvStatsPerLevel {
+        @CsvBindByName(column = "Max Mp", required = true)
+        public int maxMp;
+        @CsvBindByName(column = "Spell Learned", required = true)
+        public int spellLearned;
+        @CsvBindByName(column = "UK1", required = true)
+        public int unknown;
+        @CsvBindByName(column = "AT", required = true)
+        public int attack;
+        @CsvBindByName(column = "MAT", required = true)
+        public int magicAttack;
+        @CsvBindByName(column = "DF", required = true)
+        public int defense;
+        @CsvBindByName(column = "MDF", required = true)
+        public int magicDefense;
+        @CsvBindByName(column = "Total Stats", required = true)
+        public int totalStatPoints;
+        @CsvBindByName(column = "Name", required = true)
+        public String name;
+
+        public CsvStatsPerLevel() {
+        }
+    }
 }

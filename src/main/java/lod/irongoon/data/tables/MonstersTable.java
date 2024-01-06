@@ -39,13 +39,13 @@ public class MonstersTable implements Table {
 
     public HashMap<String, Monster.Stats> initializeStats() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(statsExternalFile))
-                .withType(Monster.Stats.class)
+                .withType(Monster.CsvStats.class)
                 .build()
                 .parse();
 
         final HashMap<String, Monster.Stats> stats = new HashMap<>();
         for (final var i : l) {
-            final Monster.Stats s = (Monster.Stats) i;
+            final Monster.Stats s = new Monster.Stats ((Monster.CsvStats) i);
             stats.put(s.name(), s);
         }
         return stats;
@@ -53,13 +53,13 @@ public class MonstersTable implements Table {
 
     public HashMap<String, Monster.Reward> initializeRewards() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(rewardsExternalFile))
-                .withType(Monster.Reward.class)
+                .withType(Monster.CsvReward.class)
                 .build()
                 .parse();
 
         final HashMap<String, Monster.Reward> rewards = new HashMap<>();
         for (final var i : l) {
-            final Monster.Reward r = (Monster.Reward) i;
+            final Monster.Reward r = new Monster.Reward((Monster.CsvReward) i);
             rewards.put(r.name(), r);
         }
         return rewards;
