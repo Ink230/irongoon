@@ -1,40 +1,30 @@
 package lod.irongoon.services;
 
 import legend.game.modding.events.characters.CharacterStatsEvent;
-import lod.irongoon.data.CharacterData;
+import lod.irongoon.data.Tables;
 import lod.irongoon.models.DivineFruit;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Characters {
     private static final Characters instance = new Characters();
     public static Characters getInstance() {
         return instance;
     }
+    private final List<DivineFruit> characters = new ArrayList<>();
 
-    private Characters() {
-        this.characters = new HashMap<>();
-    }
+    private Characters() {}
 
-    private final Map<String, DivineFruit> characters;
 
     public void initialize() {
-        for(CharacterData character : CharacterData.values()) {
-            addCharacter(character, new DivineFruit());
+        for(int i = 0; i < Tables.getCharacterTable().size(); i++) {
+            this.characters.add(new DivineFruit());
         }
     }
 
-    private void addCharacter(CharacterData name, DivineFruit character) {
-        characters.put(String.valueOf(name), new DivineFruit(character));
-    }
-
-    public DivineFruit getCharacter(CharacterData name) {
-        return characters.get(String.valueOf(name));
-    }
-
     public DivineFruit getCharacterById(int id) {
-        return getCharacter(CharacterData.getEnumByIndex(id));
+        return this.characters.get(id);
     }
 
     public void updateCharacterByReferenceCharacter(CharacterStatsEvent character) {

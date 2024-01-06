@@ -15,7 +15,7 @@ public class CharacterSpeedRandomizer {
     private CharacterSpeedRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final CharactersTable characters = Tables.getInstance().getCharacterTable();
+    private final CharactersTable characters = Tables.getCharacterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int speed) {

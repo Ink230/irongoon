@@ -10,7 +10,7 @@ public class StatsUtil {
     }
 
     public static int[] GetStatForAllCharacters(int level, IValue<Character.StatsPerLevel> getter) {
-        final var table = Tables.getInstance().getCharacterTable();
+        final var table = Tables.getCharacterTable();
         final var count = table.size();
         int[] result = new int[count];
         for (int i = 0; i < count; i++) {
@@ -21,7 +21,7 @@ public class StatsUtil {
     }
 
     public static int[] GetStatsForAllDragoons(int level, IValue<Dragoon.StatsPerLevel> getter) {
-        final var table = Tables.getInstance().getDragoonTable();
+        final var table = Tables.getDragoonTable();
         final var count = table.size();
         int[] result = new int[count];
         for (int i = 0; i < count; i++) {

@@ -22,10 +22,37 @@ public class Tables {
         SPELLS,
     }
 
+    public static CharactersTable getCharacterTable() {
+        return (CharactersTable) instance.dataTables[Type.CHARACTERS.ordinal()];
+    }
+
+    public static DragoonsTable getDragoonTable() {
+        return (DragoonsTable) instance.dataTables[Type.DRAGOONS.ordinal()];
+    }
+
+    public static EquipmentTable getEquipmentTable() {
+        return (EquipmentTable) instance.dataTables[Type.EQUIPMENT.ordinal()];
+    }
+
+    public static MonstersTable getMonsterTable() {
+        return (MonstersTable) instance.dataTables[Type.MONSTERS.ordinal()];
+    }
+
+    public static ShopsTable getShopTable() {
+        return (ShopsTable) instance.dataTables[Type.SHOPS.ordinal()];
+    }
+
+    public static SpellsTable getSpellTable() {
+        return (SpellsTable) instance.dataTables[Type.SPELLS.ordinal()];
+    }
+
+    public static AdditionsTable getAdditionTable() {
+        return (AdditionsTable) instance.dataTables[Type.ADDITIONS.ordinal()];
+    }
+
     private Tables() {
     }
 
-    private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final Table[] dataTables = new Table[]{
             new AdditionsTable(),
             new CharactersTable(),
@@ -40,33 +67,5 @@ public class Tables {
         for (final var t : dataTables) {
             t.initialize();
         }
-    }
-
-    public CharactersTable getCharacterTable() {
-        return (CharactersTable)this.dataTables[Type.CHARACTERS.ordinal()];
-    }
-
-    public DragoonsTable getDragoonTable() {
-        return (DragoonsTable)this.dataTables[Type.DRAGOONS.ordinal()];
-    }
-
-    public EquipmentTable getEquipmentTable() {
-        return (EquipmentTable)this.dataTables[Type.EQUIPMENT.ordinal()];
-    }
-
-    public MonstersTable getMonsterTable() {
-        return (MonstersTable)this.dataTables[Type.MONSTERS.ordinal()];
-    }
-
-    public ShopsTable getShopTable() {
-        return (ShopsTable)this.dataTables[Type.SHOPS.ordinal()];
-    }
-
-    public SpellsTable getSpellTable() {
-        return (SpellsTable)this.dataTables[Type.SPELLS.ordinal()];
-    }
-
-    public AdditionsTable getAdditionTable() {
-        return (AdditionsTable)this.dataTables[Type.ADDITIONS.ordinal()];
     }
 }

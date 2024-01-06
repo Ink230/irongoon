@@ -1,7 +1,6 @@
 package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
-import lod.irongoon.data.EnemyStatsData;
 import lod.irongoon.data.Tables;
 import lod.irongoon.data.tables.MonstersTable;
 import lod.irongoon.models.DivineFruit;
@@ -13,7 +12,7 @@ public class MonsterHPRandomizer {
     private MonsterHPRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final MonstersTable monters = Tables.getInstance().getMonsterTable();
+    private final MonstersTable monters = Tables.getMonsterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int hp) {

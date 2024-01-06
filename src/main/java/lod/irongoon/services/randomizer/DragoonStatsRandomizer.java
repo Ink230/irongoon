@@ -17,7 +17,7 @@ public class DragoonStatsRandomizer {
     private DragoonStatsRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final DragoonsTable dragoons = Tables.getInstance().getDragoonTable();
+    private final DragoonsTable dragoons = Tables.getDragoonTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit growDivineFruit(int[] distribution, int totalStats, DivineFruit previousFruit) {

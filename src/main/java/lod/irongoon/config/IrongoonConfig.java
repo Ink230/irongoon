@@ -12,8 +12,8 @@ import org.yaml.snakeyaml.Yaml;
 import lod.irongoon.config.modifiers.*;
 
 public class IrongoonConfig {
-    private final static String EXTERNAL_DATA_LOAD_PATH =  "./mods/irongoon/US/";
-    private final static String EXTERNAL_CONFIG_LOAD_PATH = "./mods/irongoon/config.yaml";
+    private final static String EXTERNAL_DATA_LOAD_PATH =  "mods/irongoon/US/";
+    private final static String EXTERNAL_CONFIG_LOAD_PATH = "mods/irongoon/config.yaml";
 
     private final static String EXTERNAL_DATA_LOAD_EXTENSION = ".csv";
 

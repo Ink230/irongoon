@@ -12,7 +12,7 @@ public class MonsterStatsRandomizer {
     private MonsterStatsRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final MonstersTable mosters = Tables.getInstance().getMonsterTable();
+    private final MonstersTable mosters = Tables.getMonsterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int monsterId) {

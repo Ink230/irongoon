@@ -15,7 +15,7 @@ public class CharacterHPRandomizer {
     private CharacterHPRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final CharactersTable characters = Tables.getInstance().getCharacterTable();
+    private final CharactersTable characters = Tables.getCharacterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit growDivineFruit(int HP, DivineFruit previousFruit) {

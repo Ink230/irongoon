@@ -40,7 +40,6 @@ public class MonstersTable implements Table {
     public HashMap<String, Monster.Stats> initializeStats() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(statsExternalFile))
                 .withType(Monster.Stats.class)
-                .withSkipLines(1) // Skip header line
                 .build()
                 .parse();
 
@@ -55,7 +54,6 @@ public class MonstersTable implements Table {
     public HashMap<String, Monster.Reward> initializeRewards() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(rewardsExternalFile))
                 .withType(Monster.Reward.class)
-                .withSkipLines(1) // Skip header line
                 .build()
                 .parse();
 

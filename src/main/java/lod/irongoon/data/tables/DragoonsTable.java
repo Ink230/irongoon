@@ -20,7 +20,6 @@ public class DragoonsTable implements Table {
     public void initialize() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(externalFile))
                 .withType(Dragoon.CsvStatsPerLevel.class)
-                .withSkipLines(1) // Skip header line
                 .build()
                 .parse();
 
@@ -38,22 +37,38 @@ public class DragoonsTable implements Table {
 
         for (Map.Entry<String, List<Dragoon.StatsPerLevel>> e : dragoons.entrySet()) {
             final var d = new Dragoon(e.getKey(), e.getValue().toArray(new Dragoon.StatsPerLevel[0]));
-            this.table.add(d);
             this.byName.put(d.getName(), d);
+        }
 
+        this.table.add(this.byName.get("Dart"));
+        this.table.add(this.byName.get("Lavitz"));
+        this.table.add(this.byName.get("Shana"));
+        this.table.add(this.byName.get("Rose"));
+        this.table.add(this.byName.get("Haschel"));
+        this.table.add(this.byName.get("Albert"));
+        this.table.add(this.byName.get("Meru"));
+        this.table.add(this.byName.get("Kongol"));
+        if (this.byName.containsKey("???")) {
+            this.table.add(this.byName.get("???"));
+        } else {
+            this.table.add(this.byName.get("Miranda"));
         }
     }
 
     public enum Index {
-        DART,
-        LAVITZ,
-        SHANA,
-        ROSE,
-        HASCHEL,
-        ALBERT,
-        MERU,
-        KONGOL,
-        MIRANDA;
+        DART("Dart"),
+        LAVITZ("Lavitz"),
+        SHANA("Shana"),
+        ROSE("Rose"),
+        HASCHEL("Haschel"),
+        ALBERT("Albert"),
+        MERU("Meru"),
+        KONGOL("Kongol"),
+        MIRANDA("Miranda");;
+        public final String name;
+        Index(String name) {
+            this.name = name;
+        }
     }
 
     public Dragoon getDragoon(final Index index) {
