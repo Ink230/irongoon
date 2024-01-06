@@ -1,6 +1,5 @@
 package lod.irongoon.config;
 
-import lod.irongoon.data.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,15 +9,23 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+import lod.irongoon.config.modifiers.*;
+
 public class IrongoonConfig {
+    private final static String EXTERNAL_DATA_LOAD_PATH =  "./mods/irongoon/US/";
+    private final static String EXTERNAL_CONFIG_LOAD_PATH = "./mods/irongoon/config.yaml";
+
+    private final static String EXTERNAL_DATA_LOAD_EXTENSION = ".csv";
+
+    public static String getFullPath(String filename) {
+        return EXTERNAL_DATA_LOAD_PATH + filename + EXTERNAL_DATA_LOAD_EXTENSION;
+    }
+
     private static final IrongoonConfig INSTANCE = new IrongoonConfig();
     public static IrongoonConfig getInstance() {
         return INSTANCE;
     }
 
-    public final String externalDataLoadPath = "./mods/irongoon/US/";
-    public final String externalDataLoadExtension = ".csv";
-    public final String externalConfigLoadPath = "./mods/irongoon/config.yaml";
     public final String publicSeed;
     public final long seed;
     public final int bodyNumberOfStatsAmount = 4;
@@ -49,7 +56,7 @@ public class IrongoonConfig {
     public final StatsVarianceMonsters statsVarianceMonsters;
 
     private IrongoonConfig() {
-        File configFile = new File(externalConfigLoadPath);
+        File configFile = new File(EXTERNAL_CONFIG_LOAD_PATH);
 
         Map<String, Object> yamlConfig;
         try (InputStream inputStream = new FileInputStream(configFile)) {

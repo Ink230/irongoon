@@ -2,8 +2,9 @@ package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.EnemyStatsData;
+import lod.irongoon.data.Tables;
+import lod.irongoon.data.tables.MonstersTable;
 import lod.irongoon.models.DivineFruit;
-import lod.irongoon.parse.game.MonsterStatsParser;
 
 public class MonsterHPRandomizer {
     private static final MonsterHPRandomizer INSTANCE = new MonsterHPRandomizer();
@@ -12,7 +13,7 @@ public class MonsterHPRandomizer {
     private MonsterHPRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final MonsterStatsParser parser = MonsterStatsParser.getInstance();
+    private final MonstersTable monters = Tables.getInstance().getMonsterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int hp) {
@@ -20,12 +21,12 @@ public class MonsterHPRandomizer {
     }
 
     public DivineFruit randomizeMaintainStock(int monsterId) {
-        var hp = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.HP.name());
+        var hp = this.monters.getMonsterStats(monsterId).hp();
         return createDivineFruit(hp);
     }
 
     public DivineFruit randomizeStockWithBounds(int monsterId) {
-        var monsterHp = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.HP.name());
+        var monsterHp = this.monters.getMonsterStats(monsterId).hp();
 
         var hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatMonstersLowerPercentBound, config.hpStatMonstersUpperPercentBound, monsterHp, 959 + monsterId);
 

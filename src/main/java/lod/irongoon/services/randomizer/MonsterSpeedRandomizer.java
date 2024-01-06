@@ -2,6 +2,8 @@ package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.EnemyStatsData;
+import lod.irongoon.data.Tables;
+import lod.irongoon.data.tables.MonstersTable;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.parse.game.MonsterStatsParser;
 
@@ -12,7 +14,7 @@ public class MonsterSpeedRandomizer {
     private MonsterSpeedRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final MonsterStatsParser parser = MonsterStatsParser.getInstance();
+    private final MonstersTable monsters = Tables.getInstance().getMonsterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int speed) {
@@ -20,7 +22,7 @@ public class MonsterSpeedRandomizer {
     }
 
     public DivineFruit randomizeMaintainStock(int monsterId) {
-        var speed = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.SPEED.name());
+        var speed = this.monsters.getMonsterStats(monsterId).speed();
         return createDivineFruit(speed);
     }
 

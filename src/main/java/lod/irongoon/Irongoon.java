@@ -3,17 +3,18 @@ package lod.irongoon;
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
 import legend.game.modding.events.battle.MonsterStatsEvent;
-import lod.irongoon.services.StaleStats;
-import org.legendofdragoon.modloader.events.EventListener;
-import org.legendofdragoon.modloader.registries.RegistryId;
-import org.legendofdragoon.modloader.Mod;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
-
+import lod.irongoon.data.Tables;
 import lod.irongoon.models.DivineFruit;
-import lod.irongoon.services.randomizer.Randomizer;
 import lod.irongoon.services.Characters;
-import lod.irongoon.services.DataTables;
+import lod.irongoon.services.StaleStats;
+import lod.irongoon.services.randomizer.Randomizer;
+import org.legendofdragoon.modloader.Mod;
+import org.legendofdragoon.modloader.events.EventListener;
+import org.legendofdragoon.modloader.registries.RegistryId;
+
+import java.io.FileNotFoundException;
 
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
@@ -24,7 +25,7 @@ public class Irongoon {
     }
 
     private final Characters characters = Characters.getInstance();
-    private final DataTables dataTables = DataTables.getInstance();
+    private final Tables dataTables = Tables.getInstance();
     private final Randomizer randomizer = Randomizer.getInstance();
     private final StaleStats staleStats = StaleStats.getInstance();
 
@@ -34,10 +35,14 @@ public class Irongoon {
 
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
-        refreshState();
+        try {
+            refreshState();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void refreshState() {
+    private void refreshState() throws FileNotFoundException {
         characters.initialize();
         dataTables.initialize();
     }

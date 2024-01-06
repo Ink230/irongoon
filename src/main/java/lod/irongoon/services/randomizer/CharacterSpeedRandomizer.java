@@ -1,8 +1,10 @@
 package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.Tables;
+import lod.irongoon.data.tables.CharactersTable;
+import lod.irongoon.models.Character;
 import lod.irongoon.models.DivineFruit;
-import lod.irongoon.parse.game.CharacterStatsParser;
 
 import java.util.*;
 
@@ -13,19 +15,19 @@ public class CharacterSpeedRandomizer {
     private CharacterSpeedRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final CharacterStatsParser parser = CharacterStatsParser.getInstance();
+    private final CharactersTable characters = Tables.getInstance().getCharacterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit createDivineFruit(int speed) {
         return new DivineFruit(speed);
     }
 
-    public DivineFruit randomizeMaintainStock(int character, int level) {
-        return createDivineFruit(parser.getSpeedOfCharacterByLevel(character, level));
+    public DivineFruit randomizeMaintainStock(int characterId, int level) {
+        return createDivineFruit(this.characters.getCharacterStats(characterId, level).speed());
     }
 
     public DivineFruit randomizeWithBounds(int characterId, int level) {
-        var speedOfAllCharacters = parser.getCharactersSpeedStats(level);
+        var speedOfAllCharacters = this.getAllSpeeds(level);
 
         var minValue = Arrays.stream(speedOfAllCharacters).min().orElseThrow();
         var maxValue = Arrays.stream(speedOfAllCharacters).max().orElseThrow();
@@ -36,10 +38,14 @@ public class CharacterSpeedRandomizer {
     }
 
     public DivineFruit randomizeStockWithBounds(int characterId, int level) {
-        var speedOfCharacter = parser.getSpeedOfCharacterByLevel(characterId, level);
+        var speedOfCharacter = this.characters.getCharacterStats(characterId, level).speed();
 
         var randomizedSpeed = statRandomizer.calculatePercentModifiedBoundedStat(config.nonBaselineStatsLowerPercentBound, config.nonBaselineStatsUpperPercentBound, speedOfCharacter, 801 + characterId);
 
         return createDivineFruit(randomizedSpeed);
+    }
+
+    private int[] getAllSpeeds(int level) {
+        return StatsUtil.GetStatForAllCharacters(level, Character.StatsPerLevel::speed);
     }
 }

@@ -1,8 +1,10 @@
 package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.Tables;
+import lod.irongoon.data.tables.CharactersTable;
+import lod.irongoon.models.Character;
 import lod.irongoon.models.DivineFruit;
-import lod.irongoon.parse.game.CharacterStatsParser;
 
 import java.util.*;
 
@@ -13,7 +15,7 @@ public class CharacterHPRandomizer {
     private CharacterHPRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final CharacterStatsParser parser = CharacterStatsParser.getInstance();
+    private final CharactersTable characters = Tables.getInstance().getCharacterTable();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
     private DivineFruit growDivineFruit(int HP, DivineFruit previousFruit) {
@@ -22,7 +24,8 @@ public class CharacterHPRandomizer {
     }
 
     public DivineFruit randomizeMaintainStock(int characterId, int level) {
-        return new DivineFruit(parser.getHPOfCharacterByLevel(characterId, level), 0);
+        final var stats = this.characters.getCharacterStats(characterId, level);
+        return new DivineFruit(stats.hp(), 0);
     }
 
     public DivineFruit randomizeWithBounds(int characterId, int level) {
@@ -30,8 +33,8 @@ public class CharacterHPRandomizer {
         divineTree.add(new DivineFruit(0, 0));
 
         for(int subLevel = 1; subLevel <= level; subLevel++) {
-            var hpOfCharactersByLevel = parser.getHPOfAllCharactersByLevel(subLevel);
-            var hpOfCharactersByLevelMinusOne = parser.getHPOfAllCharactersByLevel(subLevel - 1);
+            var hpOfCharactersByLevel = this.getAllHps(subLevel);
+            var hpOfCharactersByLevelMinusOne = this.getAllHps(subLevel - 1);
 
             for(int i = 0; i < hpOfCharactersByLevel.length; i++) {
                 hpOfCharactersByLevel[i] -= hpOfCharactersByLevelMinusOne[i];
@@ -53,8 +56,8 @@ public class CharacterHPRandomizer {
         divineTree.add(new DivineFruit(0, 0));
 
         for(int subLevel = 1; subLevel <= level; subLevel++) {
-            var hpOfCharactersByLevel = parser.getHPOfAllCharactersByLevel(subLevel);
-            var hpOfCharactersByLevelMinusOne = parser.getHPOfAllCharactersByLevel(subLevel - 1);
+            var hpOfCharactersByLevel = this.getAllHps(subLevel);
+            var hpOfCharactersByLevelMinusOne = this.getAllHps(subLevel - 1);
 
             for(int i = 0; i < hpOfCharactersByLevel.length; i++) {
                 hpOfCharactersByLevel[i] -= hpOfCharactersByLevelMinusOne[i];
@@ -78,8 +81,8 @@ public class CharacterHPRandomizer {
         divineTree.add(new DivineFruit(0, 0));
 
         for(int subLevel = 1; subLevel <= level; subLevel++) {
-            var hpOfCharacterByLevel = parser.getHPOfCharacterByLevel(characterId, subLevel);
-            var hpOfCharacterByLevelMinusOne = parser.getHPOfCharacterByLevel(characterId,subLevel - 1);
+            var hpOfCharacterByLevel = this.characters.getCharacterStats(characterId, subLevel).hp();
+            var hpOfCharacterByLevelMinusOne = this.characters.getCharacterStats(characterId,subLevel - 1).hp();
             var hpAvailable = hpOfCharacterByLevel - hpOfCharacterByLevelMinusOne;
 
             int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.nonBaselineStatsLowerPercentBound, config.nonBaselineStatsUpperPercentBound, hpAvailable, 939 + characterId);
@@ -88,5 +91,9 @@ public class CharacterHPRandomizer {
         }
 
         return divineTree.get(divineTree.size() - 1);
+    }
+
+    private int[] getAllHps(int level) {
+        return StatsUtil.GetStatForAllCharacters(level, Character.StatsPerLevel::hp);
     }
 }

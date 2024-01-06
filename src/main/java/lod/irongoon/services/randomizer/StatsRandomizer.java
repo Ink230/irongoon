@@ -1,8 +1,7 @@
 package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
-import lod.irongoon.data.TotalStatsDistributionPerLevel;
-import lod.irongoon.data.TotalStatsPerLevel;
+import lod.irongoon.config.modifiers.TotalStatsDistributionPerLevel;
 
 import java.util.ArrayList;
 import java.util.Collections;
