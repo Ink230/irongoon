@@ -1,6 +1,5 @@
 package lod.irongoon.data;
 
-import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.tables.*;
 
 import java.io.FileNotFoundException;

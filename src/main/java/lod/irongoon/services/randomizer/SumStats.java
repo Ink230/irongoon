@@ -4,12 +4,12 @@ import lod.irongoon.data.Tables;
 import lod.irongoon.models.Character;
 import lod.irongoon.models.Dragoon;
 
-public class StatsUtil {
-    public static interface IValue<T> {
+class SumStats {
+    public interface IValue<T> {
         int get(T t);
     }
 
-    public static int[] GetStatForAllCharacters(int level, IValue<Character.StatsPerLevel> getter) {
+    public static int[] Characters(int level, IValue<Character.StatsPerLevel> getter) {
         final var table = Tables.getCharacterTable();
         final var count = table.size();
         int[] result = new int[count];
@@ -20,7 +20,7 @@ public class StatsUtil {
         return result;
     }
 
-    public static int[] GetStatsForAllDragoons(int level, IValue<Dragoon.StatsPerLevel> getter) {
+    public static int[] Dragoons(int level, IValue<Dragoon.StatsPerLevel> getter) {
         final var table = Tables.getDragoonTable();
         final var count = table.size();
         int[] result = new int[count];

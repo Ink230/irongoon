@@ -3,7 +3,6 @@ package lod.irongoon.models;
 import com.opencsv.bean.CsvBindByName;
 
 public class Character {
-
     private final String name;
     private final StatsPerLevel[] statsPerLevel;
 
@@ -20,51 +19,79 @@ public class Character {
         return statsPerLevel[level];
     }
 
-    public record StatsPerLevel(
-            int speed,
-            int attack,
-            int defense,
-            int magicAttack,
-            int magicDefence,
-            int hp,
-            int totalStatPoints,
-            int totalStatPointsNoSpeed
-    ) {
-        public StatsPerLevel(CsvStatsPerLevel csvStatsPerLevel) {
-            this(
-                    csvStatsPerLevel.speed,
-                    csvStatsPerLevel.attack,
-                    csvStatsPerLevel.defense,
-                    csvStatsPerLevel.magicAttack,
-                    csvStatsPerLevel.magicDefense,
-                    csvStatsPerLevel.maxHp,
-                    csvStatsPerLevel.totalStatPoints,
-                    csvStatsPerLevel.totalStatPointsNoSpeed
-            );
+    public static class StatsPerLevel {
+        @CsvBindByName(column = "Speed", required = true)
+        private int speed;
+        @CsvBindByName(column = "AT", required = true)
+        private int attack;
+        @CsvBindByName(column = "MAT", required = true)
+        private int magicAttack;
+        @CsvBindByName(column = "DF", required = true)
+        private int defense;
+        @CsvBindByName(column = "MDF", required = true)
+        private int magicDefense;
+        @CsvBindByName(column = "HP", required = true)
+        private int maxHp;
+        @CsvBindByName(column = "Total Stat Points", required = true)
+        private int totalStatPoints;
+        @CsvBindByName(column = "Total Stat Points No Speed", required = true)
+        private int totalStatPointsNoSpeed;
+        @CsvBindByName(column = "Name", required = true)
+        private String name;
+
+        public StatsPerLevel() {
+        }
+
+        public int getSpeed() {
+            return speed;
+        }
+
+        public int getAttack() {
+            return attack;
+        }
+
+        public int getMagicAttack() {
+            return magicAttack;
+        }
+
+        public int getDefense() {
+            return defense;
+        }
+
+        public int getMagicDefense() {
+            return magicDefense;
+        }
+
+        public int getMaxHp() {
+            return maxHp;
+        }
+
+        public int getTotalStatPoints() {
+            return totalStatPoints;
+        }
+
+        public int getTotalStatPointsNoSpeed() {
+            return totalStatPointsNoSpeed;
+        }
+
+        public String getName() {
+            return name;
         }
     }
-
-    public static class CsvStatsPerLevel {
-        @CsvBindByName(column = "Speed", required = true)
-        public int speed;
-        @CsvBindByName(column = "AT", required = true)
-        public int attack;
-        @CsvBindByName(column = "MAT", required = true)
-        public int magicAttack;
-        @CsvBindByName(column = "DF", required = true)
-        public int defense;
-        @CsvBindByName(column = "MDF", required = true)
-        public int magicDefense;
-        @CsvBindByName(column = "HP", required = true)
-        public int maxHp;
-        @CsvBindByName(column = "Total Stat Points", required = true)
-        public int totalStatPoints;
-        @CsvBindByName(column = "Total Stat Points No Speed", required = true)
-        public int totalStatPointsNoSpeed;
-        @CsvBindByName(column = "Name", required = true)
-        public String name;
-
-        public CsvStatsPerLevel() {
+    
+    public enum Name {
+        DART("Dart"),
+        LAVITZ("Lavitz"),
+        SHANA("Shana"),
+        ROSE("Rose"),
+        HASCHEL("Haschel"),
+        ALBERT("Albert"),
+        MERU("Meru"),
+        KONGOL("Kongol"),
+        MIRANDA("Miranda");;
+        public final String name;
+        Name(String name) {
+            this.name = name;
         }
     }
 }

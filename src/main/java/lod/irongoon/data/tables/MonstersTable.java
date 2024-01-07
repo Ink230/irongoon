@@ -1,7 +1,8 @@
 package lod.irongoon.data.tables;
 
 import com.opencsv.bean.CsvToBeanBuilder;
-import lod.irongoon.config.IrongoonConfig;
+
+import lod.irongoon.config.Config;
 import lod.irongoon.models.Monster;
 
 import java.io.FileNotFoundException;
@@ -9,8 +10,8 @@ import java.io.FileReader;
 import java.util.*;
 
 public class MonstersTable implements Table {
-    private final static String statsExternalFile = IrongoonConfig.getFullPath("scdk-monster-stats");
-    private final static String rewardsExternalFile = IrongoonConfig.getFullPath("scdk-monster-rewards");
+    private final static String statsExternalFile = Config.getFullPath("scdk-monster-stats");
+    private final static String rewardsExternalFile = Config.getFullPath("scdk-monster-rewards");
 
     private final List<Monster> tables = new ArrayList<>();
     private final Map<String, Monster> byName = new HashMap<>();
@@ -27,7 +28,8 @@ public class MonstersTable implements Table {
             final String name = e.getKey();
             final var r = rewards.get(name);
             if (r == null) {
-                throw new RuntimeException("Monster " + name + " does not have a reward entry.");
+                // not a valid monster entry
+                continue;
             }
 
             final Monster m = new Monster(e.getValue(), r);
@@ -37,30 +39,35 @@ public class MonstersTable implements Table {
         this.tables.addAll(sorted.values());
     }
 
+    @Override
+    public int size() {
+        return this.tables.size();
+    }
+
     public HashMap<String, Monster.Stats> initializeStats() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(statsExternalFile))
-                .withType(Monster.CsvStats.class)
+                .withType(Monster.Stats.class)
                 .build()
                 .parse();
 
         final HashMap<String, Monster.Stats> stats = new HashMap<>();
         for (final var i : l) {
-            final Monster.Stats s = new Monster.Stats ((Monster.CsvStats) i);
-            stats.put(s.name(), s);
+            final Monster.Stats s = (Monster.Stats) i;
+            stats.put(s.getName(), s);
         }
         return stats;
     }
 
     public HashMap<String, Monster.Reward> initializeRewards() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(rewardsExternalFile))
-                .withType(Monster.CsvReward.class)
+                .withType(Monster.Reward.class)
                 .build()
                 .parse();
 
         final HashMap<String, Monster.Reward> rewards = new HashMap<>();
         for (final var i : l) {
-            final Monster.Reward r = new Monster.Reward((Monster.CsvReward) i);
-            rewards.put(r.name(), r);
+            final Monster.Reward r = (Monster.Reward) i;
+            rewards.put(r.getName(), r);
         }
         return rewards;
     }

@@ -1,7 +1,9 @@
 package lod.irongoon.data.tables;
 
 import com.opencsv.bean.CsvToBeanBuilder;
-import lod.irongoon.config.IrongoonConfig;
+
+import lod.irongoon.config.Config;
+import lod.irongoon.models.Character;
 import lod.irongoon.models.Dragoon;
 
 import java.io.FileNotFoundException;
@@ -9,7 +11,7 @@ import java.io.FileReader;
 import java.util.*;
 
 public class DragoonsTable implements Table {
-    private final static String externalFile = IrongoonConfig.getFullPath("scdk-dragoon-stats");
+    private final static String externalFile = Config.getFullPath("scdk-dragoon-stats");
 
     final List<Dragoon> table = new ArrayList<>();
     final Map<String, Dragoon> byName = new HashMap<>();
@@ -19,20 +21,19 @@ public class DragoonsTable implements Table {
     @Override
     public void initialize() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(externalFile))
-                .withType(Dragoon.CsvStatsPerLevel.class)
+                .withType(Dragoon.StatsPerLevel.class)
                 .build()
                 .parse();
 
         // Collect each level's stats to each dragoon
         final Map<String, List<Dragoon.StatsPerLevel>> dragoons = new HashMap<>();
         for (final var i : l) {
-            final Dragoon.CsvStatsPerLevel stats = (Dragoon.CsvStatsPerLevel) i;
-            final String name = stats.name.split(" ")[0];
+            final Dragoon.StatsPerLevel stats = (Dragoon.StatsPerLevel) i;
+            final String name = stats.getName().split(" ")[0];
             if (!dragoons.containsKey(name)) {
                 dragoons.put(name, new ArrayList<>());
             }
-            final var list = dragoons.get(name);
-            list.add(new Dragoon.StatsPerLevel(stats));
+            dragoons.get(name).add(stats);
         }
 
         for (Map.Entry<String, List<Dragoon.StatsPerLevel>> e : dragoons.entrySet()) {
@@ -55,24 +56,8 @@ public class DragoonsTable implements Table {
         }
     }
 
-    public enum Index {
-        DART("Dart"),
-        LAVITZ("Lavitz"),
-        SHANA("Shana"),
-        ROSE("Rose"),
-        HASCHEL("Haschel"),
-        ALBERT("Albert"),
-        MERU("Meru"),
-        KONGOL("Kongol"),
-        MIRANDA("Miranda");;
-        public final String name;
-        Index(String name) {
-            this.name = name;
-        }
-    }
-
-    public Dragoon getDragoon(final Index index) {
-        return this.table.get(index.ordinal());
+    public Dragoon getDragoon(final Character.Name name) {
+        return this.table.get(name.ordinal());
     }
 
     public Dragoon getDragoon(final int dragoonID) {

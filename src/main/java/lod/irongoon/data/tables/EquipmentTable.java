@@ -7,4 +7,9 @@ public class EquipmentTable implements Table {
     public void initialize() {
         // TODO: implement
     }
+
+    @Override
+    public int size() {
+        return 0;
+    }
 }

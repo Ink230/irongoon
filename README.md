@@ -18,7 +18,7 @@ Some rules are currently impossible, not implemented, or need further discussion
 
 # Irongoon Settings
 
-The mod permits customizing the randomizer and having different randomization options. This is done through the use of a config.yaml file.
+The mod permits customizing the randomizer and having different randomization options. This is done through the use of a Config.yaml file.
 
 A default configuration file is included in the latest release.
 

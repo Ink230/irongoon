@@ -1,6 +1,7 @@
 package lod.irongoon.services.randomizer;
 
-import lod.irongoon.config.IrongoonConfig;
+
+import lod.irongoon.config.Config;
 import lod.irongoon.config.modifiers.TotalStatsDistributionPerLevel;
 
 import java.util.ArrayList;
@@ -9,24 +10,19 @@ import java.util.List;
 import java.util.Random;
 
 public class StatsRandomizer {
-    private static final StatsRandomizer instance = new StatsRandomizer();
-    public static StatsRandomizer getInstance() { return instance; }
-
     private StatsRandomizer() {}
 
-    private final IrongoonConfig config = IrongoonConfig.getInstance();
-
-    public int[] calculateDistributionOfTotalStats(int level, int fruitId, TotalStatsDistributionPerLevel distribution, int statAmount, int uniqueModifier) {
+    public static int[] calculateDistributionOfTotalStats(int level, int fruitId, TotalStatsDistributionPerLevel distribution, int statAmount, int uniqueModifier) {
         return switch(distribution) {
             case RANDOM -> calculateDistribution(calculateFixedSeedByLevel(level, fruitId, uniqueModifier), fruitId, statAmount, uniqueModifier);
-            case DABAS_FIXED -> calculateDistribution(config.seed, fruitId, statAmount, uniqueModifier);
-            case DABAS_PER_LEVEL -> shuffleDistributionFixedPerLevel(calculateDistribution(config.seed, fruitId, statAmount, uniqueModifier), level, fruitId, uniqueModifier);
-            case DABAS_FIXED_CUSTOM -> calculateDistribution(config.seed, fruitId, statAmount, uniqueModifier);
-            case DABAS_PER_LEVEL_CUSTOM -> shuffleDistributionRandomEverytime(calculateDistribution(config.seed, fruitId, statAmount, uniqueModifier));
+            case DABAS_FIXED -> calculateDistribution(Config.seed, fruitId, statAmount, uniqueModifier);
+            case DABAS_PER_LEVEL -> shuffleDistributionFixedPerLevel(calculateDistribution(Config.seed, fruitId, statAmount, uniqueModifier), level, fruitId, uniqueModifier);
+            case DABAS_FIXED_CUSTOM -> calculateDistribution(Config.seed, fruitId, statAmount, uniqueModifier);
+            case DABAS_PER_LEVEL_CUSTOM -> shuffleDistributionRandomEverytime(calculateDistribution(Config.seed, fruitId, statAmount, uniqueModifier));
         };
     }
 
-    private int[] calculateDistribution(long seed, long fruitId, int statAmount, int uniqueModifier) {
+    private static int[] calculateDistribution(long seed, long fruitId, int statAmount, int uniqueModifier) {
         Random random = new Random(seed + fruitId + uniqueModifier);
 
         var distribution = new int[statAmount];
@@ -43,7 +39,7 @@ public class StatsRandomizer {
         return distribution;
     }
 
-    private int[] shuffleDistributionRandomEverytime(int[] distribution) {
+    private static int[] shuffleDistributionRandomEverytime(int[] distribution) {
         List<Integer> order = new ArrayList<>();
 
         for (int j : distribution) {
@@ -55,7 +51,7 @@ public class StatsRandomizer {
         return order.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    private int[] shuffleDistributionFixedPerLevel(int[] distribution, int level, int fruitId, int uniqueModifier) {
+    private static int[] shuffleDistributionFixedPerLevel(int[] distribution, int level, int fruitId, int uniqueModifier) {
         List<Integer> order = new ArrayList<>();
 
         for (int j : distribution) {
@@ -67,12 +63,12 @@ public class StatsRandomizer {
         return order.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    public int calculateFinalStat(int distribution, int totalStats) {
+    public static int calculateFinalStat(int distribution, int totalStats) {
         return (int) Math.round(((double) distribution / 100) * totalStats);
     }
 
-    private int calculateFixedSeedByLevel(int level, int fruitId, int uniqueModifier) {
-        Random random = new Random(config.seed + 1 + fruitId + uniqueModifier);
+    private static int calculateFixedSeedByLevel(int level, int fruitId, int uniqueModifier) {
+        Random random = new Random(Config.seed + 1 + fruitId + uniqueModifier);
 
         var value = 0;
         for (int i = 0; i <= level; i++) {
@@ -82,8 +78,8 @@ public class StatsRandomizer {
         return value;
     }
 
-    public int calculatePercentModifiedBoundedStat(int percentPointsLower, int percentPointsUpper, int stat, int uniqueModifier) {
-        Random random = new Random(config.seed + uniqueModifier + 24);
+    public static int calculatePercentModifiedBoundedStat(int percentPointsLower, int percentPointsUpper, int stat, int uniqueModifier) {
+        Random random = new Random(Config.seed + uniqueModifier + 24);
         percentPointsLower += 20;
         percentPointsUpper += 20;
 
@@ -92,29 +88,20 @@ public class StatsRandomizer {
         return (stat >= 10) ? ((int) Math.max(1, Math.round((stat * modifier)))) : ((int) (stat + (random.nextBoolean() ? 1 : -1) * modifier));
     }
 
-    public int calculateRandomNumberWithLimit(int limit, int uniqueModifier) {
-        Random random = new Random(config.seed + uniqueModifier + 24);
+    public static int calculateRandomNumberWithLimit(int limit, int uniqueModifier) {
+        Random random = new Random(Config.seed + uniqueModifier + 24);
         return random.nextInt(1, limit + 1);
     }
 
-    public int calculateRandomNumberBetweenBounds(int lowerBound, int upperBound, int uniqueModifier) {
-        Random random = new Random(config.seed + uniqueModifier);
-        var result = lowerBound + random.nextInt(upperBound - lowerBound + 1);
-
-        return result;
+    public static int calculateRandomNumberBetweenBounds(int lowerBound, int upperBound, int uniqueModifier) {
+        return lowerBound + new Random().nextInt(upperBound - lowerBound + 1);
     }
 
-    public int calculateRandomNumberBetweenBoundsNoSeed(int lowerBound, int upperBound) {
-        Random random = new Random();
-        var result = lowerBound + random.nextInt(upperBound - lowerBound + 1);
-
-        return result;
+    public static int calculateRandomNumberBetweenBoundsNoSeed(int lowerBound, int upperBound) {
+        return lowerBound + new Random().nextInt(upperBound - lowerBound + 1);
     }
 
-    public int calculateVarianceOfStat(int stat) {
-        Random random = new Random();
-        var result = calculatePercentModifiedBoundedStat(60, 100, stat, random.nextInt());
-
-        return result;
+    public static int calculateVarianceOfStat(int stat) {
+        return calculatePercentModifiedBoundedStat(60, 100, stat, new Random().nextInt());
     }
 }

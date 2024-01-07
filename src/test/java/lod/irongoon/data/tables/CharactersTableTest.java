@@ -1,5 +1,6 @@
 package lod.irongoon.data.tables;
 
+import lod.irongoon.models.Character;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ class CharactersTableTest {
     void initialize()  {
         assertNotNull(t);
         assertEquals(9, t.size());
-        for (final var i : CharactersTable.Index.values()) {
+        for (final var i : Character.Name.values()) {
             final var c = t.getCharacter(i);
             assertNotNull(c);
             assertEquals(i.name, c.getName());
@@ -37,7 +38,7 @@ class CharactersTableTest {
 
     @Test
     void getCharacter_index() {
-        for (final var i : CharactersTable.Index.values()) {
+        for (final var i : Character.Name.values()) {
             final var c = t.getCharacter(i);
             assertNotNull(c);
             assertEquals(i.name, c.getName());
@@ -46,7 +47,7 @@ class CharactersTableTest {
 
     @Test
     void getCharacter_int() {
-        for (final var i : CharactersTable.Index.values()) {
+        for (final var i : Character.Name.values()) {
             final var c = t.getCharacter(i.ordinal());
             assertNotNull(c);
             assertEquals(i.name, c.getName());
@@ -55,7 +56,7 @@ class CharactersTableTest {
 
     @Test
     void getCharacter_string() {
-        for (final var i : CharactersTable.Index.values()) {
+        for (final var i : Character.Name.values()) {
             final var c = t.getCharacter(i.name);
             assertNotNull(c);
             assertEquals(i.name, c.getName());
@@ -64,7 +65,7 @@ class CharactersTableTest {
 
     @Test
     void getCharacterStats() {
-        for (final var i : CharactersTable.Index.values()) {
+        for (final var i : Character.Name.values()) {
             final var c = t.getCharacter(i);
             assertNotNull(c);
             assertEquals(i.name, c.getName());
@@ -78,7 +79,7 @@ class CharactersTableTest {
     @Test
     void getNames() {
         final var names = new HashSet<>(t.getNames());
-        final var expected = CharactersTable.Index.values();
+        final var expected = Character.Name.values();
         assertEquals(expected.length, names.size());
         for (var i : expected) {
             assertTrue(names.contains(i.name), "missing " + i.name);
@@ -87,6 +88,6 @@ class CharactersTableTest {
 
     @Test
     void size() {
-        assertEquals(CharactersTable.Index.values().length, t.size());
+        assertEquals(Character.Name.values().length, t.size());
     }
 }

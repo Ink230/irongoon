@@ -1,18 +1,16 @@
 package lod.irongoon.data.tables;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import lod.irongoon.config.Config;
 import lod.irongoon.models.Character;
-import lod.irongoon.config.IrongoonConfig;
 
-import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class CharactersTable implements Table {
-    private final static String externalFile = IrongoonConfig.getFullPath("scdk-character-stats");
+    private final static String externalFile = Config.getFullPath("scdk-character-stats");
 
     final List<Character> table = new ArrayList<>();
     final Map<String, Character> byName = new HashMap<>();
@@ -22,20 +20,19 @@ public class CharactersTable implements Table {
     @Override
     public void initialize() throws FileNotFoundException {
         final List<Object> l = new CsvToBeanBuilder<>(new FileReader(externalFile))
-                .withType(Character.CsvStatsPerLevel.class)
+                .withType(Character.StatsPerLevel.class)
                 .build()
                 .parse();
 
         // Collect each level's stats to each character
         final Map<String, List<Character.StatsPerLevel>> characters = new HashMap<>();
         for (final var i : l) {
-            final Character.CsvStatsPerLevel stats = (Character.CsvStatsPerLevel) i;
-            final String name = stats.name.split(" ")[0];
+            final Character.StatsPerLevel stats = (Character.StatsPerLevel) i;
+            final String name = stats.getName().split(" ")[0];
             if (!characters.containsKey(name)) {
                 characters.put(name, new ArrayList<>());
             }
-            final var list = characters.get(name);
-            list.add(new Character.StatsPerLevel(stats));
+            characters.get(name).add(stats);
         }
 
         for (Map.Entry<String, List<Character.StatsPerLevel>> e : characters.entrySet()) {
@@ -58,24 +55,8 @@ public class CharactersTable implements Table {
         }
     }
 
-    public enum Index {
-        DART("Dart"),
-        LAVITZ("Lavitz"),
-        SHANA("Shana"),
-        ROSE("Rose"),
-        HASCHEL("Haschel"),
-        ALBERT("Albert"),
-        MERU("Meru"),
-        KONGOL("Kongol"),
-        MIRANDA("Miranda");;
-        public final String name;
-        Index(String name) {
-            this.name = name;
-        }
-    }
-
-    public Character getCharacter(final Index index) {
-        return this.table.get(index.ordinal());
+    public Character getCharacter(final Character.Name name) {
+        return this.table.get(name.ordinal());
     }
 
     public Character getCharacter(final int characterID) {

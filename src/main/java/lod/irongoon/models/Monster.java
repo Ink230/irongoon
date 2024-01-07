@@ -27,115 +27,115 @@ public class Monster {
         return stats.name;
     }
 
-    public record Stats(
-            int id,
-            int hp,
-            int mp,
-            int attack,
-            int magicAttack,
-            int speed,
-            int defense,
-            int magicDefense,
-            int attackAvoidance,
-            int magicAvoidance,
-            int special,
-            int element,
-            int elementNull,
-            int statusResist,
-            int targetArrowX,
-            int targetArrowY,
-            int targetArrowZ,
-            int totalStats,
-            String name
-    ) {
-        public Stats(CsvStats csvStats) {
-            this(
-                    csvStats.id,
-                    csvStats.hp,
-                    csvStats.mp,
-                    csvStats.attack,
-                    csvStats.magicAttack,
-                    csvStats.speed,
-                    csvStats.defense,
-                    csvStats.magicDefense,
-                    csvStats.attackAvoidance,
-                    csvStats.magicAvoidance,
-                    csvStats.special,
-                    csvStats.element,
-                    csvStats.elementNull,
-                    csvStats.statusResist,
-                    csvStats.targetArrowX,
-                    csvStats.targetArrowY,
-                    csvStats.targetArrowZ,
-                    csvStats.totalStats,
-                    csvStats.name
-            );
-        }
-    }
-
-    public static class CsvStats {
+    public static class Stats {
         @CsvBindByName(column = "ID", required = true)
-        public int id;
+        private int id;
         @CsvBindByName(column = "HP", required = true)
-        public int hp;
+        private int hp;
         @CsvBindByName(column = "MP", required = true)
-        public int mp;
+        private int mp;
         @CsvBindByName(column = "AT", required = true)
-        public int attack;
+        private int attack;
         @CsvBindByName(column = "MAT", required = true)
-        public int magicAttack;
+        private int magicAttack;
         @CsvBindByName(column = "SPD", required = true)
-        public int speed;
+        private int speed;
         @CsvBindByName(column = "DF", required = true)
-        public int defense;
+        private int defense;
         @CsvBindByName(column = "MDF", required = true)
-        public int magicDefense;
+        private int magicDefense;
         @CsvBindByName(column = "A-AV", required = true)
-        public int attackAvoidance;
+        private int attackAvoidance;
         @CsvBindByName(column = "M-AV", required = true)
-        public int magicAvoidance;
+        private int magicAvoidance;
         @CsvBindByName(column = "SPECIAL", required = true)
-        public int special;
+        private int special;
         @CsvBindByName(column = "Element", required = true)
-        public int element;
+        private int element;
         @CsvBindByName(column = "Element Null", required = true)
-        public int elementNull;
+        private int elementNull;
         @CsvBindByName(column = "Status Resist", required = true)
-        public int statusResist;
-        @CsvBindByName(column = "Target Arrow X", required = true)
-        public int targetArrowX;
-        @CsvBindByName(column = "Target Arrow Y", required = true)
-        public int targetArrowY;
-        @CsvBindByName(column = "Target Arrow Z", required = true)
-        public int targetArrowZ;
+        private int statusResist;
+//        @CsvBindByName(column = "Target Arrow X", required = true)
+//        private int targetArrowX;
+//        @CsvBindByName(column = "Target Arrow Y", required = true)
+//        private int targetArrowY;
+//        @CsvBindByName(column = "Target Arrow Z", required = true)
+//        private int targetArrowZ;
         @CsvBindByName(column = "TotalStats", required = true)
-        public int totalStats;
+        private int totalStats;
         @CsvBindByName(column = "Name", required = true)
-        public String name;
+        private String name;
 
-        public CsvStats() {
+        public Stats() {
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public int getHp() {
+            return hp;
+        }
+
+        public int getMp() {
+            return mp;
+        }
+
+        public int getAttack() {
+            return attack;
+        }
+
+        public int getMagicAttack() {
+            return magicAttack;
+        }
+
+        public int getSpeed() {
+            return speed;
+        }
+
+        public int getDefense() {
+            return defense;
+        }
+
+        public int getMagicDefense() {
+            return magicDefense;
+        }
+
+        public int getAttackAvoidance() {
+            return attackAvoidance;
+        }
+
+        public int getMagicAvoidance() {
+            return magicAvoidance;
+        }
+
+        public int getSpecial() {
+            return special;
+        }
+
+        public int getElement() {
+            return element;
+        }
+
+        public int getElementNull() {
+            return elementNull;
+        }
+
+        public int getStatusResist() {
+            return statusResist;
+        }
+
+        public int getTotalStats() {
+            return totalStats;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
-    public record Reward(
-            int exp,
-            int gold,
-            int dropRate,
-            int item,
-            String name
-    ) {
-        public Reward(CsvReward csvReward) {
-            this(
-                    csvReward.exp,
-                    csvReward.gold,
-                    csvReward.dropRate,
-                    csvReward.item,
-                    csvReward.name
-            );
-        }
-    }
-
-    public static class CsvReward {
+    public static class Reward {
         @CsvBindByName(column = "Exp", required = true)
         public int exp;
         @CsvBindByName(column = "Gold", required = true)
@@ -147,7 +147,27 @@ public class Monster {
         @CsvBindByName(column = "Name", required = true)
         public String name;
 
-        public CsvReward() {
+        public Reward() {
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public int getGold() {
+            return gold;
+        }
+
+        public int getDropRate() {
+            return dropRate;
+        }
+
+        public int getItem() {
+            return item;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }
