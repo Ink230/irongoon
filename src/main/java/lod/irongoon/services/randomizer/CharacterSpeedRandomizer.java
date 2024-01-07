@@ -3,7 +3,6 @@ package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.Config;
 import lod.irongoon.data.Tables;
-import lod.irongoon.data.tables.CharactersTable;
 import lod.irongoon.models.Character;
 import lod.irongoon.models.DivineFruit;
 
@@ -40,6 +39,6 @@ public class CharacterSpeedRandomizer {
     }
 
     private static int[] getAllSpeeds(int level) {
-        return SumStats.Characters(level, Character.StatsPerLevel::getSpeed);
+        return StatValueCompiler.Characters(level, Character.StatsPerLevel::getSpeed);
     }
 }

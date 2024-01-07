@@ -4,7 +4,7 @@ import lod.irongoon.data.Tables;
 import lod.irongoon.models.Character;
 import lod.irongoon.models.Dragoon;
 
-class SumStats {
+class StatValueCompiler {
     public interface IValue<T> {
         int get(T t);
     }

@@ -3,7 +3,6 @@ package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.Config;
 import lod.irongoon.data.Tables;
-import lod.irongoon.data.tables.DragoonsTable;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.models.Dragoon;
 
@@ -79,7 +78,7 @@ public class DragoonStatsRandomizer {
     }
 
     private static int[] getAllTotalStats(int level) {
-        return SumStats.Dragoons(level, Dragoon.StatsPerLevel::getTotalStatPoints);
+        return StatValueCompiler.Dragoons(level, Dragoon.StatsPerLevel::getTotalStatPoints);
     }
 
     private static int getAverageTotalStats(int level) {
