@@ -28,7 +28,7 @@ public class Irongoon {
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
         try {
-            Tables.getInstance().initialize();
+            Tables.initialize();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
