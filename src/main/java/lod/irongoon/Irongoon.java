@@ -2,11 +2,11 @@ package lod.irongoon;
 
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
+import legend.game.modding.Mod;
+import legend.game.modding.events.EventListener;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import legend.game.modding.registries.RegistryId;
 import lod.irongoon.services.StaleStats;
-import org.legendofdragoon.modloader.events.EventListener;
-import org.legendofdragoon.modloader.registries.RegistryId;
-import org.legendofdragoon.modloader.Mod;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
 
