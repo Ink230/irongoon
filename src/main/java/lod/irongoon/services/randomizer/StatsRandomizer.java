@@ -88,7 +88,7 @@ public class StatsRandomizer {
         percentPointsLower += 20;
         percentPointsUpper += 20;
 
-        var modifier = stat >= 10 ? (random.nextInt(percentPointsUpper - percentPointsLower + 1) + percentPointsLower) / 100.0 : random.nextInt(4);
+        var modifier = stat >= 10 ? (random.nextInt(percentPointsUpper - percentPointsLower + 1) + percentPointsLower) / 100.0 : random.nextInt(3);
 
         return (stat >= 10) ? ((int) Math.max(1, Math.round((stat * modifier)))) : ((int) (stat + (random.nextBoolean() ? 1 : -1) * modifier));
     }
