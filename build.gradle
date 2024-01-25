@@ -18,7 +18,7 @@ if(project.ext.hash == null) {
 group 'legend'
 version project.ext.hash
 
-sourceCompatibility = targetCompatibility = 1.21
+sourceCompatibility = targetCompatibility = 1.17
 compileJava.options.encoding = 'UTF-8'
 
 project.ext.lwjglVersion = "3.3.2"
