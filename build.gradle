@@ -55,8 +55,8 @@ repositories {
 }
 
 dependencies {
-  implementation group: 'org.legendofdragoon', name: 'mod-loader', version: '2.0.1'
-  api group: 'org.legendofdragoon', name: 'script-recompiler', version: '0.1.0'
+  implementation group: 'org.legendofdragoon', name: 'mod-loader', version: '2.0.2'
+  api group: 'org.legendofdragoon', name: 'script-recompiler', version: '0.2.1'
   //api group: 'org.legendofdragoon', name: 'mod-loader', version: '1.0'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
@@ -70,16 +70,21 @@ dependencies {
   api "org.lwjgl:lwjgl-glfw"
   api "org.lwjgl:lwjgl-nuklear"
   api "org.lwjgl:lwjgl-opengl"
+  api "org.lwjgl:lwjgl-openal"
+  api "org.lwjgl:lwjgl-opus"
   api "org.lwjgl:lwjgl-stb"
   runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-nuklear::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-opus::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
   api "org.joml:joml:${jomlVersion}"
 
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.9'
   implementation group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.12'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
 
   api group: 'com.github.slugify', name: 'slugify', version: '3.0.4'
 
@@ -94,7 +99,7 @@ dependencies {
   implementation group: 'net.java.dev.jna', name: 'jna', version: '5.13.0'
   api 'org.yaml:snakeyaml:2.2'
 
-  implementation(files("$projectDir/lod-game-opengl-snapshot.jar"))
+  implementation(files("$projectDir/lod-game-snapshot-opengl.jar"))
   //implementation(files("$projectDir/lod-game-software-snapshot.jar"))
   //implementation(files("$projectDir/lod-game-rb2commit-snapshot.jar"))
 
