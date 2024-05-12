@@ -2,6 +2,8 @@ package lod.irongoon;
 
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
+import legend.game.characters.Element;
+import legend.game.characters.ElementSet;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
@@ -14,6 +16,9 @@ import lod.irongoon.models.DivineFruit;
 import lod.irongoon.services.randomizer.Randomizer;
 import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
@@ -75,6 +80,7 @@ public class Irongoon {
         DivineFruit monsterStatsRandomized = randomizer.doMonsterStats(monster);
         DivineFruit monsterHPRandomized = randomizer.doMonsterHP(monster);
         DivineFruit monsterSpeedRandomized = randomizer.doMonsterSpeed(monster);
+        DivineFruit monsterElementRandomized = randomizer.doMonsterElement(monster);
 
         randomizer.doMonsterVariance(monsterStatsRandomized, monsterHPRandomized, monsterSpeedRandomized);
 
@@ -86,5 +92,11 @@ public class Irongoon {
         monster.maxHp = monsterHPRandomized.maxHP;
         monster.hp = monsterHPRandomized.maxHP;
         monster.speed = monsterSpeedRandomized.bodySpeed;
+
+        monster.elementFlag = Element.fromFlag(monsterElementRandomized.element.getValue());
+        var elementSet = new ElementSet();
+        elementSet.add(Element.fromFlag(monsterElementRandomized.elementImmunity.getValue()));
+        monster.elementalImmunityFlag.set(elementSet);
+
     }
 }

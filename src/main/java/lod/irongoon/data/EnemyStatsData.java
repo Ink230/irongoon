@@ -8,7 +8,13 @@ public enum EnemyStatsData  implements Data<Integer>{
     MAGIC_ATTACK(4),
     SPEED(5),
     DEFENSE(6),
-    MAGIC_DEFENSE(7);
+    MAGIC_DEFENSE(7),
+    ATTACK_AVOID(8),
+    MAGIC_ATTACK_AVOID(9),
+    SPECIAL(10),
+    UNKNOWN(11),
+    ELEMENT(12),
+    ELEMENT_IMMUNITY(13);
 
     private final int enemyStatsData;
 
@@ -19,7 +25,7 @@ public enum EnemyStatsData  implements Data<Integer>{
         return enemyStatsData;
     }
 
-    public static Integer getValue(EnemyStatsData  data) {
+    public static Integer getValue(EnemyStatsData data) {
         return data.enemyStatsData;
     }
 }

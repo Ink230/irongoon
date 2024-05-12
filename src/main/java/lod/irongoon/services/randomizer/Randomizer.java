@@ -19,6 +19,7 @@ public class Randomizer {
     private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
+    private final MonsterElementRandomizer monsterElementRandomizer = MonsterElementRandomizer.getInstance();
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
         return switch (config.bodyTotalStatsPerLevel) {
@@ -77,6 +78,16 @@ public class Randomizer {
             case MAINTAIN_STOCK -> monsterSpeedRandomizer.randomizeMaintainStock(monster.enemyId);
             case RANDOMIZE_BOUNDS -> monsterSpeedRandomizer.randomizeWithBounds(monster.enemyId);
             case RANDOMIZE_RANDOM_BOUNDS -> monsterSpeedRandomizer.randomizeRandomWithBounds();
+        };
+    }
+
+    public DivineFruit doMonsterElement (MonsterStatsEvent monster) {
+        return switch (config.monsterElements) {
+            case MAINTAIN_STOCK -> monsterElementRandomizer.maintainStock(monster.enemyId);
+            case RANDOMIZE -> monsterElementRandomizer.randomizeMonsterElement(monster.enemyId);
+            case RANDOM_RANDOM -> monsterElementRandomizer.randomizeMonsterElement(monster.enemyId);
+            case RANDOM_AND_TYPINGS -> null;
+            case RANDOM_RANDOM_AND_TYPINGS -> null;
         };
     }
 

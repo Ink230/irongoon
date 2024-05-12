@@ -1,5 +1,7 @@
 package lod.irongoon.models;
 
+import lod.irongoon.data.Elements;
+
 public class DivineFruit {
     public int bodyAttack;
     public int bodyMagicAttack;
@@ -14,6 +16,8 @@ public class DivineFruit {
     public int maxMP;
     public int level;
     public int dLevel;
+    public Elements element;
+    public Elements elementImmunity;
 
     public DivineFruit() {}
 
@@ -52,5 +56,10 @@ public class DivineFruit {
         this.dragoonMagicDefense = divineFruit.dragoonMagicDefense;
         this.maxHP = divineFruit.maxHP;
         this.maxMP = divineFruit.maxMP;
+    }
+
+    public DivineFruit(Elements element, Elements elementImmunity) {
+        this.element = element;
+        this.elementImmunity = elementImmunity;
     }
 }

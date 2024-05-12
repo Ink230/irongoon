@@ -23,3 +23,4 @@ speedStatMonsters: RANDOMIZE_BOUNDS
 speedStatMonstersUpperBound: 100
 speedStatMonstersLowerBoundedStatPerLevel: 30
 statsVarianceMonsters: RANDOM_PERCENT_BOUNDS
+monsterElements: RANDOMIZE
