@@ -1,6 +1,6 @@
 publicSeed: "AF51FA7B"
-bodyTotalStatsPerLevel: STOCK
-dragoonTotalStatsPerLevel: STOCK
+bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
+dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 monsterTotalStats: RANDOMIZE_BOUNDS
 monsterDefenseFloor: 50
 monsterMagicDefenseFloor: 50
@@ -23,4 +23,4 @@ speedStatMonsters: RANDOMIZE_BOUNDS
 speedStatMonstersUpperBound: 100
 speedStatMonstersLowerBoundedStatPerLevel: 30
 statsVarianceMonsters: RANDOM_PERCENT_BOUNDS
-monsterElements: RANDOMIZE_RANDOM
+monsterElements: RANDOMIZE
