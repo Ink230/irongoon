@@ -1,5 +1,6 @@
 package lod.irongoon.services.randomizer;
 
+import legend.game.characters.Element;
 import legend.game.characters.ElementSet;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.Elements;
@@ -36,5 +37,19 @@ public class MonsterElementRandomizer {
     public DivineFruit randomizeRandomMonsterElement() {
         var element = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, 7);
         return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
+    }
+
+    public DivineFruit randomizeMonsterElementAndImmunity(int monsterId) {
+        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, 7, monsterId);
+        var elementImmune = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, 7, monsterId + 1000);
+        var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune));
+        return createDivineFruit(Elements.getEnumByIndex(element), elementImmunity);
+    }
+
+    public DivineFruit randomizeRandomMonsterElementAndImmunity() {
+        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, 7);
+        var elementImmune = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, 7);
+        var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune));
+        return createDivineFruit(Elements.getEnumByIndex(element), elementImmunity);
     }
 }

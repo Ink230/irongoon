@@ -86,8 +86,8 @@ public class Randomizer {
             case MAINTAIN_STOCK -> monsterElementRandomizer.maintainStock(monster.enemyId);
             case RANDOMIZE -> monsterElementRandomizer.randomizeMonsterElement(monster.enemyId);
             case RANDOMIZE_RANDOM -> monsterElementRandomizer.randomizeRandomMonsterElement();
-            case RANDOMIZE_AND_TYPINGS -> null;
-            case RANDOMIZE_RANDOM_AND_TYPINGS -> null;
+            case RANDOMIZE_AND_TYPINGS -> monsterElementRandomizer.randomizeMonsterElementAndImmunity(monster.enemyId);
+            case RANDOMIZE_RANDOM_AND_TYPINGS -> monsterElementRandomizer.randomizeRandomMonsterElementAndImmunity();
         };
     }
 
