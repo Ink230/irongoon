@@ -1,5 +1,6 @@
 package lod.irongoon.services.randomizer;
 
+import legend.game.characters.ElementSet;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.Elements;
 import lod.irongoon.models.DivineFruit;
@@ -18,24 +19,22 @@ public class MonsterElementRandomizer {
     private final MonsterStatsParser parser = MonsterStatsParser.getInstance();
     private final StatsRandomizer statsRandomizer = StatsRandomizer.getInstance();
 
-    private DivineFruit createDivineFruit(Elements element, Elements immunity) {
+    private DivineFruit createDivineFruit(Elements element, ElementSet immunity) {
         return new DivineFruit(element, immunity);
     }
 
     public DivineFruit maintainStock(int monsterId) {
         var element = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.ELEMENT.name());
-        return createDivineFruit(Elements.getEnumByIndex(element), Elements.getEnumByIndex(0));
+        return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
     }
 
     public DivineFruit randomizeMonsterElement(int monsterId) {
-        Random random = new Random(monsterId);
-        var element = statsRandomizer.calculateRandomNumberBetweenBounds(0, 16, monsterId) * 8;
-        return createDivineFruit(Elements.getEnumByIndex(element), Elements.getEnumByIndex(0));
+        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, 7, monsterId);
+        return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
     }
 
     public DivineFruit randomizeRandomMonsterElement() {
-        Random random = new Random();
-        var element = statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, 16);
-        return createDivineFruit(Elements.getEnumByIndex(element), Elements.getEnumByIndex(0));
+        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, 7);
+        return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
     }
 }

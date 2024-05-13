@@ -1,4 +1,4 @@
-publicSeed: "7963AC95E13873B6"
+publicSeed: "AF51FA7B"
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 monsterTotalStats: RANDOMIZE_BOUNDS
@@ -23,4 +23,4 @@ speedStatMonsters: RANDOMIZE_BOUNDS
 speedStatMonstersUpperBound: 100
 speedStatMonstersLowerBoundedStatPerLevel: 30
 statsVarianceMonsters: RANDOM_PERCENT_BOUNDS
-monsterElements: RANDOMIZE
+monsterElements: RANDOMIZE_RANDOM

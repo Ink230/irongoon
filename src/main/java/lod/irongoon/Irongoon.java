@@ -94,9 +94,7 @@ public class Irongoon {
         monster.speed = monsterSpeedRandomized.bodySpeed;
 
         monster.elementFlag = Element.fromFlag(monsterElementRandomized.element.getValue());
-        var elementSet = new ElementSet();
-        elementSet.add(Element.fromFlag(monsterElementRandomized.elementImmunity.getValue()));
-        monster.elementalImmunityFlag.set(elementSet);
+        monster.elementalImmunityFlag.set(monsterElementRandomized.elementImmunity);
 
     }
 }

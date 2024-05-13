@@ -1,5 +1,6 @@
 package lod.irongoon.models;
 
+import legend.game.characters.ElementSet;
 import lod.irongoon.data.Elements;
 
 public class DivineFruit {
@@ -17,7 +18,7 @@ public class DivineFruit {
     public int level;
     public int dLevel;
     public Elements element;
-    public Elements elementImmunity;
+    public ElementSet elementImmunity;
 
     public DivineFruit() {}
 
@@ -58,7 +59,7 @@ public class DivineFruit {
         this.maxMP = divineFruit.maxMP;
     }
 
-    public DivineFruit(Elements element, Elements elementImmunity) {
+    public DivineFruit(Elements element, ElementSet elementImmunity) {
         this.element = element;
         this.elementImmunity = elementImmunity;
     }

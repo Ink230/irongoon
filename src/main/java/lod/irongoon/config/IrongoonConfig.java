@@ -61,8 +61,8 @@ public class IrongoonConfig {
             yamlConfig = Map.of();
         }
 
-        this.publicSeed = (String) yamlConfig.getOrDefault("publicSeed", "7963AC95E13873B6");
-        this.seed = Long.parseUnsignedLong(publicSeed, 16);
+        this.publicSeed = (String) yamlConfig.getOrDefault("publicSeed", "AF51FA7B");
+        this.seed = Integer.parseUnsignedInt(publicSeed, 16);
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.monsterTotalStats = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStats", "RANDOMIZE_BOUNDS"));
