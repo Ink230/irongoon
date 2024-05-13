@@ -4,8 +4,8 @@ public enum ElementsMonsters {
     MAINTAIN_STOCK(0),
     RANDOMIZE(1),
     RANDOMIZE_RANDOM(2),
-    RANDOM_AND_TYPINGS(3),
-    RANDOM_RANDOM_AND_TYPINGS(4);
+    RANDOMIZE_AND_TYPINGS(3),
+    RANDOMIZE_RANDOM_AND_TYPINGS(4);
 
     private final int elementsMonsters;
 
