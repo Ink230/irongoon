@@ -79,4 +79,9 @@ public class CharacterStatsRandomizer {
 
         return divineTree.get(divineTree.size() - 1);
     }
+
+    public DivineFruit stock(int characterId, int level) {
+        var results = parser.getCharacterStatsByLevel(characterId, level);
+        return new DivineFruit(results, false);
+    }
 }

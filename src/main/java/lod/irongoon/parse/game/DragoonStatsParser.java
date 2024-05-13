@@ -1,11 +1,10 @@
 package lod.irongoon.parse.game;
 
-import lod.irongoon.data.CharacterData;
-import lod.irongoon.data.DragoonStatsData;
-import lod.irongoon.data.ExternalData;
+import lod.irongoon.data.*;
 import lod.irongoon.services.DataTables;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class DragoonStatsParser {
     private static final DragoonStatsParser INSTANCE = new DragoonStatsParser();
@@ -40,5 +39,18 @@ public class DragoonStatsParser {
         double average = Arrays.stream(totalStatsOfAllDragoonsByLevel).average().orElse(0.0);
 
         return (int) Math.ceil(average);
+    }
+
+    public HashMap<String, Integer> getDragoonStatsByLevel(int dragoonId, int level) {
+        var statsArray = dataTableAccessor.getRowFromDataTable((dragoonId * chunkSize) + level, dataTableKey);
+
+        var dragoonStatsMap = new HashMap<String, Integer>();
+
+        for (DragoonStatsData stat : DragoonStatsData.values()) {
+            int statValue = Integer.parseInt(String.valueOf(statsArray[stat.getValue()]));
+            dragoonStatsMap.put(stat.name(), statValue);
+        }
+
+        return dragoonStatsMap;
     }
 }

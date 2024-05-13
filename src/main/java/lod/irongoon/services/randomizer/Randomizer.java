@@ -29,6 +29,7 @@ public class Randomizer {
                     characterStatsRandomizer.randomizeMaintainStock(character.characterId, character.level);
             case AVERAGE_ALL_CHARACTERS ->
                     characterStatsRandomizer.randomizeAverage(character.characterId, character.level);
+            case STOCK -> characterStatsRandomizer.stock(character.characterId, character.level);
         };
     }
 
@@ -50,11 +51,12 @@ public class Randomizer {
     }
 
     public DivineFruit doDragoonStats(CharacterStatsEvent dragoon) {
-        return switch (config.bodyTotalStatsPerLevel) {
+        return switch (config.dragoonTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS_PER_LEVEL ->
                     dragoonStatsRandomizer.randomizeWithBounds(dragoon.characterId, dragoon.dlevel);
             case MAINTAIN_STOCK -> dragoonStatsRandomizer.randomizeMaintainStock(dragoon.characterId, dragoon.dlevel);
             case AVERAGE_ALL_CHARACTERS -> dragoonStatsRandomizer.randomizeAverage(dragoon.characterId, dragoon.dlevel);
+            case STOCK -> dragoonStatsRandomizer.stock(dragoon.characterId, dragoon.dlevel);
         };
     }
 

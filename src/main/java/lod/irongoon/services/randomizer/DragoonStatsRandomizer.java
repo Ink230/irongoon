@@ -80,4 +80,9 @@ public class DragoonStatsRandomizer {
 
         return divineTree.get(divineTree.size() - 1);
     }
+
+    public DivineFruit stock(int dragoonId, int level) {
+        var results = parser.getDragoonStatsByLevel(dragoonId, level);
+        return new DivineFruit(results, true);
+    }
 }
