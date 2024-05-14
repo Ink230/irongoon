@@ -28,7 +28,7 @@ public class MonsterElementRandomizer {
 
     public DivineFruit maintainStock(int monsterId) {
         var element = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.ELEMENT.name());
-        return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
+        return createDivineFruit(Elements.getEnumByIndex(element), processElementImmunity(monsterId));
     }
 
     public DivineFruit randomizeMonsterElement(int monsterId) {
@@ -37,16 +37,16 @@ public class MonsterElementRandomizer {
         var element = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, upper, monsterId);
         element = processElement(element);
 
-        return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
+        return createDivineFruit(Elements.getEnumByIndex(element), processElementImmunity(monsterId));
     }
 
-    public DivineFruit randomizeRandomMonsterElement() {
+    public DivineFruit randomizeRandomMonsterElement(int monsterId) {
         var upper = this.elementLength + processElementUpperBound();
 
         var element = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, upper);
         element = processElement(element);
 
-        return createDivineFruit(Elements.getEnumByIndex(element), new ElementSet());
+        return createDivineFruit(Elements.getEnumByIndex(element), processElementImmunity(monsterId));
     }
 
     public DivineFruit randomizeMonsterElementAndImmunity(int monsterId) {
@@ -94,5 +94,11 @@ public class MonsterElementRandomizer {
             case EXCLUDE, ELEMENTS_ONLY -> -2;
             case INCLUDE, IMMUNITIES_ONLY -> -1;
         };
+    }
+
+    private ElementSet processElementImmunity(int monsterId) {
+        var immunity = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.ELEMENT_IMMUNITY.name());
+        if (immunity == 0) return new ElementSet();
+        return new ElementSet().add(Element.fromFlag(immunity));
     }
 }
