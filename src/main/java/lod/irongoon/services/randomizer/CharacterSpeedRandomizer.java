@@ -38,7 +38,7 @@ public class CharacterSpeedRandomizer {
     public DivineFruit randomizeStockWithBounds(int characterId, int level) {
         var speedOfCharacter = parser.getSpeedOfCharacterByLevel(characterId, level);
 
-        var randomizedSpeed = statRandomizer.calculatePercentModifiedBoundedStat(config.nonBaselineStatsLowerPercentBound, config.nonBaselineStatsUpperPercentBound, speedOfCharacter, 801 + characterId);
+        var randomizedSpeed = statRandomizer.calculatePercentModifiedBoundedStat(config.speedStatLowerPercentBound, config.speedStatUpperPercentBound, speedOfCharacter, 801 + characterId);
 
         return createDivineFruit(randomizedSpeed);
     }

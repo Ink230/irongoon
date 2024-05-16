@@ -82,7 +82,7 @@ public class CharacterHPRandomizer {
             var hpOfCharacterByLevelMinusOne = parser.getHPOfCharacterByLevel(characterId,subLevel - 1);
             var hpAvailable = hpOfCharacterByLevel - hpOfCharacterByLevelMinusOne;
 
-            int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.nonBaselineStatsLowerPercentBound, config.nonBaselineStatsUpperPercentBound, hpAvailable, 939 + characterId);
+            int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatLowerPercentBound, config.hpStatUpperPercentBound, hpAvailable, 939 + characterId);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }

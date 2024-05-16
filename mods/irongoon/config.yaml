@@ -4,8 +4,6 @@ dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 monsterTotalStats: RANDOMIZE_BOUNDS
 monsterDefenseFloor: 50
 monsterMagicDefenseFloor: 50
-NonBaselineStatsUpperPercentBound: 150
-NonBaselineStatsLowerPercentBound: 50
 totalStatsMonstersUpperPercentBound: 150
 totalStatsMonstersLowerPercentBound: 50
 bodyTotalStatsBounds: STOCK
@@ -16,6 +14,8 @@ hpStatPerLevel: RANDOMIZE_BOUNDS_PERCENT_MODIFIED_PER_LEVEL
 hpStatUpperPercentBound: 150
 hpStatLowerPercentBound: 50
 speedStatPerLevel: RANDOMIZE_BOUNDS
+speedStatUpperPercentBound: 150
+speedStatLowerPercentBound: 50
 hpStatMonsters: RANDOMIZE_BOUNDS
 hpStatMonstersUpperPercentBound: 150
 hpStatMonstersLowerPercentBound: 50
