@@ -25,6 +25,7 @@ public class DataTables {
     private final DataParser dataParser = CSVParser.getInstance();
 
     public void initialize() {
+        dataTables.clear();
         for(ExternalData data : ExternalData.values()) {
             var list = dataParser.load(config.externalDataLoadPath + data.getValue() + config.externalDataLoadExtension);
             addDataTable(data, list);

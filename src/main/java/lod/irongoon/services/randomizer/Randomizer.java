@@ -1,9 +1,12 @@
 package lod.irongoon.services.randomizer;
 
+import legend.core.GameEngine;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
+import lod.irongoon.Irongoon;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
+import org.legendofdragoon.modloader.ModNotLoadedException;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -11,8 +14,8 @@ public class Randomizer {
 
     private Randomizer() {}
 
-    private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final SeedRandomizer seedRandomizer = SeedRandomizer.getInstance();
+    private static final IrongoonConfig config = IrongoonConfig.getInstance();
+    private static final SeedRandomizer seedRandomizer = SeedRandomizer.getInstance();
     private final CharacterStatsRandomizer characterStatsRandomizer = CharacterStatsRandomizer.getInstance();
     private final CharacterHPRandomizer characterHPRandomizer = CharacterHPRandomizer.getInstance();
     private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
@@ -22,11 +25,11 @@ public class Randomizer {
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
     private final MonsterElementRandomizer monsterElementRandomizer = MonsterElementRandomizer.getInstance();
 
-    public void configureNewCampaignSeed() {
-       if (!config.useRandomSeedOnNewCampaign) return;
-       var newSeed = seedRandomizer.generateNewSeed();
-        config.seed = Integer.parseUnsignedInt(newSeed, 16);
-        seedRandomizer.saveNewSeed(newSeed);
+    public static String retrieveNewCampaignSeed() {
+        String newSeed;
+        newSeed = seedRandomizer.generateNewSeed();
+        config.campaignSeed = newSeed;
+        return newSeed;
     }
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {

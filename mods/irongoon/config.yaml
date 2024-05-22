@@ -1,5 +1,5 @@
-publicSeed: AF51FA7B
-useRandomSeedOnNewCampaign: FALSE
+publicSeed: AF51FA7C
+useRandomSeedOnNewCampaign: true
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 monsterTotalStats: RANDOMIZE_BOUNDS

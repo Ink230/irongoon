@@ -19,8 +19,9 @@ public class IrongoonConfig {
     public final String externalDataLoadPath = "./mods/irongoon/US/";
     public final String externalDataLoadExtension = ".csv";
     public final String externalConfigLoadPath = "./mods/irongoon/config.yaml";
-    public final String publicSeed;
+    public String publicSeed;
     public long seed;
+    public String campaignSeed;
     public final boolean useRandomSeedOnNewCampaign;
     public final int bodyNumberOfStatsAmount = 4;
     public final int dragoonNumberOfStatsAmount = 4;

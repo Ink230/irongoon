@@ -5,9 +5,17 @@ import legend.core.GameEngine;
 import legend.game.characters.Element;
 import legend.game.characters.ElementSet;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import legend.game.modding.events.config.ConfigEvent;
+import legend.game.modding.events.config.ConfigLoadedEvent;
+import legend.game.modding.events.config.ConfigUpdatedEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
+import legend.game.saves.*;
+import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
+import org.legendofdragoon.modloader.registries.Registrar;
+import org.legendofdragoon.modloader.registries.RegistryDelegate;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import org.legendofdragoon.modloader.Mod;
 import legend.game.modding.events.characters.CharacterStatsEvent;
@@ -29,9 +37,13 @@ public class Irongoon {
         return new RegistryId(MOD_ID, entryId);
     }
 
+    private static final IrongoonConfig config = IrongoonConfig.getInstance();
+    private static final Randomizer randomizer = Randomizer.getInstance();
+    private static final Registrar<ConfigEntry<?>, ConfigRegistryEvent> CONFIG_REGISTRAR = new Registrar<>(GameEngine.REGISTRIES.config, MOD_ID);
+    private static final RegistryDelegate<SeedConfigEntry> IRONGOON_CAMPAIGN_SEED = CONFIG_REGISTRAR.register("irongoon_campaign_seed", () -> new SeedConfigEntry(randomizer.retrieveNewCampaignSeed()));
+
     private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
-    private final Randomizer randomizer = Randomizer.getInstance();
     private final StaleStats staleStats = StaleStats.getInstance();
 
     public Irongoon() {
@@ -39,12 +51,25 @@ public class Irongoon {
     }
 
     @EventListener
+    public void gameConfig(final ConfigRegistryEvent event) {
+        CONFIG_REGISTRAR.registryEvent(event);
+    }
+
+    @EventListener
     public void newGame(final NewGameEvent game) {
-        randomizer.configureNewCampaignSeed();
+        if (config.useRandomSeedOnNewCampaign) {
+            config.publicSeed = config.campaignSeed;
+        }
     }
 
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
+        if (config.useRandomSeedOnNewCampaign) {
+            var campaignSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
+            config.publicSeed = campaignSeed;
+            config.seed = Integer.parseUnsignedInt(config.publicSeed, 16);
+        }
+
         refreshState();
     }
 

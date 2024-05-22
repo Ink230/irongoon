@@ -20,6 +20,7 @@ public class Characters {
     private final Map<String, DivineFruit> characters;
 
     public void initialize() {
+        characters.clear();
         for(CharacterData character : CharacterData.values()) {
             addCharacter(character, new DivineFruit());
         }
