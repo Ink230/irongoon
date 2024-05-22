@@ -5,6 +5,7 @@ import legend.core.GameEngine;
 import legend.game.characters.Element;
 import legend.game.characters.ElementSet;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import legend.game.modding.events.gamestate.NewGameEvent;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.registries.RegistryId;
@@ -35,6 +36,11 @@ public class Irongoon {
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
+    }
+
+    @EventListener
+    public void newGame(final NewGameEvent game) {
+        randomizer.configureNewCampaignSeed();
     }
 
     @EventListener

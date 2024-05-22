@@ -12,6 +12,7 @@ public class Randomizer {
     private Randomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
+    private final SeedRandomizer seedRandomizer = SeedRandomizer.getInstance();
     private final CharacterStatsRandomizer characterStatsRandomizer = CharacterStatsRandomizer.getInstance();
     private final CharacterHPRandomizer characterHPRandomizer = CharacterHPRandomizer.getInstance();
     private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
@@ -20,6 +21,13 @@ public class Randomizer {
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
     private final MonsterElementRandomizer monsterElementRandomizer = MonsterElementRandomizer.getInstance();
+
+    public void configureNewCampaignSeed() {
+       if (!config.useRandomSeedOnNewCampaign) return;
+       var newSeed = seedRandomizer.generateNewSeed();
+        config.seed = Integer.parseUnsignedInt(newSeed, 16);
+        seedRandomizer.saveNewSeed(newSeed);
+    }
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
         return switch (config.bodyTotalStatsPerLevel) {

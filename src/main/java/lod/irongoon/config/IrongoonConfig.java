@@ -20,7 +20,8 @@ public class IrongoonConfig {
     public final String externalDataLoadExtension = ".csv";
     public final String externalConfigLoadPath = "./mods/irongoon/config.yaml";
     public final String publicSeed;
-    public final long seed;
+    public long seed;
+    public final boolean useRandomSeedOnNewCampaign;
     public final int bodyNumberOfStatsAmount = 4;
     public final int dragoonNumberOfStatsAmount = 4;
     public final TotalStatsPerLevel bodyTotalStatsPerLevel;
@@ -64,6 +65,7 @@ public class IrongoonConfig {
 
         this.publicSeed = (String) yamlConfig.getOrDefault("publicSeed", "AF51FA7B");
         this.seed = Integer.parseUnsignedInt(publicSeed, 16);
+        this.useRandomSeedOnNewCampaign = (boolean) yamlConfig.getOrDefault("useRandomSeedOnNewCampaign", false);
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.monsterTotalStats = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStats", "RANDOMIZE_BOUNDS"));
