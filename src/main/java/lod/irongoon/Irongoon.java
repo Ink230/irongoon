@@ -37,7 +37,7 @@ public class Irongoon {
         return new RegistryId(MOD_ID, entryId);
     }
 
-    private static final IrongoonConfig config = IrongoonConfig.getInstance();
+    private static final IrongoonConfig config = IrongoonConfig.getInstance(); //can be removed, dependencies of config can be moved somewhere else
     private static final Randomizer randomizer = Randomizer.getInstance();
     private static final Registrar<ConfigEntry<?>, ConfigRegistryEvent> CONFIG_REGISTRAR = new Registrar<>(GameEngine.REGISTRIES.config, MOD_ID);
     private static final RegistryDelegate<SeedConfigEntry> IRONGOON_CAMPAIGN_SEED = CONFIG_REGISTRAR.register("irongoon_campaign_seed", () -> new SeedConfigEntry(randomizer.retrieveNewCampaignSeed()));
@@ -126,6 +126,5 @@ public class Irongoon {
 
         monster.elementFlag = Element.fromFlag(monsterElementRandomized.element.getValue());
         monster.elementalImmunityFlag.set(monsterElementRandomized.elementImmunity);
-
     }
 }
