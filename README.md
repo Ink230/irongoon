@@ -37,10 +37,10 @@ Anyone is welcome to contribute via Pull Requests or ideas on [Discord](https://
 
 - Creating Severed Chains
 
-### [Zynchronix](https://github.com/Zychronix)
+### [Zychronix](https://github.com/Zychronix)
 
 - Compiling and maintaining the various LoD stats in use by the community
 
 ### [Ironmon 101](https://gist.github.com/valiant-code/adb18d248fa0fae7da6b639e2ee8f9c1)
 
-### [Community LoD Discord]()
+### [Community LoD Discord](https://discord.gg/rQWXgK5)
