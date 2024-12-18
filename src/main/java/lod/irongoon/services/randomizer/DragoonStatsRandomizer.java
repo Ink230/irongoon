@@ -30,7 +30,7 @@ public class DragoonStatsRandomizer {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0, 0, 0, true));
 
-        for(int subDLevel = 1; subDLevel <= dLevel; subDLevel++) {
+        for (int subDLevel = 1; subDLevel <= dLevel; subDLevel++) {
             var totalStatsOfDragoonByLevel = parser.getTotalStatsOfDragoonByLevel(dragoonId, subDLevel) - parser.getTotalStatsOfDragoonByLevel(dragoonId, subDLevel - 1);
 
             var distribution = statRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999 + dragoonId);

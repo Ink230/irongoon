@@ -27,7 +27,7 @@ public class DragoonStatsParser {
     public int[] getTotalStatsOfAllDragoonsByLevel(int level) {
         var totalStatsOfAllDragoonsByLevel = new int[CharacterData.values().length];
 
-        for(CharacterData value : CharacterData.values()) {
+        for (CharacterData value : CharacterData.values()) {
             totalStatsOfAllDragoonsByLevel[value.getValue()] = getTotalStatsOfDragoonByLevel(value.getValue(), level);
         }
 

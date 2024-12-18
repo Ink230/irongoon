@@ -29,11 +29,11 @@ public class CharacterHPRandomizer {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0));
 
-        for(int subLevel = 1; subLevel <= level; subLevel++) {
+        for (int subLevel = 1; subLevel <= level; subLevel++) {
             var hpOfCharactersByLevel = parser.getHPOfAllCharactersByLevel(subLevel);
             var hpOfCharactersByLevelMinusOne = parser.getHPOfAllCharactersByLevel(subLevel - 1);
 
-            for(int i = 0; i < hpOfCharactersByLevel.length; i++) {
+            for (int i = 0; i < hpOfCharactersByLevel.length; i++) {
                 hpOfCharactersByLevel[i] -= hpOfCharactersByLevelMinusOne[i];
             }
 
@@ -52,11 +52,11 @@ public class CharacterHPRandomizer {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0));
 
-        for(int subLevel = 1; subLevel <= level; subLevel++) {
+        for (int subLevel = 1; subLevel <= level; subLevel++) {
             var hpOfCharactersByLevel = parser.getHPOfAllCharactersByLevel(subLevel);
             var hpOfCharactersByLevelMinusOne = parser.getHPOfAllCharactersByLevel(subLevel - 1);
 
-            for(int i = 0; i < hpOfCharactersByLevel.length; i++) {
+            for (int i = 0; i < hpOfCharactersByLevel.length; i++) {
                 hpOfCharactersByLevel[i] -= hpOfCharactersByLevelMinusOne[i];
             }
 
@@ -77,7 +77,7 @@ public class CharacterHPRandomizer {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0));
 
-        for(int subLevel = 1; subLevel <= level; subLevel++) {
+        for (int subLevel = 1; subLevel <= level; subLevel++) {
             var hpOfCharacterByLevel = parser.getHPOfCharacterByLevel(characterId, subLevel);
             var hpOfCharacterByLevelMinusOne = parser.getHPOfCharacterByLevel(characterId,subLevel - 1);
             var hpAvailable = hpOfCharacterByLevel - hpOfCharacterByLevelMinusOne;

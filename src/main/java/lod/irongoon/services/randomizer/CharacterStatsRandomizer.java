@@ -29,7 +29,7 @@ public class CharacterStatsRandomizer {
         var divineTree = new ArrayList<DivineFruit>();
         divineTree.add(new DivineFruit(0, 0, 0, 0));
 
-        for(int subLevel = 1; subLevel <= level; subLevel++) {
+        for (int subLevel = 1; subLevel <= level; subLevel++) {
             var totalStatsOfCharacterByLevel = parser.getTotalStatsOfCharacterByLevel(characterId, subLevel) - parser.getTotalStatsOfCharacterByLevel(characterId, subLevel - 1);
 
             var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount, characterId);

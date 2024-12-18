@@ -21,7 +21,7 @@ public class Characters {
 
     public void initialize() {
         characters.clear();
-        for(CharacterData character : CharacterData.values()) {
+        for (CharacterData character : CharacterData.values()) {
             addCharacter(character, new DivineFruit());
         }
     }

@@ -27,7 +27,7 @@ public class CharacterStatsParser {
     public int[] getTotalStatsOfAllCharactersByLevel(int level) {
         var totalStatsOfAllCharactersByLevel = new int[CharacterData.values().length];
 
-        for(CharacterData value : CharacterData.values()) {
+        for (CharacterData value : CharacterData.values()) {
             totalStatsOfAllCharactersByLevel[value.getValue()] = getTotalStatsOfCharacterByLevel(value.getValue(), level);
         }
 
@@ -48,7 +48,7 @@ public class CharacterStatsParser {
     public int[] getHPOfAllCharactersByLevel(int level) {
         var hpOfAllCharactersByLevel = new int[CharacterData.values().length];
 
-        for(CharacterData value : CharacterData.values()) {
+        for (CharacterData value : CharacterData.values()) {
             hpOfAllCharactersByLevel[value.getValue()] = getHPOfCharacterByLevel(value.getValue(), level);
         }
 
@@ -62,7 +62,7 @@ public class CharacterStatsParser {
     public int[] getCharactersSpeedStats(int level) {
         var allCharactersSpeedStats = new int[CharacterData.values().length];
 
-        for(CharacterData value : CharacterData.values()) {
+        for (CharacterData value : CharacterData.values()) {
             allCharactersSpeedStats[value.getValue()] = getSpeedOfCharacterByLevel(value.getValue(), level);
         }
 

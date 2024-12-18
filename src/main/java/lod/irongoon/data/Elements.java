@@ -22,8 +22,8 @@ public enum Elements {
     }
 
     public static Elements getEnumByIndex(int index) {
-        for(Elements element : Elements.values()) {
-            if(element.getValue() == index) {
+        for (Elements element : Elements.values()) {
+            if (element.getValue() == index) {
                 return element;
             }
         }

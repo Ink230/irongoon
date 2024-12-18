@@ -22,8 +22,8 @@ public enum CharacterData implements Data<Integer> {
     }
 
     public static CharacterData getEnumByIndex(int index) {
-        for(CharacterData character : CharacterData.values()) {
-            if(character.getValue() == index) {
+        for (CharacterData character : CharacterData.values()) {
+            if (character.getValue() == index) {
                 return character;
             }
         }

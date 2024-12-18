@@ -80,7 +80,7 @@ public class Irongoon {
 
     @EventListener
     public void characterStats(final CharacterStatsEvent character) {
-        if(!staleStats.isCharacterStale(character)) {
+        if (!staleStats.isCharacterStale(character)) {
             characters.updateCharacterByReferenceCharacter(character);
             return;
         }
