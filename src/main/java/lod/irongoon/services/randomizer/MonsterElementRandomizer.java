@@ -58,7 +58,7 @@ public class MonsterElementRandomizer {
 
         var elementImmune = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, immunityUpper, monsterId + 1000);
         elementImmune = processElement(elementImmune);
-        var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune));
+        var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune).get());
 
         return createDivineFruit(Elements.getEnumByIndex(element), elementImmunity);
     }
@@ -72,7 +72,7 @@ public class MonsterElementRandomizer {
 
         var elementImmune = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, immunityUpper);
         elementImmune = processElement(elementImmune);
-        var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune));
+        var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune).get());
 
         return createDivineFruit(Elements.getEnumByIndex(element), elementImmunity);
     }
@@ -99,6 +99,6 @@ public class MonsterElementRandomizer {
     private ElementSet processElementImmunity(int monsterId) {
         var immunity = parser.getMonsterStatsById(monsterId).get(EnemyStatsData.ELEMENT_IMMUNITY.name());
         if (immunity == 0) return new ElementSet();
-        return new ElementSet().add(Element.fromFlag(immunity));
+        return new ElementSet().add(Element.fromFlag(immunity).get());
     }
 }

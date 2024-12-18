@@ -124,7 +124,7 @@ public class Irongoon {
         monster.hp = monsterHPRandomized.maxHP;
         monster.speed = monsterSpeedRandomized.bodySpeed;
 
-        monster.elementFlag = Element.fromFlag(monsterElementRandomized.element.getValue());
+        monster.elementFlag = Element.fromFlag(monsterElementRandomized.element.getValue()).get();
         monster.elementalImmunityFlag.set(monsterElementRandomized.elementImmunity);
     }
 }
