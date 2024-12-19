@@ -107,7 +107,7 @@ public class StatsRandomizer {
 
     public int calculateRandomNumberBetweenBoundsNoSeed(int lowerBound, int upperBound) {
         Random random = new Random();
-        var result = lowerBound + random.nextInt(lowerBound, upperBound + 1);
+        var result = random.nextInt(lowerBound, upperBound + 1);
 
         return result;
     }
