@@ -30,6 +30,7 @@ import lod.irongoon.services.DataTables;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Random;
 
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
@@ -128,5 +129,23 @@ public class Irongoon {
 
         monster.elementFlag = Element.fromFlag(monsterElementRandomized.element.getValue()).get();
         monster.elementalImmunityFlag.set(monsterElementRandomized.elementImmunity);
+    }
+
+    @EventListener
+    public void stageData(final BattleEncounterStageDataEvent stage) {
+        var stageData = stage.stageData;
+        int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19}; // music indices valid
+        Random random = new Random();
+        stageData.musicIndex_04 = musicNumbers[random.nextInt(musicNumbers.length)];
+        stageData.escapeChance_08 = 0; // 0 no escape, 100 full escape
+        // stageData.playerOpeningCamera_10 = random.nextInt(0, 251); // 0 to 250
+        // stageData.monsterOpeningCamera_14 = random.nextInt(0, 234); // 0 to 233
+    }
+
+    @EventListener
+    public void encounterData(final SubmapGenerateEncounterEvent encounter) {
+        var rando = new Random();
+        // encounter.encounterId = 0; // which ones don't crash? 0 to 511
+        encounter.battleStageId = rando.nextInt(0, 96); // 0 to 95?
     }
 }
