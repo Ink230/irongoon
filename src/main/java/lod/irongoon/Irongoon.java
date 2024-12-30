@@ -32,6 +32,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 
+import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
+import static legend.game.Scus94491BpeSegment_800b.submapId_800bd808;
+
 @Mod(id = Irongoon.MOD_ID)
 public class Irongoon {
     public static final String MOD_ID = "irongoon";
@@ -144,8 +147,8 @@ public class Irongoon {
 
     @EventListener
     public void encounterData(final SubmapGenerateEncounterEvent encounter) {
-        var rando = new Random();
         // encounter.encounterId = 0; // which ones don't crash? 0 to 511
-        encounter.battleStageId = rando.nextInt(0, 96); // 0 to 95?
+        var submapId = submapCut_80052c30;
+        encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
     }
 }

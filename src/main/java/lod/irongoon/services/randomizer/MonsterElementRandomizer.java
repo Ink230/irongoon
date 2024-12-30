@@ -4,12 +4,9 @@ import legend.game.characters.Element;
 import legend.game.characters.ElementSet;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.Elements;
-import lod.irongoon.data.NoElementMonsters;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.data.EnemyStatsData;
 import lod.irongoon.parse.game.MonsterStatsParser;
-
-import java.util.Random;
 
 
 public class MonsterElementRandomizer {
@@ -34,7 +31,7 @@ public class MonsterElementRandomizer {
     public DivineFruit randomizeMonsterElement(int monsterId) {
         var upper = this.elementLength + processElementUpperBound();
 
-        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, upper, monsterId);
+        var element = 1 << statsRandomizer.calculateRandomNumberWithBounds(0, upper, monsterId);
         element = processElement(element);
 
         return createDivineFruit(Elements.getEnumByIndex(element), processElementImmunity(monsterId));
@@ -43,7 +40,7 @@ public class MonsterElementRandomizer {
     public DivineFruit randomizeRandomMonsterElement(int monsterId) {
         var upper = this.elementLength + processElementUpperBound();
 
-        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, upper);
+        var element = 1 << statsRandomizer.calculateRandomNumberWithBoundsNoSeed(0, upper);
         element = processElement(element);
 
         return createDivineFruit(Elements.getEnumByIndex(element), processElementImmunity(monsterId));
@@ -53,10 +50,10 @@ public class MonsterElementRandomizer {
         var elementUpper = this.elementLength + processElementUpperBound();
         var immunityUpper = this.elementLength + processElementImmunityUpperBound();
 
-        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, elementUpper, monsterId);
+        var element = 1 << statsRandomizer.calculateRandomNumberWithBounds(0, elementUpper, monsterId);
         element = processElement(element);
 
-        var elementImmune = 1 << statsRandomizer.calculateRandomNumberBetweenBounds(0, immunityUpper, monsterId + 1000);
+        var elementImmune = 1 << statsRandomizer.calculateRandomNumberWithBounds(0, immunityUpper, monsterId + 1000);
         elementImmune = processElement(elementImmune);
         var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune).get());
 
@@ -67,10 +64,10 @@ public class MonsterElementRandomizer {
         var elementUpper = this.elementLength + processElementUpperBound();
         var immunityUpper = this.elementLength + processElementImmunityUpperBound();
 
-        var element = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, elementUpper);
+        var element = 1 << statsRandomizer.calculateRandomNumberWithBoundsNoSeed(0, elementUpper);
         element = processElement(element);
 
-        var elementImmune = 1 << statsRandomizer.calculateRandomNumberBetweenBoundsNoSeed(0, immunityUpper);
+        var elementImmune = 1 << statsRandomizer.calculateRandomNumberWithBoundsNoSeed(0, immunityUpper);
         elementImmune = processElement(elementImmune);
         var elementImmunity = new ElementSet().add(Element.fromFlag(elementImmune).get());
 

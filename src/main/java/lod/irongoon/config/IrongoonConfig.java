@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
@@ -51,6 +53,9 @@ public class IrongoonConfig {
     public final StatsVarianceMonsters statsVarianceMonsters;
     public final ElementsMonsters monsterElements;
     public final NoElementMonsters noElementMonsters;
+    public final BattleStage battleStage;
+    public final List<Integer> battleStageList;
+
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -93,5 +98,9 @@ public class IrongoonConfig {
         this.statsVarianceMonsters = StatsVarianceMonsters.valueOf((String) yamlConfig.getOrDefault("statsVarianceMonsters", "RANDOM_PERCENT_BOUNDS"));
         this.monsterElements = ElementsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterElements", "MAINTAIN_STOCK"));
         this.noElementMonsters = NoElementMonsters.valueOf((String) yamlConfig.getOrDefault("noElementMonsters", "EXCLUDE"));
+        this.battleStage = BattleStage.valueOf((String) yamlConfig.getOrDefault("battleStage", "RANDOM"));
+        this.battleStageList = (List<Integer>) yamlConfig.getOrDefault("battleStageList", new ArrayList<>());
     }
+
+    public final int battleStageSize = 95;
 }

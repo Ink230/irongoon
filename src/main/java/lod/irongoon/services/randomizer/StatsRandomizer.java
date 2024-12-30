@@ -2,7 +2,6 @@ package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.TotalStatsDistributionPerLevel;
-import lod.irongoon.data.TotalStatsPerLevel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,14 +97,14 @@ public class StatsRandomizer {
         return random.nextInt(1, limit + 1);
     }
 
-    public int calculateRandomNumberBetweenBounds(int lowerBound, int upperBound, int uniqueModifier) {
+    public int calculateRandomNumberWithBounds(int lowerBound, int upperBound, int uniqueModifier) {
         Random random = new Random(config.seed + uniqueModifier + 94);
         var result = random.nextInt(lowerBound, upperBound + 1);
 
         return result;
     }
 
-    public int calculateRandomNumberBetweenBoundsNoSeed(int lowerBound, int upperBound) {
+    public int calculateRandomNumberWithBoundsNoSeed(int lowerBound, int upperBound) {
         Random random = new Random();
         var result = random.nextInt(lowerBound, upperBound + 1);
 

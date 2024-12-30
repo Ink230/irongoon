@@ -55,7 +55,7 @@ public class CharacterStatsRandomizer {
             var minValue = Arrays.stream(totalStatsPerCharacterByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(totalStatsPerCharacterByLevel).max().orElseThrow();
 
-            var totalStats = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, characterId);
+            var totalStats = statRandomizer.calculateRandomNumberWithBounds(minValue, maxValue, characterId);
 
             var distribution = statRandomizer.calculateDistributionOfTotalStats(subLevel, characterId, config.bodyTotalStatsDistributionPerLevel, config.bodyNumberOfStatsAmount, characterId);
 

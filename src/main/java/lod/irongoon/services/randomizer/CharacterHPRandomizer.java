@@ -40,7 +40,7 @@ public class CharacterHPRandomizer {
             var minValue = Arrays.stream(hpOfCharactersByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(hpOfCharactersByLevel).max().orElseThrow();
 
-            var hp = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909 + characterId);
+            var hp = statRandomizer.calculateRandomNumberWithBounds(minValue, maxValue, 909 + characterId);
 
             divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
         }
@@ -63,7 +63,7 @@ public class CharacterHPRandomizer {
             var minValue = Arrays.stream(hpOfCharactersByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(hpOfCharactersByLevel).max().orElseThrow();
 
-            var hpAvailable = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 909 + characterId);
+            var hpAvailable = statRandomizer.calculateRandomNumberWithBounds(minValue, maxValue, 909 + characterId);
 
             var hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatLowerPercentBound, config.hpStatUpperPercentBound, hpAvailable, 909 + characterId);
 

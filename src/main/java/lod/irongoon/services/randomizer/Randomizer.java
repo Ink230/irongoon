@@ -1,12 +1,9 @@
 package lod.irongoon.services.randomizer;
 
-import legend.core.GameEngine;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
-import lod.irongoon.Irongoon;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
-import org.legendofdragoon.modloader.ModNotLoadedException;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -24,6 +21,7 @@ public class Randomizer {
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
     private final MonsterElementRandomizer monsterElementRandomizer = MonsterElementRandomizer.getInstance();
+    private final BattleRandomizer battleRandomizer = BattleRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
         String newSeed;
@@ -112,5 +110,14 @@ public class Randomizer {
                 monsterStatsRandomizer.varianceStats(monsterStats, monsterHP, monsterSpeed);
                 break;
         }
+    }
+
+    public int doBattleStage(int battleStageId, int encounterId, int submapId) {
+        return switch (config.battleStage) {
+            case STOCK -> battleRandomizer.maintainStock(battleStageId);
+            case RANDOM -> battleRandomizer.randomRandom();
+            case RANDOM_FIXED_ENCOUNTER -> battleRandomizer.randomFixedEncounter(encounterId);
+            case RANDOM_FIXED_SUBMAP -> battleRandomizer.randomFixedSubmap(submapId);
+        };
     }
 }

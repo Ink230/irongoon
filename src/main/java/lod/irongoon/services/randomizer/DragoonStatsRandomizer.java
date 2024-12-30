@@ -56,7 +56,7 @@ public class DragoonStatsRandomizer {
             var minValue = Arrays.stream(totalStatsOfAllDragoonsByLevel).min().orElseThrow();
             var maxValue = Arrays.stream(totalStatsOfAllDragoonsByLevel).max().orElseThrow();
 
-            var totalStats = statRandomizer.calculateRandomNumberBetweenBounds(minValue, maxValue, 404 + dragoonId);
+            var totalStats = statRandomizer.calculateRandomNumberWithBounds(minValue, maxValue, 404 + dragoonId);
 
             var distribution = statRandomizer.calculateDistributionOfTotalStats(subDLevel, dragoonId, config.dragoonTotalStatsDistributionPerLevel, config.dragoonNumberOfStatsAmount, 999 + dragoonId);
 

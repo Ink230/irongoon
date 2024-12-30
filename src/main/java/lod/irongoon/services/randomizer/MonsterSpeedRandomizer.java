@@ -25,13 +25,13 @@ public class MonsterSpeedRandomizer {
     }
 
     public DivineFruit randomizeWithBounds(int monsterId) {
-        var speed = statRandomizer.calculateRandomNumberBetweenBounds(config.speedStatMonstersLowerBound, config.speedStatMonstersUpperBound, 989 + monsterId);
+        var speed = statRandomizer.calculateRandomNumberWithBounds(config.speedStatMonstersLowerBound, config.speedStatMonstersUpperBound, 989 + monsterId);
 
         return createDivineFruit(speed);
     }
 
     public DivineFruit randomizeRandomWithBounds() {
-        var speed = statRandomizer.calculateRandomNumberBetweenBoundsNoSeed(config.speedStatMonstersLowerBound, config.speedStatMonstersUpperBound);
+        var speed = statRandomizer.calculateRandomNumberWithBoundsNoSeed(config.speedStatMonstersLowerBound, config.speedStatMonstersUpperBound);
 
         return createDivineFruit(speed);
     }

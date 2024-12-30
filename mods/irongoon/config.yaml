@@ -40,3 +40,5 @@ noElementMonsters: EXCLUDE
 useRandomSeedOnNewCampaign: TRUE
 # Party
 # Encounters
+battleStage: RANDOM
+battleStageList: []
