@@ -43,5 +43,5 @@ useRandomSeedOnNewCampaign: TRUE
 battleStage: RANDOM
 battleStageList: []
 escapeChance: RANDOMIZE_BOUNDS
-escapeChanceUpperBound: 1
-escapeChanceLowerBound: 99
+escapeChanceUpperBound: 99
+escapeChanceLowerBound: 1
