@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
+import static legend.game.Scus94491BpeSegment_800b.encounterId_800bb0f8;
 import static legend.game.Scus94491BpeSegment_800b.submapId_800bd808;
 
 @Mod(id = Irongoon.MOD_ID)
@@ -137,12 +138,15 @@ public class Irongoon {
     @EventListener
     public void stageData(final BattleEncounterStageDataEvent stage) {
         var stageData = stage.stageData;
+        var submapId = submapCut_80052c30;
+        var encounterId = encounterId_800bb0f8; // relying on this being set before this event
         int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19}; // music indices valid
         Random random = new Random();
         stageData.musicIndex_04 = musicNumbers[random.nextInt(musicNumbers.length)];
-        stageData.escapeChance_08 = 0; // 0 no escape, 100 full escape
+        stageData.escapeChance_08 = randomizer.doEscapeChance(stageData.escapeChance_08, encounterId, submapId); // 0 no escape, 100 full escape
         // stageData.playerOpeningCamera_10 = random.nextInt(0, 251); // 0 to 250
         // stageData.monsterOpeningCamera_14 = random.nextInt(0, 234); // 0 to 233
+        final var t = 2;
     }
 
     @EventListener

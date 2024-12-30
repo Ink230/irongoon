@@ -42,3 +42,6 @@ useRandomSeedOnNewCampaign: TRUE
 # Encounters
 battleStage: RANDOM
 battleStageList: []
+escapeChance: RANDOMIZE_BOUNDS
+escapeChanceUpperBound: 1
+escapeChanceLowerBound: 99

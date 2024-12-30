@@ -2,16 +2,16 @@ package lod.irongoon.services.randomizer;
 
 import lod.irongoon.config.IrongoonConfig;
 
-public class BattleRandomizer {
-    private static final BattleRandomizer INSTANCE = new BattleRandomizer();
-    public static BattleRandomizer getInstance() { return INSTANCE; }
+public class BattleStageRandomizer {
+    private static final BattleStageRandomizer INSTANCE = new BattleStageRandomizer();
+    public static BattleStageRandomizer getInstance() { return INSTANCE; }
 
-    private BattleRandomizer() {}
+    private BattleStageRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
-    public int maintainStock(int battleStageId) {
+    public int maintainStock(final int battleStageId) {
         return battleStageId;
     }
 
@@ -20,13 +20,8 @@ public class BattleRandomizer {
         return this.finalizedBattleStageId(result);
     }
 
-    public int randomFixedEncounter(final int encounterId) {
-        final var result = statRandomizer.calculateRandomNumberWithBounds(0, this.getBattleUpperBound(), encounterId);
-        return this.finalizedBattleStageId(result);
-    }
-
-    public int randomFixedSubmap(final int submapId) {;
-        final var result = statRandomizer.calculateRandomNumberWithBounds(0, this.getBattleUpperBound(), submapId);
+    public int randomFixed(final int uniqueModifier) {
+        final var result = statRandomizer.calculateRandomNumberWithBounds(0, this.getBattleUpperBound(), uniqueModifier);
         return this.finalizedBattleStageId(result);
     }
 

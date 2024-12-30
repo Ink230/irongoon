@@ -21,7 +21,8 @@ public class Randomizer {
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
     private final MonsterElementRandomizer monsterElementRandomizer = MonsterElementRandomizer.getInstance();
-    private final BattleRandomizer battleRandomizer = BattleRandomizer.getInstance();
+    private final BattleStageRandomizer battleStageRandomizer = BattleStageRandomizer.getInstance();
+    private final EscapeChanceRandomizer escapeChanceRandomizer = EscapeChanceRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
         String newSeed;
@@ -112,12 +113,23 @@ public class Randomizer {
         }
     }
 
-    public int doBattleStage(int battleStageId, int encounterId, int submapId) {
+    public int doBattleStage(final int battleStageId, final int encounterId, final int submapId) {
         return switch (config.battleStage) {
-            case STOCK -> battleRandomizer.maintainStock(battleStageId);
-            case RANDOM -> battleRandomizer.randomRandom();
-            case RANDOM_FIXED_ENCOUNTER -> battleRandomizer.randomFixedEncounter(encounterId);
-            case RANDOM_FIXED_SUBMAP -> battleRandomizer.randomFixedSubmap(submapId);
+            case STOCK -> battleStageRandomizer.maintainStock(battleStageId);
+            case RANDOM -> battleStageRandomizer.randomRandom();
+            case RANDOM_FIXED_ENCOUNTER -> battleStageRandomizer.randomFixed(encounterId + 646);
+            case RANDOM_FIXED_SUBMAP -> battleStageRandomizer.randomFixed(submapId + 293);
+        };
+    }
+
+    public int doEscapeChance(final int escapeChance, final int encounterId, final int submapId) {
+        return switch (config.escapeChance) {
+            case STOCK -> escapeChanceRandomizer.maintainStock(escapeChance);
+            case RANDOMIZE_BOUNDS -> escapeChanceRandomizer.randomizeBounds();
+            case RANDOMIZE_BOUNDS_FIXED_ENCOUNTER -> escapeChanceRandomizer.randomizeBoundsFixed(encounterId);
+            case RANDOMIZE_BOUNDS_FIXED_SUBMAP -> escapeChanceRandomizer.randomizeBoundsFixed(submapId);
+            case NO_ESCAPE -> 0;
+            case COWARD -> 100;
         };
     }
 }
