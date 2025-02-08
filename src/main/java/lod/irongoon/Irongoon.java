@@ -36,7 +36,7 @@ import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
 import static legend.game.Scus94491BpeSegment_800b.encounterId_800bb0f8;
 import static legend.game.Scus94491BpeSegment_800b.submapId_800bd808;
 
-@Mod(id = Irongoon.MOD_ID)
+@Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
 public class Irongoon {
     public static final String MOD_ID = "irongoon";
     private static final Slugify slug = Slugify.builder().underscoreSeparator(true).customReplacement("'", "").customReplacement("-", "_").build();
