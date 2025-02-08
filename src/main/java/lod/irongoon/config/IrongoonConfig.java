@@ -104,8 +104,8 @@ public class IrongoonConfig {
         this.battleStage = BattleStage.valueOf((String) yamlConfig.getOrDefault("battleStage", "RANDOM"));
         this.battleStageList = (List<Integer>) yamlConfig.getOrDefault("battleStageList", new ArrayList<>());
         this.escapeChance = EscapeChance.valueOf((String) yamlConfig.getOrDefault("escapeChance", "STOCK"));
-        this.escapeChanceUpperBound = (int) yamlConfig.getOrDefault("escapeChanceUpperBound", "99");
-        this.escapeChanceLowerBound = (int) yamlConfig.getOrDefault("escapeChanceLowerBound", "1");
+        this.escapeChanceUpperBound = (int) yamlConfig.getOrDefault("escapeChanceUpperBound", 99);
+        this.escapeChanceLowerBound = (int) yamlConfig.getOrDefault("escapeChanceLowerBound", 1);
     }
 
     public final int battleStageSize = 95;
