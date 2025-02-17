@@ -1,5 +1,6 @@
 package lod.irongoon.services.randomizer;
 
+import legend.game.combat.Battle;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import lod.irongoon.config.IrongoonConfig;
@@ -78,14 +79,14 @@ public class Randomizer {
         };
     }
 
-    public DivineFruit doMonsterHP (MonsterStatsEvent monster){
+    public DivineFruit doMonsterHP(MonsterStatsEvent monster){
         return switch (config.hpStatMonsters) {
             case MAINTAIN_STOCK -> monsterHPRandomizer.randomizeMaintainStock(monster.enemyId);
             case RANDOMIZE_BOUNDS -> monsterHPRandomizer.randomizeStockWithBounds(monster.enemyId);
         };
     }
 
-    public DivineFruit doMonsterSpeed (MonsterStatsEvent monster) {
+    public DivineFruit doMonsterSpeed(MonsterStatsEvent monster) {
         return switch (config.speedStatMonsters) {
             case MAINTAIN_STOCK -> monsterSpeedRandomizer.randomizeMaintainStock(monster.enemyId);
             case RANDOMIZE_BOUNDS -> monsterSpeedRandomizer.randomizeWithBounds(monster.enemyId);
@@ -93,7 +94,7 @@ public class Randomizer {
         };
     }
 
-    public DivineFruit doMonsterElement (MonsterStatsEvent monster) {
+    public DivineFruit doMonsterElement(MonsterStatsEvent monster) {
         return switch (config.monsterElements) {
             case MAINTAIN_STOCK -> monsterElementRandomizer.maintainStock(monster.enemyId);
             case RANDOMIZE -> monsterElementRandomizer.randomizeMonsterElement(monster.enemyId);
