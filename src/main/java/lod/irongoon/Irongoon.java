@@ -44,7 +44,7 @@ public class Irongoon {
         return new RegistryId(MOD_ID, entryId);
     }
 
-    private static final IrongoonConfig config = IrongoonConfig.getInstance(); //can be removed, dependencies of config can be moved somewhere else
+    private static final IrongoonConfig config = IrongoonConfig.getInstance();
     private static final Randomizer randomizer = Randomizer.getInstance();
     private static final Registrar<ConfigEntry<?>, ConfigRegistryEvent> CONFIG_REGISTRAR = new Registrar<>(GameEngine.REGISTRIES.config, MOD_ID);
     private static final RegistryDelegate<SeedConfigEntry> IRONGOON_CAMPAIGN_SEED = CONFIG_REGISTRAR.register("irongoon_campaign_seed", () -> new SeedConfigEntry(randomizer.retrieveNewCampaignSeed()));
@@ -139,19 +139,16 @@ public class Irongoon {
     public void stageData(final BattleEncounterStageDataEvent stage) {
         var stageData = stage.stageData;
         var submapId = submapCut_80052c30;
-        var encounterId = encounterId_800bb0f8; // relying on this being set before this event
-        int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19}; // music indices valid
+        var encounterId = encounterId_800bb0f8;
+        int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19}; // valid music indices
+
         Random random = new Random();
         stageData.musicIndex_04 = musicNumbers[random.nextInt(musicNumbers.length)];
-        stageData.escapeChance_08 = randomizer.doEscapeChance(stageData.escapeChance_08, encounterId, submapId); // 0 no escape, 100 full escape
-        // stageData.playerOpeningCamera_10 = random.nextInt(0, 251); // 0 to 250
-        // stageData.monsterOpeningCamera_14 = random.nextInt(0, 234); // 0 to 233
-        final var t = 2;
+        stageData.escapeChance_08 = randomizer.doEscapeChance(stageData.escapeChance_08, encounterId, submapId);
     }
 
     @EventListener
     public void encounterData(final SubmapGenerateEncounterEvent encounter) {
-        // encounter.encounterId = 0; // which ones don't crash? 0 to 511
         var submapId = submapCut_80052c30;
         encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
     }
