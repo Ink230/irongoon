@@ -63,7 +63,8 @@ public class IrongoonConfig {
     public final int shopQuantityUpperBound;
     public final int shopQuantityLowerBound;
     public final ShopContents shopContents;
-    public final List<String> shopContentsPool;
+    public final List<String> shopContentsItemPool;
+    public final List<String> shopContentsEquipmentPool;
     public final List<String> shopContentsRecalled;
 
     private IrongoonConfig() {
@@ -117,7 +118,8 @@ public class IrongoonConfig {
         this.shopQuantityUpperBound = (int) yamlConfig.getOrDefault("shopQuantityUpperBound", "8");
         this.shopQuantityLowerBound = (int) yamlConfig.getOrDefault("shopQuantityLowerBound", "0");
         this.shopContents = ShopContents.valueOf((String) yamlConfig.getOrDefault("shopContents", "RANDOMIZE_ALL_MIXED"));
-        this.shopContentsPool = (List<String>) yamlConfig.getOrDefault("shopContentsPool", new ArrayList<>());
+        this.shopContentsItemPool = (List<String>) yamlConfig.getOrDefault("shopContentsItemPool", new ArrayList<>());
+        this.shopContentsEquipmentPool = (List<String>) yamlConfig.getOrDefault("shopContentsEquipmentPool", new ArrayList<>());
         this.shopContentsRecalled = (List<String>) yamlConfig.getOrDefault("shopContentsRecalled", new ArrayList<>());
     }
 

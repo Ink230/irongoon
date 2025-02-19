@@ -32,8 +32,9 @@ shopAvailability: STOCK
 shopQuantity: RANDOMIZE_BOUNDS
 shopQuantityUpperBound: 8
 shopQuantityLowerBound: 0
-shopContents: RANDOMIZE_ALL_MIXED
-shopContentsPool: []
+shopContents: STOCK
+shopContentsItemPool: ["lod:spear_frost"]
+shopContentsEquipmentPool: ["lod:bastard_sword"]
 shopContentsRecalled: []
 # Chests
 # Drops

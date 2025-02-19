@@ -153,13 +153,12 @@ public class Irongoon {
     public void shopData(final ShopContentsEvent shop) {
         final var shopQuantity = randomizer.doShopQuantity(shop.shop, shop.contents);
         final var shopContents = randomizer.doShopContents(shop.shop, shop.contents, shopQuantity);
-        final var randomizedContents = new ArrayList<>(randomizer.doShopAvailability(shop.shop, shopContents));
+        final var randomizedContents = randomizer.doShopAvailability(shop.shop, shopContents);
         // doShopContentsRecalledPruning, potentially necessary to do again
         // doShopBuyPricing
         // doShopReuse
         // doShopContentsReuse
         // doShopUniqueInventory
-
         shop.contents.clear();
         shop.contents.addAll(randomizedContents);
     }

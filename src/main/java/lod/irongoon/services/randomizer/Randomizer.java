@@ -163,11 +163,13 @@ public class Randomizer {
         final var preparedContents = shopContentsRandomizer.prepareContentSlots(shop, contents, shopQuantity);
 
         return switch (config.shopContents) {
-            case STOCK -> shopContentsRandomizer.maintainStock(preparedContents); // maintains stock, if shopquantity is lower shuffles the available stuck
+            case STOCK -> shopContentsRandomizer.maintainStock(shop, preparedContents); // maintains stock, if shopquantity is lower shuffles the available stuck
             case RANDOMIZE_ITEMS -> shopContentsRandomizer.randomizeItems(shop, preparedContents); // randomizes each item for another item
             case RANDOMIZE_EQUIPMENT -> shopContentsRandomizer.randomizeEquipment(shop, preparedContents); // randomizes each equipment for another equipment
             case RANDOMIZE_ALL -> shopContentsRandomizer.randomizeAll(shop, preparedContents); // randomizes each type of inventory for another type of that inventory
             case RANDOMIZE_ALL_MIXED -> shopContentsRandomizer.randomizeAllMixed(shop, preparedContents); // in a shop, completely randomizes the contents w/ eq or items
         };
+
+        // processedContents -> replace recalled items
     }
 }
