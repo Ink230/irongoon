@@ -29,6 +29,9 @@ monsterElements: RANDOMIZE
 noElementMonsters: EXCLUDE
 # Shops
 shopAvailability: NO_EQUIPMENT
+shopQuantity: RANDOMIZE_BOUNDS
+shopQuantityUpperBound: 8
+shopQuantityLowerBound: 0
 # Chests
 # Drops
 # Enemies

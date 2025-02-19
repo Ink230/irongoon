@@ -30,6 +30,7 @@ public class Randomizer {
     private final BattleStageRandomizer battleStageRandomizer = BattleStageRandomizer.getInstance();
     private final EscapeChanceRandomizer escapeChanceRandomizer = EscapeChanceRandomizer.getInstance();
     private final ShopAvailabilityRandomizer shopAvailabilityRandomizer = ShopAvailabilityRandomizer.getInstance();
+    private final ShopQuantityRandomizer shopQuantityRandomizer = ShopQuantityRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
         String newSeed;
@@ -137,6 +138,13 @@ public class Randomizer {
             case RANDOMIZE_BOUNDS_FIXED_SUBMAP -> escapeChanceRandomizer.randomizeBoundsFixed(submapId);
             case NO_ESCAPE -> 0;
             case COWARD -> 100;
+        };
+    }
+
+    public int doShopQuantity(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+        return switch (config.shopQuantity) {
+            case STOCK -> shopQuantityRandomizer.maintainStock(contents);
+            case RANDOMIZE_BOUNDS -> shopQuantityRandomizer.randomBounds(shop);
         };
     }
 

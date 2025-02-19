@@ -59,6 +59,9 @@ public class IrongoonConfig {
     public final int escapeChanceUpperBound;
     public final int escapeChanceLowerBound;
     public final ShopAvailability shopAvailability;
+    public final ShopQuantity shopQuantity;
+    public final int shopQuantityUpperBound;
+    public final int shopQuantityLowerbound;
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -107,6 +110,9 @@ public class IrongoonConfig {
         this.escapeChanceUpperBound = (int) yamlConfig.getOrDefault("escapeChanceUpperBound", 99);
         this.escapeChanceLowerBound = (int) yamlConfig.getOrDefault("escapeChanceLowerBound", 1);
         this.shopAvailability = ShopAvailability.valueOf((String) yamlConfig.getOrDefault("shopAvailability", "RANDOM"));
+        this.shopQuantity = ShopQuantity.valueOf((String) yamlConfig.getOrDefault("shopQuantity", "RANDOM_BOUNDS"));
+        this.shopQuantityUpperBound = (int) yamlConfig.getOrDefault("shopQuantityUpperBound", "8");
+        this.shopQuantityLowerbound = (int) yamlConfig.getOrDefault("shopQuantityLowerBound", "0");
     }
 
     public final int battleStageSize = 95;
