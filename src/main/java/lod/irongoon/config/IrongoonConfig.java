@@ -61,7 +61,10 @@ public class IrongoonConfig {
     public final ShopAvailability shopAvailability;
     public final ShopQuantity shopQuantity;
     public final int shopQuantityUpperBound;
-    public final int shopQuantityLowerbound;
+    public final int shopQuantityLowerBound;
+    public final ShopContents shopContents;
+    public final List<String> shopContentsPool;
+    public final List<String> shopContentsRecalled;
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -112,7 +115,10 @@ public class IrongoonConfig {
         this.shopAvailability = ShopAvailability.valueOf((String) yamlConfig.getOrDefault("shopAvailability", "RANDOM"));
         this.shopQuantity = ShopQuantity.valueOf((String) yamlConfig.getOrDefault("shopQuantity", "RANDOM_BOUNDS"));
         this.shopQuantityUpperBound = (int) yamlConfig.getOrDefault("shopQuantityUpperBound", "8");
-        this.shopQuantityLowerbound = (int) yamlConfig.getOrDefault("shopQuantityLowerBound", "0");
+        this.shopQuantityLowerBound = (int) yamlConfig.getOrDefault("shopQuantityLowerBound", "0");
+        this.shopContents = ShopContents.valueOf((String) yamlConfig.getOrDefault("shopContents", "RANDOMIZE_ALL_MIXED"));
+        this.shopContentsPool = (List<String>) yamlConfig.getOrDefault("shopContentsPool", new ArrayList<>());
+        this.shopContentsRecalled = (List<String>) yamlConfig.getOrDefault("shopContentsRecalled", new ArrayList<>());
     }
 
     public final int battleStageSize = 95;

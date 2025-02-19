@@ -22,6 +22,6 @@ public class ShopQuantityRandomizer {
 
     public int randomBounds(Shop shop) {
         final var hash = Math.abs(shop.getRegistryId().hashCode());
-        return statRandomizer.calculateRandomNumberWithBounds(config.shopQuantityLowerbound, config.shopQuantityUpperBound, hash);
+        return statRandomizer.calculateRandomNumberWithBounds(config.shopQuantityLowerBound, config.shopQuantityUpperBound, hash);
     }
 }

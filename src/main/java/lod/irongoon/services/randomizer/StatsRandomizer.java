@@ -97,7 +97,7 @@ public class StatsRandomizer {
         return random.nextInt(1, limit + 1);
     }
 
-    public int calculateRandomNumberWithBounds(int lowerBound, int upperBound, int uniqueModifier) {
+    public int calculateRandomNumberWithBounds(int lowerBound, int upperBound, long uniqueModifier) {
         Random random = new Random(config.seed + uniqueModifier + 94);
         return random.nextInt(lowerBound, upperBound + 1);
     }

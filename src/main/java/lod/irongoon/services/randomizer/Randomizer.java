@@ -31,6 +31,7 @@ public class Randomizer {
     private final EscapeChanceRandomizer escapeChanceRandomizer = EscapeChanceRandomizer.getInstance();
     private final ShopAvailabilityRandomizer shopAvailabilityRandomizer = ShopAvailabilityRandomizer.getInstance();
     private final ShopQuantityRandomizer shopQuantityRandomizer = ShopQuantityRandomizer.getInstance();
+    private final ShopContentsRandomizer shopContentsRandomizer = ShopContentsRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
         String newSeed;
@@ -155,6 +156,18 @@ public class Randomizer {
             case NO_SHOPS -> shopAvailabilityRandomizer.noShops();
             case NO_ITEMS -> shopAvailabilityRandomizer.noItemsInShops(contents);
             case NO_EQUIPMENT -> shopAvailabilityRandomizer.noEquipmentInShops(contents);
+        };
+    }
+
+    public List<ShopScreen.ShopEntry<InventoryEntry>> doShopContents(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
+        final var preparedContents = shopContentsRandomizer.prepareContentSlots(shop, contents, shopQuantity);
+
+        return switch (config.shopContents) {
+            case STOCK -> shopContentsRandomizer.maintainStock(preparedContents); // maintains stock, if shopquantity is lower shuffles the available stuck
+            case RANDOMIZE_ITEMS -> shopContentsRandomizer.randomizeItems(shop, preparedContents); // randomizes each item for another item
+            case RANDOMIZE_EQUIPMENT -> shopContentsRandomizer.randomizeEquipment(shop, preparedContents); // randomizes each equipment for another equipment
+            case RANDOMIZE_ALL -> shopContentsRandomizer.randomizeAll(shop, preparedContents); // randomizes each type of inventory for another type of that inventory
+            case RANDOMIZE_ALL_MIXED -> shopContentsRandomizer.randomizeAllMixed(shop, preparedContents); // in a shop, completely randomizes the contents w/ eq or items
         };
     }
 }

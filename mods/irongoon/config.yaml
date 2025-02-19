@@ -28,10 +28,13 @@ statsVarianceMonsters: RANDOM_PERCENT_BOUNDS
 monsterElements: RANDOMIZE
 noElementMonsters: EXCLUDE
 # Shops
-shopAvailability: NO_EQUIPMENT
+shopAvailability: STOCK
 shopQuantity: RANDOMIZE_BOUNDS
 shopQuantityUpperBound: 8
 shopQuantityLowerBound: 0
+shopContents: RANDOMIZE_ALL_MIXED
+shopContentsPool: []
+shopContentsRecalled: []
 # Chests
 # Drops
 # Enemies
