@@ -58,7 +58,7 @@ public class IrongoonConfig {
     public final EscapeChance escapeChance;
     public final int escapeChanceUpperBound;
     public final int escapeChanceLowerBound;
-
+    public final ShopAvailability shopAvailability;
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -73,7 +73,7 @@ public class IrongoonConfig {
         }
 
         this.publicSeed = (String) yamlConfig.getOrDefault("publicSeed", "AF51FA7B");
-        this.seed = Integer.parseUnsignedInt(publicSeed, 16);
+        this.seed = Long.parseLong(this.publicSeed, 16);
         this.useRandomSeedOnNewCampaign = (boolean) yamlConfig.getOrDefault("useRandomSeedOnNewCampaign", false);
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
@@ -106,6 +106,7 @@ public class IrongoonConfig {
         this.escapeChance = EscapeChance.valueOf((String) yamlConfig.getOrDefault("escapeChance", "STOCK"));
         this.escapeChanceUpperBound = (int) yamlConfig.getOrDefault("escapeChanceUpperBound", 99);
         this.escapeChanceLowerBound = (int) yamlConfig.getOrDefault("escapeChanceLowerBound", 1);
+        this.shopAvailability = ShopAvailability.valueOf((String) yamlConfig.getOrDefault("shopAvailability", "RANDOM"));
     }
 
     public final int battleStageSize = 95;

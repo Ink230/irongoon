@@ -99,22 +99,21 @@ public class StatsRandomizer {
 
     public int calculateRandomNumberWithBounds(int lowerBound, int upperBound, int uniqueModifier) {
         Random random = new Random(config.seed + uniqueModifier + 94);
-        var result = random.nextInt(lowerBound, upperBound + 1);
-
-        return result;
+        return random.nextInt(lowerBound, upperBound + 1);
     }
 
     public int calculateRandomNumberWithBoundsNoSeed(int lowerBound, int upperBound) {
         Random random = new Random();
-        var result = random.nextInt(lowerBound, upperBound + 1);
-
-        return result;
+        return random.nextInt(lowerBound, upperBound + 1);
     }
 
     public int calculateVarianceOfStat(int stat) {
         Random random = new Random();
-        var result = calculatePercentModifiedBoundedStat(60, 100, stat, random.nextInt());
+        return calculatePercentModifiedBoundedStat(60, 100, stat, random.nextInt());
+    }
 
-        return result;
+    public boolean calculateNextBoolean(int uniqueModifier) {
+        Random random = new Random(config.seed + uniqueModifier);
+        return random.nextBoolean();
     }
 }

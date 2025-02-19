@@ -1,5 +1,5 @@
 # Seed
-publicSeed: 2F055607
+publicSeed: 2F055608
 # Characters
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 bodyTotalStatsDistributionPerLevel: RANDOM
@@ -28,6 +28,7 @@ statsVarianceMonsters: RANDOM_PERCENT_BOUNDS
 monsterElements: RANDOMIZE
 noElementMonsters: EXCLUDE
 # Shops
+shopAvailability: NO_EQUIPMENT
 # Chests
 # Drops
 # Enemies

@@ -1,10 +1,15 @@
 package lod.irongoon.services.randomizer;
 
-import legend.game.combat.Battle;
+
+import legend.game.inventory.InventoryEntry;
+import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
+import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
+
+import java.util.List;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -24,6 +29,7 @@ public class Randomizer {
     private final MonsterElementRandomizer monsterElementRandomizer = MonsterElementRandomizer.getInstance();
     private final BattleStageRandomizer battleStageRandomizer = BattleStageRandomizer.getInstance();
     private final EscapeChanceRandomizer escapeChanceRandomizer = EscapeChanceRandomizer.getInstance();
+    private final ShopAvailabilityRandomizer shopAvailabilityRandomizer = ShopAvailabilityRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
         String newSeed;
@@ -131,6 +137,16 @@ public class Randomizer {
             case RANDOMIZE_BOUNDS_FIXED_SUBMAP -> escapeChanceRandomizer.randomizeBoundsFixed(submapId);
             case NO_ESCAPE -> 0;
             case COWARD -> 100;
+        };
+    }
+
+    public List<ShopScreen.ShopEntry<InventoryEntry>> doShopAvailability(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+        return switch (config.shopAvailability) {
+            case STOCK -> shopAvailabilityRandomizer.maintainStock(contents);
+            case RANDOM -> shopAvailabilityRandomizer.random(shop, contents);
+            case NO_SHOPS -> shopAvailabilityRandomizer.noShops();
+            case NO_ITEMS -> shopAvailabilityRandomizer.noItemsInShops(contents);
+            case NO_EQUIPMENT -> shopAvailabilityRandomizer.noEquipmentInShops(contents);
         };
     }
 }

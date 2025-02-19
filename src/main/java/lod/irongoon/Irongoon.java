@@ -3,13 +3,12 @@ package lod.irongoon;
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
 import legend.game.characters.Element;
-import legend.game.characters.ElementSet;
+import legend.game.inventory.InventoryEntry;
+import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.BattleEncounterStageDataEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
-import legend.game.modding.events.config.ConfigEvent;
-import legend.game.modding.events.config.ConfigLoadedEvent;
-import legend.game.modding.events.config.ConfigUpdatedEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
+import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapGenerateEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
@@ -28,13 +27,11 @@ import lod.irongoon.services.randomizer.Randomizer;
 import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
 import static legend.game.Scus94491BpeSegment_800b.encounterId_800bb0f8;
-import static legend.game.Scus94491BpeSegment_800b.submapId_800bd808;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
 public class Irongoon {
@@ -72,9 +69,8 @@ public class Irongoon {
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
         if (config.useRandomSeedOnNewCampaign) {
-            var campaignSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
-            config.publicSeed = campaignSeed;
-            config.seed = Integer.parseUnsignedInt(config.publicSeed, 16);
+            config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
+            config.seed = Long.parseLong(config.publicSeed, 16);
         }
 
         refreshState();
@@ -151,5 +147,20 @@ public class Irongoon {
     public void encounterData(final SubmapGenerateEncounterEvent encounter) {
         var submapId = submapCut_80052c30;
         encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
+    }
+    
+    @EventListener
+    public void shopData(final ShopContentsEvent shop) {
+        final var randomizedContents = new ArrayList<ShopScreen.ShopEntry<InventoryEntry>>();
+
+        // doShopQuantity
+        // doShopContents
+        randomizedContents.addAll(randomizer.doShopAvailability(shop.shop, shop.contents));
+        // doShopBuyPricing
+        // doShopReuse
+        // doShopContentsReuse
+
+        shop.contents.clear();
+        shop.contents.addAll(randomizedContents);
     }
 }
