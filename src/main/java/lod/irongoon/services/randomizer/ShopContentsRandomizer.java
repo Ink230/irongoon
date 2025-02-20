@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -31,18 +30,22 @@ public class ShopContentsRandomizer {
 
         if(config.shopContentsItemPool.isEmpty() && config.shopContentsEquipmentPool.isEmpty()) return new ArrayList<>(contents);
 
-        List<ShopScreen.ShopEntry<InventoryEntry>> filteredItemContents = contents.stream()
+        final var filteredItemContents = contents.stream()
                 .filter(entry -> {
                     if(!(entry.item instanceof Item)) return false;
+
+                    if(config.shopContentsItemPool.isEmpty()) return true;
 
                     final var modIdAndIdentifier = ((Item) entry.item).getRegistryId().toString();
                     return config.shopContentsItemPool.contains(modIdAndIdentifier);
                 })
                 .collect(Collectors.toList());
 
-        List<ShopScreen.ShopEntry<InventoryEntry>> filteredEquipmentContents = contents.stream()
+        final var filteredEquipmentContents = contents.stream()
                 .filter(entry -> {
                     if(!(entry.item instanceof Equipment)) return false;
+
+                    if(config.shopContentsEquipmentPool.isEmpty()) return true;
 
                     final var modIdAndIdentifier = ((Equipment) entry.item).getRegistryId().toString();
                     return config.shopContentsEquipmentPool.contains(modIdAndIdentifier);
@@ -52,11 +55,11 @@ public class ShopContentsRandomizer {
         final var filteredContents = shop.shopType_00 == 0 ? new ArrayList<>(filteredEquipmentContents) : new ArrayList<>(filteredItemContents);
         final var shopContentsPool = shop.shopType_00 == 0 ? config.shopContentsEquipmentPool : config.shopContentsItemPool;
         final var useItemShop = shop.shopType_00 == 0 ? false : true;
+
+        if(shopContentsPool.isEmpty()) return filteredContents;
+
         for(int i = filteredContents.size() + 1; i <= contents.size(); i++) {
-            if(shopContentsPool.size() == 0) continue;
-
             var randomEntryId = new RegistryId(shopContentsPool.get(statRandomizer.calculateRandomNumberWithBounds(0, shopContentsPool.size() - 1, shopHash + i)));
-
             filteredContents.add(this.generateShopInventorySlot(useItemShop, randomEntryId));
         }
 
@@ -80,60 +83,42 @@ public class ShopContentsRandomizer {
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> prepareContentSlots(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
-        final List<ShopScreen.ShopEntry<InventoryEntry>> preparedContents;
+        final List<ShopScreen.ShopEntry<InventoryEntry>> preparedContents = new ArrayList<>(contents);
         final var shopHash = Math.abs(shop.getRegistryId().hashCode());
-        Random random = new Random(config.seed + shopHash);
+        final Random random = new Random(config.seed + shopHash);
 
         if (contents.size() == shopQuantity) {
             return new ArrayList<>(contents);
         }
 
         if (contents.size() > shopQuantity) {
-            preparedContents = new ArrayList<>(contents);
             Collections.shuffle(preparedContents, random);
 
             return new ArrayList<>(preparedContents.subList(0, shopQuantity));
         }
 
-        // need to fill out the inventory
+        // need to fill out the inventory - approximate workaround
         var containsOnlyItems = contents.stream().allMatch(entry -> entry.item instanceof Item);
         var containsOnlyEquipment = contents.stream().allMatch(entry -> entry.item instanceof Equipment);
 
-        if (containsOnlyItems && !config.shopContents.equals("RANDOMIZE_ALL_MIXED")) {
-            preparedContents = new ArrayList<>(contents);
+        if ((containsOnlyItems || containsOnlyEquipment) && !config.shopContents.equals("RANDOMIZE_ALL_MIXED")) {
+            final var generateItem = containsOnlyItems;
 
             for(int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
-                final var shopEntry = this.generateRandomShopInventoryRegistryId(true, shopHash, i, 0);
+                final var shopEntry = this.generateRandomShopInventoryRegistryId(generateItem, shopHash, i, 0);
                 preparedContents.add(shopEntry);
             }
 
-            return preparedContents;
-        }
-
-        if (containsOnlyEquipment && !config.shopContents.equals("RANDOMIZE_ALL_MIXED")) {
-            preparedContents = new ArrayList<>(contents);
-
-            for(int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
-                final var shopEntry = this.generateRandomShopInventoryRegistryId(false, shopHash, i, 0);
-                preparedContents.add(shopEntry);
-            }
-
-            return preparedContents;
+            return new ArrayList<>(preparedContents);
         }
 
         // mixed inventory and missing inventory quantity, provide mixed fulfillment
-        preparedContents = new ArrayList<>(contents);
         for (int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
-            if (random.nextBoolean()) {
-                final var shopEntry = this.generateRandomShopInventoryRegistryId(true, shopHash, i, 0);
-                preparedContents.add(shopEntry);
-            } else {
-                final var shopEntry = this.generateRandomShopInventoryRegistryId(false, shopHash, i, 0);
-                preparedContents.add(shopEntry);
-            }
+            final var shopEntry = this.generateRandomShopInventoryRegistryId(random.nextBoolean(), shopHash, i, 0);
+            preparedContents.add(shopEntry);
         }
 
-        return preparedContents;
+        return new ArrayList<>(preparedContents);
     }
 
     private ShopScreen.ShopEntry<InventoryEntry> generateRandomShopInventoryRegistryId(final boolean generateItem, long shopHash, int slotNumber, long itemHash) {

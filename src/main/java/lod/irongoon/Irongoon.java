@@ -152,14 +152,15 @@ public class Irongoon {
     @EventListener
     public void shopData(final ShopContentsEvent shop) {
         final var shopQuantity = randomizer.doShopQuantity(shop.shop, shop.contents);
-        final var shopContents = randomizer.doShopContents(shop.shop, shop.contents, shopQuantity);
+        final var shopContents = randomizer.doShopContents(shop.shop, shop.contents, shopQuantity); // can handle generating uniqueInventoryEntries later
         final var randomizedContents = randomizer.doShopAvailability(shop.shop, shopContents);
-        // doShopContentsRecalledPruning, potentially necessary to do again
-        // doShopBuyPricing
-        // doShopReuse
-        // doShopContentsReuse
-        // doShopUniqueInventory
+
         shop.contents.clear();
         shop.contents.addAll(randomizedContents);
     }
+
+    // public void canPurchase(final ShopPurchaseEvent invoice)
+        // Carried, TimesBoughtFromShop, TimesBoughtInCampaign, Character, ShopStockLevel
+        // Can all be used to dictate if you can buy what is in the shop
+        // BUY_4 in ShopScreen in input handlers
 }

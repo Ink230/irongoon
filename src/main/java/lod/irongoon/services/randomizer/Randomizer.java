@@ -169,7 +169,5 @@ public class Randomizer {
             case RANDOMIZE_ALL -> shopContentsRandomizer.randomizeAll(shop, preparedContents); // randomizes each type of inventory for another type of that inventory
             case RANDOMIZE_ALL_MIXED -> shopContentsRandomizer.randomizeAllMixed(shop, preparedContents); // in a shop, completely randomizes the contents w/ eq or items
         };
-
-        // processedContents -> replace recalled items
     }
 }
