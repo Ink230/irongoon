@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -118,9 +119,9 @@ public class IrongoonConfig {
         this.shopQuantityUpperBound = (int) yamlConfig.getOrDefault("shopQuantityUpperBound", "8");
         this.shopQuantityLowerBound = (int) yamlConfig.getOrDefault("shopQuantityLowerBound", "0");
         this.shopContents = ShopContents.valueOf((String) yamlConfig.getOrDefault("shopContents", "RANDOMIZE_ALL_MIXED"));
-        this.shopContentsItemPool = (List<String>) yamlConfig.getOrDefault("shopContentsItemPool", new ArrayList<>());
-        this.shopContentsEquipmentPool = (List<String>) yamlConfig.getOrDefault("shopContentsEquipmentPool", new ArrayList<>());
         this.shopContentsRecalled = (List<String>) yamlConfig.getOrDefault("shopContentsRecalled", new ArrayList<>());
+        this.shopContentsItemPool = ((List<String>) yamlConfig.getOrDefault("shopContentsItemPool", new ArrayList<>())).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());
+        this.shopContentsEquipmentPool = ((List<String>) yamlConfig.getOrDefault("shopContentsEquipmentPool", new ArrayList<>())).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());;
     }
 
     public final int battleStageSize = 95;

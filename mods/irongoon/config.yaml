@@ -33,9 +33,9 @@ shopQuantity: RANDOMIZE_BOUNDS
 shopQuantityUpperBound: 8
 shopQuantityLowerBound: 0
 shopContents: STOCK
-shopContentsItemPool: ["lod:spear_frost"]
-shopContentsEquipmentPool: ["lod:bastard_sword"]
-shopContentsRecalled: []
+shopContentsItemPool: ["lod:spear_frost", "lod:burn_out"]
+shopContentsEquipmentPool: ["lod:bastard_sword", "lod:detonate_arrow"]
+shopContentsRecalled: ["lod:bastard_sword", "lod:burn_out"]
 # Chests
 # Drops
 # Enemies
