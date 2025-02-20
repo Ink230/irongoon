@@ -31,11 +31,15 @@ noElementMonsters: EXCLUDE
 shopAvailability: STOCK
 shopQuantity: RANDOMIZE_BOUNDS
 shopQuantityUpperBound: 8
-shopQuantityLowerBound: 0
-shopContents: STOCK
+shopQuantityLowerBound: 1
+shopContents: RANDOMIZE_ITEMS
 shopContentsItemPool: []
-shopContentsEquipmentPool: ["lod:bastard_sword", "lod:detonate_arrow", "lod:soul_eater"]
-shopContentsRecalled: ["lod:bastard_sword", "lod:burn_out"]
+shopContentsEquipmentPool: []
+shopContentsRecalled: [
+  "lod:sachet", "lod:enemy_healing_potion", "lod:psyche_bomb",
+  "lod:psyche_bomb_x", "lod:soul_eater", "lod:ultimate_wargod",
+  "lod:legend_casque", "lod:armor_of_legend", "lod:phantom_shield"
+]
 # Chests
 # Drops
 # Enemies

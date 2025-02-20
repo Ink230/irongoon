@@ -9,7 +9,9 @@ import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 import java.util.ArrayList;
@@ -30,23 +32,55 @@ public class ShopContentsRandomizer {
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeItems(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
-        return new ArrayList<>(contents);
+        final var shopHash = shop.toString().hashCode();
+
+        return contents.stream()
+                .map(entry -> {
+                    if(entry.item instanceof Equipment) return entry;
+
+                    final var itemHash = entry.item.toString().hashCode();
+                    final var slotNumber = contents.indexOf(entry);
+                    return generateRandomShopInventoryEntry(true, shopHash, slotNumber, itemHash);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeEquipment(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
-        return new ArrayList<>(contents);
+        final var shopHash = shop.toString().hashCode();
+
+        return contents.stream()
+                .map(entry -> {
+                    if(entry.item instanceof Item) return entry;
+
+                    final var itemHash = entry.item.toString().hashCode();
+                    final var slotNumber = contents.indexOf(entry);
+                    return generateRandomShopInventoryEntry(false, shopHash, slotNumber, itemHash);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeAll(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
-        return new ArrayList<>(contents);
+        final var equipmentResults = this.randomizeEquipment(shop, contents);
+        final var itemResults = this.randomizeItems(shop, contents);
+
+        return IntStream.range(0, contents.size())
+                .mapToObj(i -> contents.get(i).item instanceof Equipment ? equipmentResults.get(i) : itemResults.get(i))
+                .collect(Collectors.toList());
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeAllMixed(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
-        return new ArrayList<>(contents);
+        final var shopHash = shop.toString().hashCode();
+        final var random = new Random(config.seed + shopHash);
+
+        return contents.stream().map(entry -> {
+            final var itemHash = entry.item.toString().hashCode();
+            final var slotNumber = contents.indexOf(entry);
+            return this.generateRandomShopInventoryEntry(random.nextBoolean(), shopHash, slotNumber, itemHash);
+        }).collect(Collectors.toList());
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> prepareContents(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
-        final var shopHash = Math.abs(shop.getRegistryId().hashCode());
+        final var shopHash = Math.abs(shop.getRegistryId().toString().hashCode());
         final Random random = new Random(config.seed + shopHash);
 
         final var preparedContents = new ArrayList<>(contents
@@ -61,8 +95,6 @@ public class ShopContentsRandomizer {
         }
 
         if (preparedContents.size() > shopQuantity) {
-            Collections.shuffle(preparedContents, random);
-
             return new ArrayList<>(preparedContents.subList(0, shopQuantity));
         }
 
@@ -89,7 +121,7 @@ public class ShopContentsRandomizer {
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> processContents(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
-        final var shopHash = Math.abs(shop.getRegistryId().hashCode());
+        final var shopHash = Math.abs(shop.getRegistryId().toString().hashCode());
         Random random = new Random(config.seed + shopHash);
 
         final var processContents = new ArrayList<>(contents);
@@ -121,11 +153,5 @@ public class ShopContentsRandomizer {
                 : GameEngine.REGISTRIES.equipment.getEntry(inventoryIdentifier).get();
 
         return new ShopScreen.ShopEntry<>(inventoryEntry, inventoryEntry.getPrice());
-    }
-
-    private List<ShopScreen.ShopEntry<InventoryEntry>> filterContentsByInventoryType(List<ShopScreen.ShopEntry<InventoryEntry>> contents, final boolean useItem) {
-        return useItem
-                ? contents.stream().filter(entry -> entry.item instanceof Item).collect(Collectors.toList())
-                : contents.stream().filter(entry -> entry.item instanceof Equipment).collect(Collectors.toList());
     }
 }
