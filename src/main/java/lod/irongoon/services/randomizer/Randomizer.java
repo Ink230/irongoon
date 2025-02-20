@@ -160,14 +160,16 @@ public class Randomizer {
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> doShopContents(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
-        final var preparedContents = shopContentsRandomizer.prepareContentSlots(shop, contents, shopQuantity);
+        final var preparedContents = shopContentsRandomizer.prepareContents(shop, contents, shopQuantity);
 
-        return switch (config.shopContents) {
-            case STOCK -> shopContentsRandomizer.maintainStock(shop, preparedContents); // maintains stock, if shopquantity is lower shuffles the available stuck
-            case RANDOMIZE_ITEMS -> shopContentsRandomizer.randomizeItems(shop, preparedContents); // randomizes each item for another item
-            case RANDOMIZE_EQUIPMENT -> shopContentsRandomizer.randomizeEquipment(shop, preparedContents); // randomizes each equipment for another equipment
+        final var randomizedContents = switch (config.shopContents) {
+            case STOCK -> shopContentsRandomizer.maintainStock(shop, preparedContents);
+            case RANDOMIZE_ITEMS -> shopContentsRandomizer.randomizeItems(shop, preparedContents);
+            case RANDOMIZE_EQUIPMENT -> shopContentsRandomizer.randomizeEquipment(shop, preparedContents);
             case RANDOMIZE_ALL -> shopContentsRandomizer.randomizeAll(shop, preparedContents); // randomizes each type of inventory for another type of that inventory
-            case RANDOMIZE_ALL_MIXED -> shopContentsRandomizer.randomizeAllMixed(shop, preparedContents); // in a shop, completely randomizes the contents w/ eq or items
+            case RANDOMIZE_ALL_MIXED -> shopContentsRandomizer.randomizeAllMixed(shop, preparedContents);
         };
+
+        return shopContentsRandomizer.processContents(shop, randomizedContents);
     }
 }

@@ -45,7 +45,7 @@ public class ShopContentsRandomizer {
         return new ArrayList<>(contents);
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> prepareContentSlots(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
+    public List<ShopScreen.ShopEntry<InventoryEntry>> prepareContents(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
         final var shopHash = Math.abs(shop.getRegistryId().hashCode());
         final Random random = new Random(config.seed + shopHash);
 
@@ -86,6 +86,15 @@ public class ShopContentsRandomizer {
         }
 
         return new ArrayList<>(preparedContents);
+    }
+
+    public List<ShopScreen.ShopEntry<InventoryEntry>> processContents(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+        final var shopHash = Math.abs(shop.getRegistryId().hashCode());
+        Random random = new Random(config.seed + shopHash);
+
+        final var processContents = new ArrayList<>(contents);
+        Collections.shuffle(processContents, random);
+        return processContents;
     }
 
     private ShopScreen.ShopEntry<InventoryEntry> generateRandomShopInventoryEntry(final boolean generateItem, long shopHash, int slotNumber, long itemHash) {
