@@ -30,7 +30,7 @@ public class IrongoonConfig {
     public int dragoonNumberOfStatsAmount = 4;
     public TotalStatsPerLevel bodyTotalStatsPerLevel;
     public TotalStatsPerLevel dragoonTotalStatsPerLevel;
-    public TotalStatsMonsters monsterTotalStats;
+    public TotalStatsMonsters monsterTotalStatsPerLevel;
     public int monsterDefenseFloor;
     public int monsterMagicDefenseFloor;
     public int speedStatUpperPercentBound;
@@ -96,7 +96,7 @@ public class IrongoonConfig {
         this.useRandomSeedOnNewCampaign = (boolean) yamlConfig.getOrDefault("useRandomSeedOnNewCampaign", false);
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
-        this.monsterTotalStats = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStats", "RANDOMIZE_BOUNDS"));
+        this.monsterTotalStatsPerLevel = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStatsPerLevel", "RANDOMIZE_BOUNDS"));
         this.monsterDefenseFloor = (int) yamlConfig.getOrDefault("monsterDefenseFloor", 50);
         this.monsterMagicDefenseFloor = (int) yamlConfig.getOrDefault("monsterMagicDefenseFloor", 50);
         this.speedStatUpperPercentBound = (int) yamlConfig.getOrDefault("speedStatUpperPercentBound", 150);
