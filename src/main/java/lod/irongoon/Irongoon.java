@@ -145,8 +145,10 @@ public class Irongoon {
 
     @EventListener
     public void encounterData(final SubmapGenerateEncounterEvent encounter) {
+        if(encounter.encounterId == 431) return;
         var submapId = submapCut_80052c30;
         encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
+
     }
     
     @EventListener
