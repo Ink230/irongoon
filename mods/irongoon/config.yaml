@@ -32,7 +32,8 @@ shopAvailability: STOCK
 shopQuantity: RANDOMIZE_BOUNDS
 shopQuantityUpperBound: 8
 shopQuantityLowerBound: 1
-shopContents: RANDOMIZE_ITEMS
+shopQuantityLogic: RESPECT_SHOP_CONTENTS
+shopContents: RANDOMIZE_EQUIPMENT
 shopContentsItemPool: []
 shopContentsEquipmentPool: []
 shopContentsRecalled: [

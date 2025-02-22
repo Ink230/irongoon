@@ -7,6 +7,8 @@ import legend.game.inventory.Item;
 import legend.game.inventory.screens.ShopScreen;
 import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.ShopContents;
+import lod.irongoon.data.ShopQuantityLogic;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import java.util.List;
 import java.util.stream.Collector;
@@ -99,10 +101,12 @@ public class ShopContentsRandomizer {
         }
 
         // mono-inventory, provide matching mono-fulfillment to the original contents
+        var fillItemShops = (config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL || config.shopContents != ShopContents.RANDOMIZE_EQUIPMENT);
         var containsOnlyItems = contents.stream().allMatch(entry -> entry.item instanceof Item);
-        var containsOnlyEquipment = contents.stream().allMatch(entry -> entry.item instanceof Equipment);
+        var fillEquipmentShops = (config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL || config.shopContents != ShopContents.RANDOMIZE_ITEMS);
+        var containsOnlyEquipment = contents.stream().allMatch(entry -> entry.item instanceof Equipment) ;
 
-        if ((containsOnlyItems || containsOnlyEquipment)) {
+        if (((containsOnlyItems && fillItemShops) || (containsOnlyEquipment && fillEquipmentShops))) {
             for(int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
                 final var shopEntry = this.generateRandomShopInventoryEntry(containsOnlyItems, shopHash, i, 0);
                 preparedContents.add(shopEntry);
@@ -110,6 +114,8 @@ public class ShopContentsRandomizer {
 
             return new ArrayList<>(preparedContents);
         }
+
+        if (containsOnlyEquipment || containsOnlyEquipment) return new ArrayList<>(preparedContents);
 
         // mixed inventory and missing inventory quantity, provide mixed fulfillment
         for (int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
@@ -125,7 +131,11 @@ public class ShopContentsRandomizer {
         Random random = new Random(config.seed + shopHash);
 
         final var processContents = new ArrayList<>(contents);
-        Collections.shuffle(processContents, random);
+
+        if((config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL) || !(shop.shopType_00 == 1 && config.shopContents == ShopContents.RANDOMIZE_EQUIPMENT) && !(shop.shopType_00 == 0 && config.shopContents == ShopContents.RANDOMIZE_ITEMS)){
+            Collections.shuffle(processContents, random);
+        }
+
         return processContents;
     }
 
