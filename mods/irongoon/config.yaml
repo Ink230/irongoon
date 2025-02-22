@@ -34,7 +34,7 @@ shopQuantityUpperBound: 8
 shopQuantityLowerBound: 1
 shopQuantityLogic: RESPECT_SHOP_CONTENTS
 shopContents: RANDOMIZE_ITEMS
-shopContentsItemPool: ["lod:burn_out"]
+shopContentsItemPool: []
 shopContentsEquipmentPool: []
 shopContentsRecalled: [
   "lod:sachet", "lod:enemy_healing_potion", "lod:psyche_bomb",

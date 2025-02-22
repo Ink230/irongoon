@@ -116,7 +116,9 @@ public class ShopContentsRandomizer {
         if (((containsOnlyItems && fillItemShops) || (containsOnlyEquipment && fillEquipmentShops))) {
             for(int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
                 final var shopEntry = this.generateRandomShopInventoryEntry(containsOnlyItems, shopHash, i, 0, preparedContents);
-                preparedContents.add(shopEntry);
+                if (shopEntry != null) {
+                    preparedContents.add(shopEntry);
+                }
             }
 
             return new ArrayList<>(preparedContents);
@@ -127,7 +129,9 @@ public class ShopContentsRandomizer {
         // mixed inventory and missing inventory quantity, provide mixed fulfillment
         for (int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
             final var shopEntry = this.generateRandomShopInventoryEntry(random.nextBoolean(), shopHash, i, 0, preparedContents);
-            preparedContents.add(shopEntry);
+            if (shopEntry != null) {
+                preparedContents.add(shopEntry);
+            }
         }
 
         return new ArrayList<>(preparedContents);
@@ -161,6 +165,18 @@ public class ShopContentsRandomizer {
                     && (config.shopContentsEquipmentPool.isEmpty() || config.shopContentsEquipmentPool.contains(equip.toString()));
         }).collect(Collectors.toList());
 
+        // only one item in shop pool or shop pool items < shop quantity
+        if(items.size() == 0) return null;
+        if(equipment.size() == 0) return null;
+
+        if((items.size() == 1 && generateItem) || (equipment.size() == 1 && !generateItem)) {
+            final RegistryId inventoryIdentifier = generateItem
+                    ? items.get(0)
+                    : equipment.get(0);
+
+            return this.addShopInventoryEntryByRegistryId(generateItem, inventoryIdentifier);
+        }
+
         final RegistryId inventoryIdentifier = generateItem
                 ? items.get(statRandomizer.calculateRandomNumberWithBounds(0, items.size() - 1, uniqueModifier))
                 : equipment.get(statRandomizer.calculateRandomNumberWithBounds(0, equipment.size() - 1, uniqueModifier));
@@ -182,10 +198,11 @@ public class ShopContentsRandomizer {
 
     private boolean isPresentInShop(final boolean checkItemRegistry, final List<ShopScreen.ShopEntry<InventoryEntry>> currentInventory, final RegistryId item) {
         return currentInventory.stream().anyMatch(entry -> {
-            if(entry.item instanceof Item && !checkItemRegistry) return false;
-            if(entry.item instanceof Equipment && checkItemRegistry) return false;
+            if (entry.item instanceof Item && !checkItemRegistry) return false;
+            if (entry.item instanceof Equipment && checkItemRegistry) return false;
 
             return entry.item.toString().equals(this.getInventoryEntry(checkItemRegistry, item).toString());
+
         });
     }
 }
