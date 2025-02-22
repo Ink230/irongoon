@@ -115,7 +115,7 @@ public class IrongoonConfig {
         this.escapeChanceUpperBound = (int) yamlConfig.getOrDefault("escapeChanceUpperBound", 99);
         this.escapeChanceLowerBound = (int) yamlConfig.getOrDefault("escapeChanceLowerBound", 1);
         this.shopAvailability = ShopAvailability.valueOf((String) yamlConfig.getOrDefault("shopAvailability", "RANDOM"));
-        this.shopQuantity = ShopQuantity.valueOf((String) yamlConfig.getOrDefault("shopQuantity", "RANDOM_BOUNDS"));
+        this.shopQuantity = ShopQuantity.valueOf((String) yamlConfig.getOrDefault("shopQuantity", "RANDOMIZE_BOUNDS"));
         this.shopQuantityUpperBound = (int) yamlConfig.getOrDefault("shopQuantityUpperBound", "8");
         this.shopQuantityLowerBound = (int) yamlConfig.getOrDefault("shopQuantityLowerBound", "0");
         this.shopContents = ShopContents.valueOf((String) yamlConfig.getOrDefault("shopContents", "RANDOMIZE_ALL_MIXED"));
