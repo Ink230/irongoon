@@ -2,6 +2,7 @@ package lod.irongoon.services.randomizer;
 
 
 import legend.game.inventory.InventoryEntry;
+import legend.game.inventory.Item;
 import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
@@ -9,8 +10,8 @@ import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -182,5 +183,18 @@ public class Randomizer {
         };
 
         return shopContentsRandomizer.processContents(shop, randomizedContents);
+    }
+
+    public List<Item> doItemCarryingLimit(List<Item> inventory, List<Item> givenItems) {
+        if(config.itemCarryLimit == 0) return givenItems;
+
+        final Map<Item, Long> heldItemsFrequency = inventory.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(item -> item, Collectors.counting()));
+
+        return givenItems.stream()
+                .filter(Objects::nonNull)
+                .filter(item -> !heldItemsFrequency.containsKey(item) || heldItemsFrequency.get(item) < config.itemCarryLimit)
+                .collect(Collectors.toList());
     }
 }

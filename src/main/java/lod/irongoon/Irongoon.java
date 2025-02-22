@@ -8,6 +8,7 @@ import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.BattleEncounterStageDataEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
+import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapGenerateEncounterEvent;
 import legend.game.saves.*;
@@ -160,8 +161,10 @@ public class Irongoon {
         shop.contents.addAll(randomizedContents);
     }
 
-    // public void canPurchase(final ShopPurchaseEvent invoice)
-        // Carried, TimesBoughtFromShop, TimesBoughtInCampaign, Character, ShopStockLevel
-        // Can all be used to dictate if you can buy what is in the shop
-        // BUY_4 in ShopScreen in input handlers
+    @EventListener
+    public void giveItem(final GiveItemEvent event) {
+        final var givenItems = randomizer.doItemCarryingLimit(event.currentItems, event.givenItems);
+        event.givenItems.clear();
+        event.givenItems.addAll(givenItems);
+    }
 }

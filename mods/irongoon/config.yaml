@@ -44,6 +44,8 @@ shopContentsRecalled: [
 shopDuplicates: NONE
 # Chests
 # Drops
+# Items
+itemCarryLimit: 2
 # Enemies
 # Sound
 # Options

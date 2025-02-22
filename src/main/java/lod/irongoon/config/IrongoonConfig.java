@@ -70,6 +70,7 @@ public class IrongoonConfig {
     public List<String> shopContentsRecalled;
     public ShopDuplicates shopDuplicates;
     public BattleMusic battleMusic;
+    public int itemCarryLimit;
 
 
     private IrongoonConfig() {
@@ -135,5 +136,6 @@ public class IrongoonConfig {
         this.shopContentsEquipmentPool = ((List<String>) yamlConfig.getOrDefault("shopContentsEquipmentPool", new ArrayList<>())).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());;
         this.shopDuplicates = ShopDuplicates.valueOf((String) yamlConfig.getOrDefault("shopDuplicates", "NONE"));
         this.battleMusic = BattleMusic.valueOf((String) yamlConfig.getOrDefault("battleMusic", "RANDOM"));
+        this.itemCarryLimit = (int) yamlConfig.getOrDefault("itemCarryLimit", 0);
     }
 }
