@@ -68,6 +68,8 @@ public class Irongoon {
 
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
+        config.regenerateConfig();
+
         if (config.useRandomSeedOnNewCampaign) {
             config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
             config.seed = Long.parseLong(config.publicSeed, 16);

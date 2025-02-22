@@ -1,5 +1,5 @@
 # Seed
-publicSeed: 2F055608
+publicSeed: 2F055604
 # Characters
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 bodyTotalStatsDistributionPerLevel: RANDOM
@@ -51,7 +51,7 @@ shopDuplicates: NONE
 # Scaling
 # Additions
 # Randomizer
-useRandomSeedOnNewCampaign: TRUE
+useRandomSeedOnNewCampaign: FALSE
 # Party
 # Encounters
 battleStage: RANDOM

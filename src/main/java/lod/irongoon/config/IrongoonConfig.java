@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import org.yaml.snakeyaml.Yaml;
 
 public class IrongoonConfig {
-    private static final IrongoonConfig INSTANCE = new IrongoonConfig();
+    private static IrongoonConfig INSTANCE = new IrongoonConfig();
     public static IrongoonConfig getInstance() {
         return INSTANCE;
     }
@@ -25,55 +25,61 @@ public class IrongoonConfig {
     public String publicSeed;
     public long seed;
     public String campaignSeed;
-    public final boolean useRandomSeedOnNewCampaign;
-    public final int bodyNumberOfStatsAmount = 4;
-    public final int dragoonNumberOfStatsAmount = 4;
-    public final TotalStatsPerLevel bodyTotalStatsPerLevel;
-    public final TotalStatsPerLevel dragoonTotalStatsPerLevel;
-    public final TotalStatsMonsters monsterTotalStats;
-    public final int monsterDefenseFloor;
-    public final int monsterMagicDefenseFloor;
-    public final int speedStatUpperPercentBound;
-    public final int speedStatLowerPercentBound;
-    public final int totalStatsMonstersUpperPercentBound;
-    public final int totalStatsMonstersLowerPercentBound;
-    public final TotalStatsBounds bodyTotalStatsBounds;
-    public final TotalStatsBounds dragoonStatsBounds;
-    public final TotalStatsDistributionPerLevel bodyTotalStatsDistributionPerLevel;
-    public final TotalStatsDistributionPerLevel dragoonTotalStatsDistributionPerLevel;
-    public final HPStatPerLevel hpStatPerLevel;
-    public final int hpStatUpperPercentBound;
-    public final int hpStatLowerPercentBound;
-    public final SpeedStatPerLevel speedStatPerLevel;
-    public final HPStatMonsters hpStatMonsters;
-    public final int hpStatMonstersUpperPercentBound;
-    public final int hpStatMonstersLowerPercentBound;
-    public final SpeedStatMonsters speedStatMonsters;
-    public final int speedStatMonstersUpperBound;
-    public final int speedStatMonstersLowerBound;
-    public final StatsVarianceMonsters statsVarianceMonsters;
-    public final ElementsMonsters monsterElements;
-    public final NoElementMonsters noElementMonsters;
-    public final BattleStage battleStage;
-    public final List<Integer> battleStageList;
-    public final EscapeChance escapeChance;
-    public final int escapeChanceUpperBound;
-    public final int escapeChanceLowerBound;
-    public final ShopAvailability shopAvailability;
-    public final ShopQuantity shopQuantity;
-    public final int shopQuantityUpperBound;
-    public final int shopQuantityLowerBound;
-    public final ShopQuantityLogic shopQuantityLogic;
-    public final ShopContents shopContents;
-    public final List<String> shopContentsItemPool;
-    public final List<String> shopContentsEquipmentPool;
-    public final List<String> shopContentsRecalled;
-    public final ShopDuplicates shopDuplicates;
-    public final BattleMusic battleMusic;
+    public boolean useRandomSeedOnNewCampaign;
+    public int bodyNumberOfStatsAmount = 4;
+    public int dragoonNumberOfStatsAmount = 4;
+    public TotalStatsPerLevel bodyTotalStatsPerLevel;
+    public TotalStatsPerLevel dragoonTotalStatsPerLevel;
+    public TotalStatsMonsters monsterTotalStats;
+    public int monsterDefenseFloor;
+    public int monsterMagicDefenseFloor;
+    public int speedStatUpperPercentBound;
+    public int speedStatLowerPercentBound;
+    public int totalStatsMonstersUpperPercentBound;
+    public int totalStatsMonstersLowerPercentBound;
+    public TotalStatsBounds bodyTotalStatsBounds;
+    public TotalStatsBounds dragoonStatsBounds;
+    public TotalStatsDistributionPerLevel bodyTotalStatsDistributionPerLevel;
+    public TotalStatsDistributionPerLevel dragoonTotalStatsDistributionPerLevel;
+    public HPStatPerLevel hpStatPerLevel;
+    public int hpStatUpperPercentBound;
+    public int hpStatLowerPercentBound;
+    public SpeedStatPerLevel speedStatPerLevel;
+    public HPStatMonsters hpStatMonsters;
+    public int hpStatMonstersUpperPercentBound;
+    public int hpStatMonstersLowerPercentBound;
+    public SpeedStatMonsters speedStatMonsters;
+    public int speedStatMonstersUpperBound;
+    public int speedStatMonstersLowerBound;
+    public StatsVarianceMonsters statsVarianceMonsters;
+    public ElementsMonsters monsterElements;
+    public NoElementMonsters noElementMonsters;
+    public BattleStage battleStage;
+    public List<Integer> battleStageList;
+    public EscapeChance escapeChance;
+    public int escapeChanceUpperBound;
+    public int escapeChanceLowerBound;
+    public ShopAvailability shopAvailability;
+    public ShopQuantity shopQuantity;
+    public int shopQuantityUpperBound;
+    public int shopQuantityLowerBound;
+    public ShopQuantityLogic shopQuantityLogic;
+    public ShopContents shopContents;
+    public List<String> shopContentsItemPool;
+    public List<String> shopContentsEquipmentPool;
+    public List<String> shopContentsRecalled;
+    public ShopDuplicates shopDuplicates;
+    public BattleMusic battleMusic;
 
 
     private IrongoonConfig() {
-        File configFile = new File(externalConfigLoadPath);
+        this.regenerateConfig();
+    }
+
+    public final int battleStageSize = 95;
+    
+    public void regenerateConfig() {
+        File configFile = new File(this.externalConfigLoadPath);
 
         Map<String, Object> yamlConfig;
         try (InputStream inputStream = new FileInputStream(configFile)) {
@@ -130,6 +136,4 @@ public class IrongoonConfig {
         this.shopDuplicates = ShopDuplicates.valueOf((String) yamlConfig.getOrDefault("shopDuplicates", "NONE"));
         this.battleMusic = BattleMusic.valueOf((String) yamlConfig.getOrDefault("battleMusic", "RANDOM"));
     }
-
-    public final int battleStageSize = 95;
 }
