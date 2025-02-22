@@ -8,6 +8,7 @@ import legend.game.inventory.screens.ShopScreen;
 import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.ShopContents;
+import lod.irongoon.data.ShopDuplicates;
 import lod.irongoon.data.ShopQuantityLogic;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import java.util.List;
@@ -36,29 +37,33 @@ public class ShopContentsRandomizer {
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeItems(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
         final var shopHash = shop.toString().hashCode();
 
-        return contents.stream()
-                .map(entry -> {
-                    if(entry.item instanceof Equipment) return entry;
-
-                    final var itemHash = entry.item.toString().hashCode();
-                    final var slotNumber = contents.indexOf(entry);
-                    return generateRandomShopInventoryEntry(true, shopHash, slotNumber, itemHash);
-                })
-                .collect(Collectors.toList());
+        final List<ShopScreen.ShopEntry<InventoryEntry>> result = new ArrayList<>();
+        for (int i = 0; i < contents.size(); i++) {
+            final var entry = contents.get(i);
+            if(entry.item instanceof Equipment) {
+                result.add(entry);
+                continue;
+            }
+            final var itemHash = entry.item.toString().hashCode();
+            result.add(this.generateRandomShopInventoryEntry(true, shopHash, i, itemHash, result));
+        }
+        return result;
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeEquipment(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
         final var shopHash = shop.toString().hashCode();
 
-        return contents.stream()
-                .map(entry -> {
-                    if(entry.item instanceof Item) return entry;
-
-                    final var itemHash = entry.item.toString().hashCode();
-                    final var slotNumber = contents.indexOf(entry);
-                    return generateRandomShopInventoryEntry(false, shopHash, slotNumber, itemHash);
-                })
-                .collect(Collectors.toList());
+        final List<ShopScreen.ShopEntry<InventoryEntry>> result = new ArrayList<>();
+        for (int i = 0; i < contents.size(); i++) {
+            final var entry = contents.get(i);
+            if(entry.item instanceof Item) {
+                result.add(entry);
+                continue;
+            }
+            final var itemHash = entry.item.toString().hashCode();
+            result.add(this.generateRandomShopInventoryEntry(false, shopHash, i, itemHash, result));
+        }
+        return result;
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> randomizeAll(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
@@ -74,11 +79,13 @@ public class ShopContentsRandomizer {
         final var shopHash = shop.toString().hashCode();
         final var random = new Random(config.seed + shopHash);
 
-        return contents.stream().map(entry -> {
+        final List<ShopScreen.ShopEntry<InventoryEntry>> result = new ArrayList<>();
+        for (int i = 0; i < contents.size(); i++) {
+            final var entry = contents.get(i);
             final var itemHash = entry.item.toString().hashCode();
-            final var slotNumber = contents.indexOf(entry);
-            return this.generateRandomShopInventoryEntry(random.nextBoolean(), shopHash, slotNumber, itemHash);
-        }).collect(Collectors.toList());
+            result.add(this.generateRandomShopInventoryEntry(random.nextBoolean(), shopHash, i, itemHash, result));
+        }
+        return result;
     }
 
     public List<ShopScreen.ShopEntry<InventoryEntry>> prepareContents(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
@@ -108,7 +115,7 @@ public class ShopContentsRandomizer {
 
         if (((containsOnlyItems && fillItemShops) || (containsOnlyEquipment && fillEquipmentShops))) {
             for(int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
-                final var shopEntry = this.generateRandomShopInventoryEntry(containsOnlyItems, shopHash, i, 0);
+                final var shopEntry = this.generateRandomShopInventoryEntry(containsOnlyItems, shopHash, i, 0, preparedContents);
                 preparedContents.add(shopEntry);
             }
 
@@ -119,7 +126,7 @@ public class ShopContentsRandomizer {
 
         // mixed inventory and missing inventory quantity, provide mixed fulfillment
         for (int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
-            final var shopEntry = this.generateRandomShopInventoryEntry(random.nextBoolean(), shopHash, i, 0);
+            final var shopEntry = this.generateRandomShopInventoryEntry(random.nextBoolean(), shopHash, i, 0, preparedContents);
             preparedContents.add(shopEntry);
         }
 
@@ -139,15 +146,19 @@ public class ShopContentsRandomizer {
         return processContents;
     }
 
-    private ShopScreen.ShopEntry<InventoryEntry> generateRandomShopInventoryEntry(final boolean generateItem, long shopHash, int slotNumber, long itemHash) {
+    private ShopScreen.ShopEntry<InventoryEntry> generateRandomShopInventoryEntry(final boolean generateItem, long shopHash, int slotNumber, long itemHash, List<ShopScreen.ShopEntry<InventoryEntry>> currentInventory) {
         final var uniqueModifier = shopHash + slotNumber + itemHash;
 
         final var items = StreamSupport.stream(GameEngine.REGISTRIES.items.spliterator(), false).filter(item -> {
-            return !config.shopContentsRecalled.contains(item.toString()) && (config.shopContentsItemPool.isEmpty() || config.shopContentsItemPool.contains(item.toString()));
+            return !config.shopContentsRecalled.contains(item.toString())
+                    && (config.shopDuplicates == ShopDuplicates.ANY || (currentInventory.isEmpty() || !(this.isPresentInShop(true, currentInventory, item))))
+                    && (config.shopContentsItemPool.isEmpty() || config.shopContentsItemPool.contains(item.toString()));
         }).collect(Collectors.toList());
 
         final var equipment = StreamSupport.stream(GameEngine.REGISTRIES.equipment.spliterator(), false).filter(equip -> {
-            return !config.shopContentsRecalled.contains(equip.toString()) && (config.shopContentsEquipmentPool.isEmpty() || config.shopContentsEquipmentPool.contains(equip.toString()));
+            return !config.shopContentsRecalled.contains(equip.toString())
+                    && (config.shopDuplicates == ShopDuplicates.ANY || (currentInventory.isEmpty() || !(this.isPresentInShop(false, currentInventory, equip))))
+                    && (config.shopContentsEquipmentPool.isEmpty() || config.shopContentsEquipmentPool.contains(equip.toString()));
         }).collect(Collectors.toList());
 
         final RegistryId inventoryIdentifier = generateItem
@@ -158,10 +169,23 @@ public class ShopContentsRandomizer {
     }
 
     private ShopScreen.ShopEntry<InventoryEntry> addShopInventoryEntryByRegistryId(final boolean generateItem, RegistryId inventoryIdentifier) {
-        final var inventoryEntry = generateItem
-                ? GameEngine.REGISTRIES.items.getEntry(inventoryIdentifier).get()
-                : GameEngine.REGISTRIES.equipment.getEntry(inventoryIdentifier).get();
+        final var inventoryEntry = this.getInventoryEntry(generateItem, inventoryIdentifier);
 
         return new ShopScreen.ShopEntry<>(inventoryEntry, inventoryEntry.getPrice());
+    }
+
+    private InventoryEntry getInventoryEntry(final boolean checkItemRegistry, final RegistryId registryId) {
+        return checkItemRegistry
+                ? GameEngine.REGISTRIES.items.getEntry(registryId).get()
+                : GameEngine.REGISTRIES.equipment.getEntry(registryId).get();
+    }
+
+    private boolean isPresentInShop(final boolean checkItemRegistry, final List<ShopScreen.ShopEntry<InventoryEntry>> currentInventory, final RegistryId item) {
+        return currentInventory.stream().anyMatch(entry -> {
+            if(entry.item instanceof Item && !checkItemRegistry) return false;
+            if(entry.item instanceof Equipment && checkItemRegistry) return false;
+
+            return entry.item.toString().equals(this.getInventoryEntry(checkItemRegistry, item).toString());
+        });
     }
 }
