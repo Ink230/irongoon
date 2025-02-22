@@ -89,4 +89,21 @@ public class CharacterHPRandomizer {
 
         return divineTree.get(divineTree.size() - 1);
     }
+
+    public DivineFruit randomizeRandomStockWithBounds(int characterId, int level) {
+        var divineTree = new ArrayList<DivineFruit>();
+        divineTree.add(new DivineFruit(0, 0));
+
+        for (int subLevel = 1; subLevel <= level; subLevel++) {
+            var hpOfCharacterByLevel = parser.getHPOfCharacterByLevel(characterId, subLevel);
+            var hpOfCharacterByLevelMinusOne = parser.getHPOfCharacterByLevel(characterId,subLevel - 1);
+            var hpAvailable = hpOfCharacterByLevel - hpOfCharacterByLevelMinusOne;
+
+            int hp = statRandomizer.calculatePercentModifiedBoundedStat(config.hpStatLowerPercentBound, config.hpStatUpperPercentBound, hpAvailable, 939 + characterId + hpAvailable);
+
+            divineTree.add(growDivineFruit(hp, divineTree.get(divineTree.size() - 1)));
+        }
+
+        return divineTree.get(divineTree.size() - 1);
+    }
 }
