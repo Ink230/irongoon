@@ -10,6 +10,7 @@ import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
 
 import java.util.List;
+import java.util.Random;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -128,6 +129,16 @@ public class Randomizer {
             case RANDOM -> battleStageRandomizer.randomRandom();
             case RANDOM_FIXED_ENCOUNTER -> battleStageRandomizer.randomFixed(encounterId + 646);
             case RANDOM_FIXED_SUBMAP -> battleStageRandomizer.randomFixed(submapId + 293);
+        };
+    }
+
+    public int doMusic(final int currentMusicIndex) {
+        final int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19};
+        final var random = new Random();
+
+        return switch(config.battleMusic) {
+            case STOCK -> currentMusicIndex;
+            case RANDOM -> musicNumbers[random.nextInt(musicNumbers.length)];
         };
     }
 

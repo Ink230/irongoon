@@ -136,10 +136,8 @@ public class Irongoon {
         var stageData = stage.stageData;
         var submapId = submapCut_80052c30;
         var encounterId = encounterId_800bb0f8;
-        int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19}; // valid music indices
 
-        Random random = new Random();
-        stageData.musicIndex_04 = musicNumbers[random.nextInt(musicNumbers.length)];
+        stageData.musicIndex_04 = randomizer.doMusic(stageData.musicIndex_04);
         stageData.escapeChance_08 = randomizer.doEscapeChance(stageData.escapeChance_08, encounterId, submapId);
     }
 
@@ -148,7 +146,6 @@ public class Irongoon {
         if(encounter.encounterId == 431) return;
         var submapId = submapCut_80052c30;
         encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
-
     }
     
     @EventListener

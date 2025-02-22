@@ -69,6 +69,8 @@ public class IrongoonConfig {
     public final List<String> shopContentsEquipmentPool;
     public final List<String> shopContentsRecalled;
     public final ShopDuplicates shopDuplicates;
+    public final BattleMusic battleMusic;
+
 
     private IrongoonConfig() {
         File configFile = new File(externalConfigLoadPath);
@@ -126,6 +128,7 @@ public class IrongoonConfig {
         this.shopContentsItemPool = ((List<String>) yamlConfig.getOrDefault("shopContentsItemPool", new ArrayList<>())).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());
         this.shopContentsEquipmentPool = ((List<String>) yamlConfig.getOrDefault("shopContentsEquipmentPool", new ArrayList<>())).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());;
         this.shopDuplicates = ShopDuplicates.valueOf((String) yamlConfig.getOrDefault("shopDuplicates", "NONE"));
+        this.battleMusic = BattleMusic.valueOf((String) yamlConfig.getOrDefault("battleMusic", "RANDOM"));
     }
 
     public final int battleStageSize = 95;

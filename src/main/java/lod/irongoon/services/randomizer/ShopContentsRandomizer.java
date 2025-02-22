@@ -202,7 +202,6 @@ public class ShopContentsRandomizer {
             if (entry.item instanceof Equipment && checkItemRegistry) return false;
 
             return entry.item.toString().equals(this.getInventoryEntry(checkItemRegistry, item).toString());
-
         });
     }
 }
