@@ -13,7 +13,7 @@ speedStatLowerPercentBound: 30
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsDistributionPerLevel: RANDOM
 # Monsters
-monsterTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
+monsterTotalStatsPerLevel: RANDOMIZE_BOUNDS
 totalStatsMonstersUpperPercentBound: 150
 totalStatsMonstersLowerPercentBound: 50
 monsterDefenseFloor: 50
@@ -45,7 +45,7 @@ shopDuplicates: NONE
 # Chests
 # Drops
 # Items
-itemCarryLimit: 2
+itemCarryLimit: 0
 # Enemies
 # Sound
 # Options
