@@ -187,13 +187,14 @@ public class Randomizer {
     }
 
     public List<Item> doItemCarryingLimit(List<Item> inventory, List<Item> givenItems) {
-        if(config.itemCarryLimit == 0) return givenItems;
+        final var preparedItems = new ArrayList<>(givenItems);
+        if(config.itemCarryLimit == 0) return new ArrayList<>(preparedItems);
 
         final Map<Item, Long> heldItemsFrequency = inventory.stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(item -> item, Collectors.counting()));
 
-        return givenItems.stream()
+        return preparedItems.stream()
                 .filter(Objects::nonNull)
                 .filter(item -> !heldItemsFrequency.containsKey(item) || heldItemsFrequency.get(item) < config.itemCarryLimit)
                 .collect(Collectors.toList());
