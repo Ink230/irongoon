@@ -91,15 +91,27 @@ public class ShopContentsRandomizer {
     public List<ShopScreen.ShopEntry<InventoryEntry>> prepareContents(Shop shop, List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
         final var shopHash = Math.abs(shop.getRegistryId().toString().hashCode());
         final Random random = new Random(config.seed + shopHash);
+        final var fillItemShops = (config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL || config.shopContents != ShopContents.RANDOMIZE_EQUIPMENT);
+        final var containsOnlyItems = contents.stream().allMatch(entry -> entry.item instanceof Item);
+        final var fillEquipmentShops = (config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL || config.shopContents != ShopContents.RANDOMIZE_ITEMS);
+        final var containsOnlyEquipment = contents.stream().allMatch(entry -> entry.item instanceof Equipment);
 
         final var preparedContents = new ArrayList<>(contents
                 .stream().filter(entry -> {
-                    return !config.shopContentsRecalled.contains(entry.toString())
-                            && (entry.item instanceof Item && (config.shopContentsItemPool.isEmpty() || config.shopContentsItemPool.contains(entry.toString())))
-                            || (entry.item instanceof Equipment && (config.shopContentsEquipmentPool.isEmpty() || config.shopContentsEquipmentPool.contains(entry.toString())));
+                    final var isItem = entry.item instanceof Item;
+                    final var registryId = (isItem ? ((Item)entry.item).getRegistryId() : ((Equipment)entry.item).getRegistryId()).toString();
+
+                    final var onBanList = config.shopContentsRecalled.contains(registryId);
+                    final var onItemPool = (isItem && (config.shopContentsItemPool.isEmpty() || config.shopContentsItemPool.contains(registryId)));
+                    final var onEquipmentPool = (!isItem && (config.shopContentsEquipmentPool.isEmpty() || config.shopContentsEquipmentPool.contains(registryId)));
+
+                    return !onBanList && (onItemPool || onEquipmentPool);
                 }).collect(Collectors.toList()));
 
-        if (preparedContents.size() == shopQuantity) {
+        final var doNothingToItems = shop.shopType_00 == 1 && config.shopContents == ShopContents.RANDOMIZE_EQUIPMENT && preparedContents.stream().allMatch(entry -> entry.item instanceof Item);
+        final var doNothingToEquipment = shop.shopType_00 == 0 && config.shopContents == ShopContents.RANDOMIZE_ITEMS && preparedContents.stream().allMatch(entry -> entry.item instanceof Equipment);
+
+        if (preparedContents.size() == shopQuantity || doNothingToItems || doNothingToEquipment) {
             return new ArrayList<>(preparedContents);
         }
 
@@ -108,11 +120,6 @@ public class ShopContentsRandomizer {
         }
 
         // mono-inventory, provide matching mono-fulfillment to the original contents
-        var fillItemShops = (config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL || config.shopContents != ShopContents.RANDOMIZE_EQUIPMENT);
-        var containsOnlyItems = contents.stream().allMatch(entry -> entry.item instanceof Item);
-        var fillEquipmentShops = (config.shopQuantityLogic == ShopQuantityLogic.FILL_ALL || config.shopContents != ShopContents.RANDOMIZE_ITEMS);
-        var containsOnlyEquipment = contents.stream().allMatch(entry -> entry.item instanceof Equipment) ;
-
         if (((containsOnlyItems && fillItemShops) || (containsOnlyEquipment && fillEquipmentShops))) {
             for(int i = preparedContents.size() + 1; i <= shopQuantity; i++) {
                 final var shopEntry = this.generateRandomShopInventoryEntry(containsOnlyItems, shopHash, i, 0, preparedContents);
