@@ -45,7 +45,7 @@ shopDuplicates: NONE
 # Chests
 # Drops
 # Items
-itemCarryLimit: 0
+itemCarryLimit: 2
 # Enemies
 # Sound
 # Options
@@ -53,7 +53,7 @@ itemCarryLimit: 0
 # Scaling
 # Additions
 # Randomizer
-useRandomSeedOnNewCampaign: FALSE
+useRandomSeedOnNewCampaign: TRUE
 # Party
 # Encounters
 battleStage: RANDOM
