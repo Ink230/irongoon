@@ -18,11 +18,14 @@ if(project.ext.hash == null) {
 group 'legend'
 version project.ext.hash
 
-sourceCompatibility = targetCompatibility = 1.21
+java {
+  sourceCompatibility = targetCompatibility = JavaVersion.VERSION_21
+}
+
 compileJava.options.encoding = 'UTF-8'
 
-project.ext.lwjglVersion = "3.3.3"
-project.ext.jomlVersion = "1.10.6"
+project.ext.lwjglVersion = "3.4.0-SNAPSHOT"
+project.ext.jomlVersion = "1.10.8"
 
 final def operatingSystem = hasProperty("os") ? OperatingSystem.forName(os) : OperatingSystem.current()
 final def architecture = hasProperty("arch") ? arch : System.getProperty("os.arch")
@@ -52,48 +55,44 @@ println "Building for " + operatingSystem.familyName + " " + architecture
 repositories {
   mavenCentral()
   mavenLocal()
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
   api group: 'org.legendofdragoon', name: 'mod-loader', version: '4.2.0'
   api group: 'org.legendofdragoon', name: 'script-recompiler', version: '0.5.6'
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
-  implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.3.2'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.24.3'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.24.3'
+  implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.4.1'
 
   api platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
 
   api "org.lwjgl:lwjgl"
-  api "org.lwjgl:lwjgl-glfw"
-  api "org.lwjgl:lwjgl-nuklear"
+  api "org.lwjgl:lwjgl-sdl"
   api "org.lwjgl:lwjgl-opengl"
   api "org.lwjgl:lwjgl-openal"
   api "org.lwjgl:lwjgl-opus"
   api "org.lwjgl:lwjgl-stb"
   runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-  runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-  runtimeOnly "org.lwjgl:lwjgl-nuklear::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-sdl::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-opus::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
   api "org.joml:joml:${jomlVersion}"
 
-  api group: 'com.badlogicgames.jamepad', name: 'jamepad', version: '2.30.0.0'
-
-  implementation group: 'com.vaadin', name: 'open', version: '8.5.0.4' // opening links in a web browser
   implementation group: 'org.asynchttpclient', name: 'async-http-client', version: '3.0.1' // update check
   implementation group: 'org.json', name: 'json', version: '20250107'
 
   implementation group: 'com.opencsv', name: 'opencsv', version: '5.9'
-  implementation group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.12'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
+  implementation group: 'io.github.java-diff-utils', name: 'java-diff-utils', version: '4.15'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.18.0'
 
-  api group: 'com.github.slugify', name: 'slugify', version: '3.0.4'
+  api group: 'com.github.slugify', name: 'slugify', version: '3.0.7'
 
-  api group: 'it.unimi.dsi', name: 'fastutil', version: '8.5.12'
+  api group: 'it.unimi.dsi', name: 'fastutil', version: '8.5.15'
 
   implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
   // To quiet no logger found for reflections
@@ -101,13 +100,11 @@ dependencies {
 
   implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
-  implementation group: 'net.java.dev.jna', name: 'jna', version: '5.13.0'
+  implementation group: 'net.java.dev.jna', name: 'jna', version: '5.16.0'
+
   api 'org.yaml:snakeyaml:2.2'
 
   implementation(files("$projectDir/lod-game-snapshot-2.jar"))
-
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 }
 
 javafx {
