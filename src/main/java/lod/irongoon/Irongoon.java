@@ -4,8 +4,9 @@ import com.github.slugify.Slugify;
 import legend.core.GameEngine;
 import legend.game.characters.Element;
 import legend.game.inventory.InventoryEntry;
+import legend.game.inventory.ItemStack;
 import legend.game.inventory.screens.ShopScreen;
-import legend.game.modding.events.battle.BattleEncounterStageDataEvent;
+import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
@@ -29,7 +30,9 @@ import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.StreamSupport;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
 import static legend.game.Scus94491BpeSegment_800b.encounterId_800bb0f8;
@@ -97,14 +100,14 @@ public class Irongoon {
         DivineFruit speedStatRandomized = randomizer.doCharacterSpeed(character);
 
         character.bodyAttack = bodyStatsRandomized.bodyAttack;
-        character.bodyDefence = bodyStatsRandomized.bodyDefense;
+        character.bodyDefence = Math.max(1, bodyStatsRandomized.bodyDefense);
         character.bodyMagicAttack = bodyStatsRandomized.bodyMagicAttack;
-        character.bodyMagicDefence = bodyStatsRandomized.bodyMagicDefense;
+        character.bodyMagicDefence =Math.max(1,  bodyStatsRandomized.bodyMagicDefense);
 
         character.dragoonAttack = dragoonStatsRandomized.dragoonAttack;
-        character.dragoonDefence = dragoonStatsRandomized.dragoonDefense;
+        character.dragoonDefence = Math.max(1, dragoonStatsRandomized.dragoonDefense);
         character.dragoonMagicAttack = dragoonStatsRandomized.dragoonMagicAttack;
-        character.dragoonMagicDefence = dragoonStatsRandomized.dragoonMagicDefense;
+        character.dragoonMagicDefence = Math.max(1, dragoonStatsRandomized.dragoonMagicDefense);
 
         character.maxHp = hpStatRandomized.maxHP;
         character.bodySpeed = speedStatRandomized.bodySpeed;
@@ -122,9 +125,9 @@ public class Irongoon {
         randomizer.doMonsterVariance(monsterStatsRandomized, monsterHPRandomized, monsterSpeedRandomized);
 
         monster.attack = monsterStatsRandomized.bodyAttack;
-        monster.defence = monsterStatsRandomized.bodyDefense;
+        monster.defence = Math.max(1, monsterStatsRandomized.bodyDefense);
         monster.magicAttack = monsterStatsRandomized.bodyMagicAttack;
-        monster.magicDefence = monsterStatsRandomized.bodyMagicDefense;
+        monster.magicDefence = Math.max(1, monsterStatsRandomized.bodyMagicDefense);
 
         monster.maxHp = monsterHPRandomized.maxHP;
         monster.hp = monsterHPRandomized.maxHP;
@@ -135,13 +138,13 @@ public class Irongoon {
     }
 
     @EventListener
-    public void stageData(final BattleEncounterStageDataEvent stage) {
-        var stageData = stage.stageData;
-        var submapId = submapCut_80052c30;
-        var encounterId = encounterId_800bb0f8;
+    public void stageData(final BattleMusicEvent stage) {
+        stage.musicIndex = randomizer.doMusic(stage.musicIndex);
+        // stage.victoryType = randomizer.doVictory(stage.victoryIndex);
+    }
 
-        stageData.musicIndex_04 = randomizer.doMusic(stageData.musicIndex_04);
-        stageData.escapeChance_08 = randomizer.doEscapeChance(stageData.escapeChance_08, encounterId, submapId);
+    public void stageEscapeChance() {
+        // escapeChance_08 = randomizer.doEscapeChance()
     }
 
     @EventListener
@@ -163,8 +166,13 @@ public class Irongoon {
 
     @EventListener
     public void giveItem(final GiveItemEvent event) {
-        final var givenItems = randomizer.doItemCarryingLimit(event.currentItems, event.givenItems);
+        final List<ItemStack> inventoryItems = StreamSupport
+                .stream(event.inventory.spliterator(), false)
+                .toList();
+
+        final List<ItemStack> limitedItems = randomizer.doItemCarryingLimit(inventoryItems, event.givenItems);
+
         event.givenItems.clear();
-        event.givenItems.addAll(givenItems);
+        event.givenItems.addAll(limitedItems);
     }
 }

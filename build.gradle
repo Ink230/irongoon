@@ -1,13 +1,23 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.internal.os.OperatingSystem
 
-plugins {
-  id 'java'
-  id 'org.openjfx.javafxplugin' version '0.1.0'
-  id 'java-library'
-  id 'maven-publish'
-  id("com.github.johnrengelman.shadow") version "7.1.2"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.gradleup.shadow:shadow-gradle-plugin:9.2.2'
+    }
 }
+
+plugins {
+    id 'java'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+apply plugin: 'com.gradleup.shadow'
 
 project.ext.hash = System.getenv("GITHUB_SHA");
 
@@ -19,7 +29,7 @@ group 'legend'
 version project.ext.hash
 
 java {
-  sourceCompatibility = targetCompatibility = JavaVersion.VERSION_21
+  sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -55,7 +65,8 @@ println "Building for " + operatingSystem.familyName + " " + architecture
 repositories {
   mavenCentral()
   mavenLocal()
-  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+  maven { url = "https://central.sonatype.com/repository/maven-snapshots/" }
+  maven { url = "https://jitpack.io" }
 }
 
 dependencies {
@@ -68,19 +79,20 @@ dependencies {
 
   api platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
-
   api "org.lwjgl:lwjgl"
   api "org.lwjgl:lwjgl-sdl"
   api "org.lwjgl:lwjgl-opengl"
   api "org.lwjgl:lwjgl-openal"
   api "org.lwjgl:lwjgl-opus"
   api "org.lwjgl:lwjgl-stb"
+  api "org.lwjgl:lwjgl-assimp"
   runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-sdl::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-opus::$lwjglNatives"
   runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
   api "org.joml:joml:${jomlVersion}"
 
   implementation group: 'org.asynchttpclient', name: 'async-http-client', version: '3.0.1' // update check
@@ -94,13 +106,15 @@ dependencies {
 
   api group: 'it.unimi.dsi', name: 'fastutil', version: '8.5.15'
 
-  implementation group: 'org.reflections', name: 'reflections', version: '0.10.2'
-  // To quiet no logger found for reflections
-  implementation group: 'org.slf4j', name: 'slf4j-nop', version: '2.0.7'
+  implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-  implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+  implementation 'net.java.dev.jna:jna:5.16.0'
 
-  implementation group: 'net.java.dev.jna', name: 'jna', version: '5.16.0'
+  implementation 'com.github.JnCrMx:discord-game-sdk4j:v1.0.0'
+
+  testImplementation(platform("org.junit:junit-bom:6.0.0"))
+  testImplementation("org.junit.jupiter:junit-jupiter")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
   api 'org.yaml:snakeyaml:2.2'
 
@@ -124,74 +138,22 @@ jar {
   }
 }
 
-task sourceJar(type: Jar) {
+tasks.register('sourceJar', Jar) {
   from sourceSets.main.allJava
+  archiveClassifier = "sources"
 }
 
-task clearOutput(type: Delete) {
-  delete "${buildDir}/libs/libs"
-  delete "${buildDir}/libs/**"
+tasks.register('clearOutput', Delete) {
+  delete layout.buildDirectory.dir("libs/libs")
+  delete layout.buildDirectory.file("libs/**")
 }
 
-task copyLibs(type: Copy) {
+tasks.register('copyLibs', Copy) {
   from configurations.compileClasspath + configurations.runtimeClasspath
-  into "${buildDir}/libs/libs"
+  into layout.buildDirectory.dir("libs/libs")
 }
 
-
-
-task copySupportFiles(type: Copy) {
-  into "${buildDir}/libs"
-
-  into("gfx") {
-    from 'gfx'
-  }
-
-  into("patches") {
-    from 'patches'
-  }
-
-  into("lang") {
-    from 'lang'
-  }
-
-  into(".") {
-    switch(operatingSystem) {
-      case OperatingSystem.LINUX:
-        from(isSteamDeck ? 'launch-steamdeck' : 'launch-linux') {
-          filter(ReplaceTokens, tokens: [version: project.ext.hash])
-          rename("-\\w+", "")
-        }
-        from('download-java') {
-          filter(ReplaceTokens, tokens: [os: 'linux', arch: isArm ? "aarch64" : "x64"])
-        }
-        break
-
-      case OperatingSystem.MAC_OS:
-        from('launch-macos') {
-          filter(ReplaceTokens, tokens: [version: project.ext.hash])
-          rename("-macos", "")
-        }
-        from('download-java') {
-          filter(ReplaceTokens, tokens: [os: 'macosx', arch: isArm ? "aarch64" : "x64"])
-        }
-        break
-
-      case OperatingSystem.WINDOWS:
-        from('launch.bat') {
-          filter(ReplaceTokens, tokens: [version: project.ext.hash])
-        }
-        break
-    }
-
-    from 'log4j2.xml'
-    from 'gamecontrollerdb.txt'
-    from 'README.md'
-    from 'LICENSE'
-  }
-}
-
-jar.dependsOn(clearOutput, copyLibs, copySupportFiles)
+jar.dependsOn(clearOutput, copyLibs)
 
 publishing {
   publications {
@@ -209,6 +171,8 @@ publishing {
 
 test {
   useJUnitPlatform()
+  // Don't automatically run tests in build process
+  exclude '**/*'
 }
 
 sourceSets {

@@ -3,6 +3,7 @@ package lod.irongoon.services.randomizer;
 
 import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.Item;
+import legend.game.inventory.ItemStack;
 import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
@@ -135,7 +136,7 @@ public class Randomizer {
     }
 
     public int doMusic(final int currentMusicIndex) {
-        final int[] musicNumbers = {0, 1, 2, 16, 17, 18, 19};
+        final int[] musicNumbers = {702, 707, 712, 717, 722, 727, 732};
         final var random = new Random();
 
         return switch(config.battleMusic) {
@@ -186,17 +187,44 @@ public class Randomizer {
         return shopContentsRandomizer.processContents(shop, randomizedContents);
     }
 
-    public List<Item> doItemCarryingLimit(List<Item> inventory, List<Item> givenItems) {
+    public List<ItemStack> doItemCarryingLimit(List<ItemStack> inventory, List<ItemStack> givenItems) {
         final var preparedItems = new ArrayList<>(givenItems);
-        if(config.itemCarryLimit == 0) return new ArrayList<>(preparedItems);
+        if (config.itemCarryLimit == 0) return new ArrayList<>(preparedItems);
 
-        final Map<Item, Long> heldItemsFrequency = inventory.stream()
+        final Map<Item, Integer> heldItemsCount = inventory.stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.groupingBy(item -> item, Collectors.counting()));
+                .filter(stack -> !stack.isEmpty())
+                .collect(Collectors.toMap(
+                        stack -> stack.getItem(),
+                        ItemStack::getSize,
+                        Integer::sum
+                ));
 
-        return preparedItems.stream()
-                .filter(Objects::nonNull)
-                .filter(item -> !heldItemsFrequency.containsKey(item) || heldItemsFrequency.get(item) < config.itemCarryLimit)
-                .collect(Collectors.toList());
+        final List<ItemStack> allowed = new ArrayList<>();
+
+        for (ItemStack stack : preparedItems) {
+            if (stack == null || stack.isEmpty()) continue;
+
+            final Item item = stack.getItem();
+            final int currentCount = heldItemsCount.getOrDefault(item, 0);
+            final int limit = config.itemCarryLimit;
+
+            if (currentCount >= limit) {
+                continue;
+            }
+
+            int remaining = limit - currentCount;
+            if (stack.getSize() <= remaining) {
+                allowed.add(stack);
+                heldItemsCount.put(item, currentCount + stack.getSize());
+            } else {
+                ItemStack partial = new ItemStack(item, remaining, stack.getCurrentDurability());
+                allowed.add(partial);
+                heldItemsCount.put(item, limit);
+            }
+        }
+
+        return allowed;
     }
+
 }

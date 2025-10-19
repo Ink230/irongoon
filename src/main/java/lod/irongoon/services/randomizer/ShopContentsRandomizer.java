@@ -199,7 +199,7 @@ public class ShopContentsRandomizer {
 
     private InventoryEntry getInventoryEntry(final boolean checkItemRegistry, final RegistryId registryId) {
         return checkItemRegistry
-                ? GameEngine.REGISTRIES.items.getEntry(registryId).get()
+                ? (InventoryEntry) GameEngine.REGISTRIES.items.getEntry(registryId)
                 : GameEngine.REGISTRIES.equipment.getEntry(registryId).get();
     }
 
