@@ -9,6 +9,9 @@ hpStatLowerPercentBound: 75
 speedStatPerLevel: RANDOMIZE_BOUNDS
 speedStatUpperPercentBound: 150
 speedStatLowerPercentBound: 30
+characterElements: RANDOM_CAMPAIGN
+characterNoElement: FALSE
+characterElementOverride: [] # positional (ex dart first): ["skip", "fire", "water", "wind", "earth", "dark", "light", "thunder", "noelement", "divine"]
 # Dragoons
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsDistributionPerLevel: RANDOM

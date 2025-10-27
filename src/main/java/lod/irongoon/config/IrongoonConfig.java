@@ -71,6 +71,9 @@ public class IrongoonConfig {
     public ShopDuplicates shopDuplicates;
     public BattleMusic battleMusic;
     public int itemCarryLimit;
+    public CharacterElements characterElements;
+    public boolean characterNoElement;
+    public List<String> characterElementOverride;
 
 
     private IrongoonConfig() {
@@ -137,5 +140,8 @@ public class IrongoonConfig {
         this.shopDuplicates = ShopDuplicates.valueOf((String) yamlConfig.getOrDefault("shopDuplicates", "NONE"));
         this.battleMusic = BattleMusic.valueOf((String) yamlConfig.getOrDefault("battleMusic", "RANDOM"));
         this.itemCarryLimit = (int) yamlConfig.getOrDefault("itemCarryLimit", 0);
+        this.characterElements = CharacterElements.valueOf((String) yamlConfig.getOrDefault("characterElements", "STOCK"));
+        this.characterNoElement = (boolean) yamlConfig.getOrDefault("characterNoElement", false);
+        this.characterElementOverride = (List<String>) yamlConfig.getOrDefault("characterElementOverride", new ArrayList<>());
     }
 }

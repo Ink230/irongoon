@@ -7,12 +7,14 @@ import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.ItemStack;
 import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.BattleMusicEvent;
+import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapGenerateEncounterEvent;
 import legend.game.saves.*;
+import legend.lodmod.LodMod;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.services.StaleStats;
@@ -36,6 +38,7 @@ import java.util.stream.StreamSupport;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
 import static legend.game.Scus94491BpeSegment_800b.encounterId_800bb0f8;
+import static legend.game.combat.Battle.characterElements_800c706c;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
 public class Irongoon {
@@ -53,6 +56,8 @@ public class Irongoon {
     private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
     private final StaleStats staleStats = StaleStats.getInstance();
+
+    private final RegistryDelegate<Element>[] characterElementsUnmodified = characterElements_800c706c.clone();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
@@ -141,6 +146,11 @@ public class Irongoon {
     public void stageData(final BattleMusicEvent stage) {
         stage.musicIndex = randomizer.doMusic(stage.musicIndex);
         // stage.victoryType = randomizer.doVictory(stage.victoryIndex);
+
+        final var randomizedElements = randomizer.doCharacterElement(characterElementsUnmodified);
+        for (int i = 0; i < randomizedElements.length; i++) {
+            characterElements_800c706c[i] = randomizedElements[i];
+        }
     }
 
     public void stageEscapeChance() {

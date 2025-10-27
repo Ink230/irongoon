@@ -20,7 +20,7 @@ public class SeedRandomizer {
     private final IrongoonConfig config = IrongoonConfig.getInstance();
 
     public String generateNewSeed() {
-        Random random = new Random();
+        var random = new Random();
         var result = random.nextInt();
         var hexString = String.format("%08X", result);
 

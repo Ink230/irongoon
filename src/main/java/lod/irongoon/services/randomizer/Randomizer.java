@@ -1,6 +1,7 @@
 package lod.irongoon.services.randomizer;
 
 
+import legend.game.characters.Element;
 import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.Item;
 import legend.game.inventory.ItemStack;
@@ -10,6 +11,7 @@ import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.models.DivineFruit;
+import org.legendofdragoon.modloader.registries.RegistryDelegate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,12 +37,11 @@ public class Randomizer {
     private final ShopAvailabilityRandomizer shopAvailabilityRandomizer = ShopAvailabilityRandomizer.getInstance();
     private final ShopQuantityRandomizer shopQuantityRandomizer = ShopQuantityRandomizer.getInstance();
     private final ShopContentsRandomizer shopContentsRandomizer = ShopContentsRandomizer.getInstance();
+    private final CharacterElementRandomizer characterElementRandomizer = CharacterElementRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
-        String newSeed;
-        newSeed = seedRandomizer.generateNewSeed();
-        config.campaignSeed = newSeed;
-        return newSeed;
+        config.campaignSeed = seedRandomizer.generateNewSeed();
+        return config.campaignSeed;
     }
 
     public DivineFruit doCharacterStats(CharacterStatsEvent character) {
@@ -227,4 +228,13 @@ public class Randomizer {
         return allowed;
     }
 
+    public RegistryDelegate<Element>[] doCharacterElement(RegistryDelegate<Element>[] characterElements) {
+        final var randomizedElements = switch (config.characterElements) {
+            case STOCK -> characterElements;
+            case RANDOM_CAMPAIGN -> characterElementRandomizer.randomizeCampaign(characterElements);
+            case RANDOM_BATTLE -> characterElementRandomizer.randomizeBattle(characterElements);
+        };
+
+        return randomizedElements;
+    }
 }
