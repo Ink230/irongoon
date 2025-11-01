@@ -8,8 +8,13 @@ import legend.game.inventory.ItemStack;
 import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
+import legend.game.modding.events.submap.SubmapWarpEvent;
+import legend.game.title.NewGame;
+import legend.game.types.CharacterData2c;
+import legend.game.types.GameState52c;
 import legend.game.types.Shop;
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.models.DivineFruit;
 import org.legendofdragoon.modloader.registries.RegistryDelegate;
 
@@ -38,6 +43,7 @@ public class Randomizer {
     private final ShopQuantityRandomizer shopQuantityRandomizer = ShopQuantityRandomizer.getInstance();
     private final ShopContentsRandomizer shopContentsRandomizer = ShopContentsRandomizer.getInstance();
     private final CharacterElementRandomizer characterElementRandomizer = CharacterElementRandomizer.getInstance();
+    private final BattlePartyRandomizer battlePartyRandomizer = BattlePartyRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
         config.campaignSeed = seedRandomizer.generateNewSeed();
@@ -236,5 +242,31 @@ public class Randomizer {
         };
 
         return randomizedElements;
+    }
+
+    public void setLevelOneParty(final GameState52c game) {
+        if(config.enableAllCharacters != EnableAllCharacters.STOCK) {
+            for(var i = 0; i < NewGame.characterStartingLevels.length; i++) {
+                NewGame.characterStartingLevels[i] = 1;
+            }
+        }
+    }
+
+    public void enableAllCharacters(final SubmapWarpEvent game) {
+        if((game.submapCut == 10 && config.enableAllCharacters == EnableAllCharacters.STORY_CONTROLLED) || config.enableAllCharacters == EnableAllCharacters.PERMANENTLY) {
+            for(var i = 0; i < game.gameState.charData_32c.length; i++) {
+                game.gameState.charData_32c[i].partyFlags_04 |= 0x1;
+            }
+        }
+    }
+
+    public int[] doBattleParty(final CharacterData2c[] characterData, final int[] battleParty) {
+        final var randomizedBattleParty = switch (config.battleParty) {
+            case STOCK -> battlePartyRandomizer.maintainStock(characterData, battleParty);
+            case RANDOM_CAMPAIGN -> battlePartyRandomizer.randomizeCampaign(characterData, battleParty);
+            case RANDOM_BATTLE -> battlePartyRandomizer.randomizeBattle(characterData, battleParty);
+        };
+
+        return randomizedBattleParty;
     }
 }

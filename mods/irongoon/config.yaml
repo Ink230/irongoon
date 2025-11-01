@@ -12,6 +12,13 @@ speedStatLowerPercentBound: 30
 characterElements: RANDOM_CAMPAIGN
 characterNoElement: FALSE
 characterElementOverride: [] # positional (ex dart first): ["skip", "fire", "water", "wind", "earth", "dark", "light", "thunder", "noelement", "divine"]
+# Party
+enableAllCharacters: PERMANENTLY # only works on new campaign start
+battleParty: RANDOM_CAMPAIGN
+battlePartyOverride: [] # slot0: rose, slot1: meru, slot2: randomized would be ex: [3, 6]
+battlePartySize: 3
+battlePartyPool: [] # list of char ids to randomize from ex: [4,0,2,5], empty is all available
+battlePartyDuplicates: TRUE
 # Dragoons
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsDistributionPerLevel: RANDOM
@@ -57,7 +64,6 @@ itemCarryLimit: 2
 # Additions
 # Randomizer
 useRandomSeedOnNewCampaign: TRUE
-# Party
 # Encounters
 battleStage: RANDOM
 battleStageList: []

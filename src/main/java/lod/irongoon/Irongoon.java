@@ -3,20 +3,18 @@ package lod.irongoon;
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
 import legend.game.characters.Element;
-import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.ItemStack;
-import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.BattleMusicEvent;
-import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapGenerateEncounterEvent;
+import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.saves.*;
-import legend.lodmod.LodMod;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
+import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -31,13 +29,12 @@ import lod.irongoon.services.randomizer.Randomizer;
 import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.StreamSupport;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
-import static legend.game.Scus94491BpeSegment_800b.encounterId_800bb0f8;
+import static legend.game.Scus94491BpeSegment_800b.gameState_800babc8;
 import static legend.game.combat.Battle.characterElements_800c706c;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
@@ -73,6 +70,8 @@ public class Irongoon {
         if (config.useRandomSeedOnNewCampaign) {
             config.publicSeed = config.campaignSeed;
         }
+
+        randomizer.setLevelOneParty(game.gameState);
     }
 
     @EventListener
@@ -90,6 +89,11 @@ public class Irongoon {
     private void refreshState() {
         characters.initialize();
         dataTables.initialize();
+    }
+
+    @EventListener
+    public void submapWarp(final SubmapWarpEvent game) {
+        randomizer.enableAllCharacters(game);
     }
 
     @EventListener
@@ -162,6 +166,11 @@ public class Irongoon {
         if(encounter.encounterId == 431) return;
         var submapId = submapCut_80052c30;
         encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
+
+        final var randomizedBattleParty = randomizer.doBattleParty(gameState_800babc8.charData_32c, gameState_800babc8.charIds_88);
+        for(int i = 0; i < gameState_800babc8.charIds_88.length; i++) {
+            gameState_800babc8.charIds_88[i] = randomizedBattleParty[i];
+        }
     }
     
     @EventListener
