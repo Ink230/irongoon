@@ -6,6 +6,7 @@ import legend.game.characters.Element;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
@@ -15,6 +16,7 @@ import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.data.EnableAllCharacters;
+import lod.irongoon.services.Additions;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -53,6 +55,7 @@ public class Irongoon {
     private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
     private final StaleStats staleStats = StaleStats.getInstance();
+    private final Additions additions = Additions.getInstance();
 
     private final RegistryDelegate<Element>[] characterElementsUnmodified = characterElements_800c706c.clone();
 
@@ -89,6 +92,7 @@ public class Irongoon {
     private void refreshState() {
         characters.initialize();
         dataTables.initialize();
+        additions.initialize();
     }
 
     @EventListener
@@ -193,5 +197,10 @@ public class Irongoon {
 
         event.givenItems.clear();
         event.givenItems.addAll(limitedItems);
+    }
+
+    @EventListener
+    public void additionUnlock(final AdditionUnlockEvent addition) {
+        addition.additionLevel = additions.getUnlockLevelById(addition.additionId);
     }
 }
