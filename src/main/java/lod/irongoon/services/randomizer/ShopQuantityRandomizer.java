@@ -16,7 +16,7 @@ public class ShopQuantityRandomizer {
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
-    public int maintainStock(List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public int maintainStock(List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         return contents.size();
     }
 

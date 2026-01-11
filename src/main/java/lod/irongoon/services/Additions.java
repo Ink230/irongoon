@@ -20,14 +20,14 @@ public class Additions {
     public void initialize() {
         additions.clear();
 
-        int totalAdditions = additionUnlockParser.getTotalAdditions();
+        var totalAdditions = additionUnlockParser.getTotalAdditions();
 
         for (int i = 0; i < totalAdditions; i++) {
-            int id = additionUnlockParser.getAdditionId(i);
-            String name = additionUnlockParser.getAdditionName(i).trim();
-            int unlockLevel = additionUnlockParser.getAdditionUnlockLevel(i);
+            var id = additionUnlockParser.getAdditionId(i);
+            var name = additionUnlockParser.getAdditionName(i).trim();
+            var unlockLevel = additionUnlockParser.getAdditionUnlockLevel(i);
 
-            AdditionUnlock addition = new AdditionUnlock(id, name, unlockLevel);
+            var addition = new AdditionUnlock(id, name, unlockLevel);
             additions.put(id, addition);
         }
     }

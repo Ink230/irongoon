@@ -163,14 +163,14 @@ public class Randomizer {
         };
     }
 
-    public int doShopQuantity(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public int doShopQuantity(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         return switch (config.shopQuantity) {
             case STOCK -> shopQuantityRandomizer.maintainStock(contents);
             case RANDOMIZE_BOUNDS -> shopQuantityRandomizer.randomBounds(shop);
         };
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> doShopAvailability(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> doShopAvailability(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         return switch (config.shopAvailability) {
             case STOCK -> shopAvailabilityRandomizer.maintainStock(contents);
             case RANDOM -> shopAvailabilityRandomizer.random(shop, contents);
@@ -180,14 +180,14 @@ public class Randomizer {
         };
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> doShopContents(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents, final int shopQuantity) {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> doShopContents(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents, final int shopQuantity) {
         final var preparedContents = shopContentsRandomizer.prepareContents(shop, contents, shopQuantity);
 
         final var randomizedContents = switch (config.shopContents) {
             case STOCK -> shopContentsRandomizer.maintainStock(shop, preparedContents);
             case RANDOMIZE_ITEMS -> shopContentsRandomizer.randomizeItems(shop, preparedContents);
             case RANDOMIZE_EQUIPMENT -> shopContentsRandomizer.randomizeEquipment(shop, preparedContents);
-            case RANDOMIZE_ALL -> shopContentsRandomizer.randomizeAll(shop, preparedContents); // randomizes each type of inventory for another type of that inventory
+            case RANDOMIZE_ALL -> shopContentsRandomizer.randomizeAll(shop, preparedContents);
             case RANDOMIZE_ALL_MIXED -> shopContentsRandomizer.randomizeAllMixed(shop, preparedContents);
         };
 

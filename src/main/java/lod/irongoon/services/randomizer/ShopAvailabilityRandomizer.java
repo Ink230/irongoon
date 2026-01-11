@@ -18,7 +18,7 @@ public class ShopAvailabilityRandomizer {
 
     private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> random(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> random(final Shop shop, final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         final var hash = Math.abs(shop.getRegistryId().hashCode());
         final var result = statRandomizer.calculateNextBoolean(hash);
         if(result) return new ArrayList<>();
@@ -26,21 +26,21 @@ public class ShopAvailabilityRandomizer {
         return new ArrayList<>(contents);
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> maintainStock(final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> maintainStock(final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         return new ArrayList<>(contents);
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> noShops() {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> noShops() {
         return new ArrayList<>();
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> noItemsInShops(final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> noItemsInShops(final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         return contents.stream()
                 .filter(entry -> !(entry.item instanceof Item))
                 .collect(Collectors.toList());
     }
 
-    public List<ShopScreen.ShopEntry<InventoryEntry>> noEquipmentInShops(final List<ShopScreen.ShopEntry<InventoryEntry>> contents) {
+    public List<ShopScreen.ShopEntry<InventoryEntry<?>>> noEquipmentInShops(final List<ShopScreen.ShopEntry<InventoryEntry<?>>> contents) {
         return contents.stream()
                 .filter(entry -> !(entry.item instanceof Equipment))
                 .collect(Collectors.toList());

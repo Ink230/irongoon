@@ -201,6 +201,8 @@ public class Irongoon {
 
     @EventListener
     public void additionUnlock(final AdditionUnlockEvent addition) {
-        addition.additionLevel = additions.getUnlockLevelById(addition.additionId);
+        var additionIdentifier = addition.addition.getRegistryId().entryId();
+        var additionUnlockLevel = additions.getUnlockLevelByName(additionIdentifier);
+        addition.additionStats.unlocked = addition.charData.level_12 >= additionUnlockLevel;
     }
 }

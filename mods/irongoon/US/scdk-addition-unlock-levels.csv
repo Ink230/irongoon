@@ -1,44 +1,44 @@
 id,name,unlockLevel
-0,Double Slash,1
-1,Volcano,2
-2,Burning Rush,8
-3,Crush Dance,15
-4,Madness Hero,22
-5,Moon Strike,29
-6,Blazing Dynamo,255
-7, ,254
-8,Harpoon,1
-9,Spinning Cane,5
-10,Rod Typhoon,7
-11,Gust of Wind Dance,11
-12,Flower Storm,255
-13, ,254
-14,Whip Smack,1
-15,More & More,14
-16,Hard Blade,19
-17,Demon's Dance,255
-18, ,254
-19,Pursuit,1
-20,Inferno,23
-21,Bone Crush,255
-22, ,254
-23,Double Smack,1
-24,Hammer Spin ,21
-25,Cool Boogie,26
-26,Cat's Cradle,30
-27,Perky Step,255
-28, ,254
-29,Double Punch,1
-30,Flurry of Styx,14
-31,Summon 4 Gods,18
-32,5 Ring Shattering,22
-33,Hex Hammer,26
-34,Omni-Sweep,255
-35, ,254
-36,Harpoon,1
-37,Spinning Cane,5
-38,Rod Typhoon,7
-39,Gust of Wind Dance,11
-40,Flower Storm,255
+0,double_slash,1
+1,volcano,3
+2,burning_rush,2
+3,crush_dance,15
+4,madness_hero,22
+5,moon_strike,29
+6,blazing_dynamo,255
+7,,254
+8,harpoon,1
+9,spinning_cane,5
+10,rod_typhoon,7
+11,gust_of_wind_dance,11
+12,flower_storm,255
+13,,254
+14,whip_smack,1
+15,more_more,14
+16,hard_blade,19
+17,demons_dance,255
+18,,254
+19,pursuit,1
+20,inferno,23
+21,bone_crush,255
+22,,254
+23,double_smack,1
+24,hammer_spin,21
+25,cool_boogie,26
+26,cats_cradle,30
+27,perky_step,255
+28,,254
+29,double_punch,1
+30,ferry_of_styx,14
+31,summon_4_gods,18
+32,five_ring_shattering,22
+33,hex_hammer,26
+34,omni_sweep,255
+35,,254
+36,albert_harpoon,1
+37,albert_spinning_cane,5
+38,albert_rod_typhoon,7
+39,albert_gust_of_wind_dance,11
+40,albert_flower_storm,255
 41,,254
 42,,254
