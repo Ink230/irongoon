@@ -2,16 +2,19 @@ package lod.irongoon;
 
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
+import legend.core.Registries;
 import legend.game.characters.Element;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
+import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
-import legend.game.modding.events.submap.SubmapGenerateEncounterEvent;
+import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
+import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
@@ -19,6 +22,7 @@ import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.services.Additions;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
+import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
 import org.legendofdragoon.modloader.registries.RegistryDelegate;
 import org.legendofdragoon.modloader.registries.RegistryId;
@@ -68,7 +72,7 @@ public class Irongoon {
         CONFIG_REGISTRAR.registryEvent(event);
     }
 
-    @EventListener
+    @EventListener(priority = Priority.LOW)
     public void newGame(final NewGameEvent game) {
         if (config.useRandomSeedOnNewCampaign) {
             config.publicSeed = config.campaignSeed;
@@ -166,15 +170,28 @@ public class Irongoon {
     }
 
     @EventListener
-    public void encounterData(final SubmapGenerateEncounterEvent encounter) {
-        if(encounter.encounterId == 431) return;
-        var submapId = submapCut_80052c30;
-        encounter.battleStageId = randomizer.doBattleStage(encounter.battleStageId, encounter.encounterId, submapId);
+    public void submapEncounterData(final SubmapEncounterEvent event) {
+        processEncounter(event, submapCut_80052c30);
+    }
 
-        final var randomizedBattleParty = randomizer.doBattleParty(gameState_800babc8.charData_32c, gameState_800babc8.charIds_88);
-        for(int i = 0; i < gameState_800babc8.charIds_88.length; i++) {
-            gameState_800babc8.charIds_88[i] = randomizedBattleParty[i];
-        }
+    @EventListener
+    public void worldmapEncounterData(final WorldMapEncounterEvent event) {
+        processEncounter(event, event.directionalPathSegment.pathSegmentIndexAndDirection_00);
+    }
+
+    private void processEncounter(final EncounterEvent event, final int mapIdentifierId) {
+        var encounterEntryId = event.encounter.getRegistryId().entryId().toString();
+
+        if(encounterEntryId.equals("zackwell_lavitzs_spirit")) return;
+
+        var encounterUniqueId = encounterEntryId.hashCode();
+        var gameState = event.getGameState();
+
+        event.battleStageId = randomizer.doBattleStage(event.battleStageId, encounterUniqueId, mapIdentifierId);
+
+        var charIds = gameState.charIds_88;
+        var randomizedBattleParty = randomizer.doBattleParty(gameState.charData_32c, charIds);
+        System.arraycopy(randomizedBattleParty, 0, charIds, 0, charIds.length);
     }
     
     @EventListener
