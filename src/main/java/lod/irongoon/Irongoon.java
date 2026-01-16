@@ -4,21 +4,27 @@ import com.github.slugify.Slugify;
 import legend.core.GameEngine;
 import legend.core.Registries;
 import legend.game.characters.Element;
+import legend.game.inventory.Equipment;
+import legend.game.inventory.EquipmentRegistryEvent;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
+import legend.game.modding.events.inventory.EquipmentStatsEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
+import legend.game.types.EquipmentSlot;
+import legend.lodmod.LodEquipment;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.data.EnableAllCharacters;
+import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
 import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
@@ -36,6 +42,7 @@ import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.StreamSupport;
 
@@ -221,5 +228,10 @@ public class Irongoon {
         var additionIdentifier = addition.addition.getRegistryId().entryId();
         var additionUnlockLevel = additions.getUnlockLevelByName(additionIdentifier);
         addition.additionStats.unlocked = addition.charData.level_12 >= additionUnlockLevel;
+    }
+
+    @EventListener
+    public void registerEquipment(final EquipmentRegistryEvent event) {
+        IrongoonEquipment.register(event);
     }
 }

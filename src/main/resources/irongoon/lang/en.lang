@@ -1,3 +1,25 @@
 irongoon.name=Irongoon
 
 irongoon.config.irongoon_campaign_seed.label=Irongoon Campaign Seed
+
+
+irongoon.equipment.broad_sword.name=Tasman's Edge
+irongoon.equipment.broad_sword.description=
+
+irongoon.equipment.spear.name=Basil Spear
+irongoon.equipment.spear.description=
+
+irongoon.equipment.short_bow.name=Bendy Bow
+irongoon.equipment.short_bow.description=
+
+irongoon.equipment.rapier.name=Estoc
+irongoon.equipment.rapier.description=
+
+irongoon.equipment.iron_knuckle.name=Fisty Cuffs
+irongoon.equipment.iron_knuckle.description=
+
+irongoon.equipment.axe.name=Kongol's Axe
+irongoon.equipment.axe.description=
+
+irongoon.equipment.mace.name=Fishing Oar
+irongoon.equipment.mace.description=
