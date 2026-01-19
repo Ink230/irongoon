@@ -118,7 +118,7 @@ dependencies {
 
   api 'org.yaml:snakeyaml:2.2'
 
-  implementation(files("$projectDir/lod-game-snapshot-2.jar"))
+  compileOnly(files("$projectDir/lod-game-snapshot-2.jar"))
 }
 
 javafx {
@@ -181,5 +181,11 @@ sourceSets {
       srcDirs = ["src/main/java"]
       exclude ".gradle", "build", "files"
     }
+  }
+}
+
+shadowJar {
+  dependencies {
+    exclude(dependency(files("$projectDir/lod-game-snapshot-2.jar")))
   }
 }

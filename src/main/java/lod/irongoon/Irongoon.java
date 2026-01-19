@@ -12,6 +12,7 @@ import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
+import legend.game.modding.events.input.InputPressedEvent;
 import legend.game.modding.events.inventory.EquipmentStatsEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
@@ -233,5 +234,11 @@ public class Irongoon {
     @EventListener
     public void registerEquipment(final EquipmentRegistryEvent event) {
         IrongoonEquipment.register(event);
+    }
+
+    @EventListener
+    public void inputEvent(final InputPressedEvent event) {
+        var t = event.action;
+        var r = "";
     }
 }
