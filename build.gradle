@@ -118,7 +118,7 @@ dependencies {
 
   api 'org.yaml:snakeyaml:2.2'
 
-  compileOnly(files("$projectDir/lod-game-snapshot-2.jar"))
+  implementation (files("$projectDir/lod-game-snapshot-2.jar"))
 }
 
 javafx {

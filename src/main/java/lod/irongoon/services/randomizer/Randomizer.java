@@ -321,8 +321,8 @@ public class Randomizer {
 
     public void enableAllCharacters(final SubmapWarpEvent game) {
         if((game.submapCut == 10 && config.enableAllCharacters == EnableAllCharacters.STORY_CONTROLLED) || config.enableAllCharacters == EnableAllCharacters.PERMANENTLY) {
-            for(var i = 0; i < game.gameState.charData_32c.length; i++) {
-                game.gameState.charData_32c[i].partyFlags_04 |= 0x3;
+            for(var i = 0; i < game.getGameState().charData_32c.length; i++) {
+                game.getGameState().charData_32c[i].partyFlags_04 |= 0x3;
             }
         }
     }
