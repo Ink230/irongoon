@@ -2,9 +2,7 @@ package lod.irongoon;
 
 import com.github.slugify.Slugify;
 import legend.core.GameEngine;
-import legend.core.Registries;
 import legend.game.characters.Element;
-import legend.game.inventory.Equipment;
 import legend.game.inventory.EquipmentRegistryEvent;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleMusicEvent;
@@ -12,19 +10,14 @@ import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
-import legend.game.modding.events.input.InputPressedEvent;
-import legend.game.modding.events.inventory.EquipmentStatsEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
-import legend.game.types.EquipmentSlot;
-import legend.lodmod.LodEquipment;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
-import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
 import lod.irongoon.services.StaleStats;
@@ -43,12 +36,9 @@ import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.stream.StreamSupport;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
-import static legend.game.Scus94491BpeSegment_800b.gameState_800babc8;
 import static legend.game.combat.Battle.characterElements_800c706c;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
@@ -168,9 +158,7 @@ public class Irongoon {
         // stage.victoryType = randomizer.doVictory(stage.victoryIndex);
 
         final var randomizedElements = randomizer.doCharacterElement(characterElementsUnmodified);
-        for (int i = 0; i < randomizedElements.length; i++) {
-            characterElements_800c706c[i] = randomizedElements[i];
-        }
+        System.arraycopy(randomizedElements, 0, characterElements_800c706c, 0, randomizedElements.length);
     }
 
     public void stageEscapeChance() {
@@ -199,7 +187,14 @@ public class Irongoon {
 
         var charIds = gameState.charIds_88;
         var randomizedBattleParty = randomizer.doBattleParty(gameState.charData_32c, charIds);
-        System.arraycopy(randomizedBattleParty, 0, charIds, 0, charIds.length);
+
+        for (int i = 0; i < charIds.length; i++) {
+            if (i < randomizedBattleParty.length) {
+                charIds[i] = randomizedBattleParty[i];
+            } else {
+                charIds[i] = -1;
+            }
+        }
     }
     
     @EventListener
@@ -234,11 +229,5 @@ public class Irongoon {
     @EventListener
     public void registerEquipment(final EquipmentRegistryEvent event) {
         IrongoonEquipment.register(event);
-    }
-
-    @EventListener
-    public void inputEvent(final InputPressedEvent event) {
-        var t = event.action;
-        var r = "";
     }
 }

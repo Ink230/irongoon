@@ -1,11 +1,9 @@
 package lod.irongoon.services.randomizer;
 
 import legend.game.types.CharacterData2c;
-import legend.game.types.GameState52c;
 import lod.irongoon.config.IrongoonConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -16,21 +14,20 @@ public class BattlePartyRandomizer {
     private BattlePartyRandomizer() {}
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
-    private final StatsRandomizer statRandomizer = StatsRandomizer.getInstance();
 
-    public int[] maintainStock(final CharacterData2c[] characterData, final int[] battleParty) {
+    public int[] maintainStock(final int[] battleParty) {
         return battleParty;
     }
 
-    public int[] randomizeCampaign(final CharacterData2c[] characterData, final int[] battleParty) {
-        return battlePartyRandomizer(characterData, battleParty, true);
+    public int[] randomizeCampaign(final CharacterData2c[] characterData) {
+        return battlePartyRandomizer(characterData, true);
     }
 
-    public int[] randomizeBattle(final CharacterData2c[] characterData, final int[] battleParty) {
-        return battlePartyRandomizer(characterData, battleParty, false);
+    public int[] randomizeBattle(final CharacterData2c[] characterData) {
+        return battlePartyRandomizer(characterData, false);
     }
 
-    private int[] battlePartyRandomizer(final CharacterData2c[] characterData, final int[] battleParty, final boolean seeded) {
+    private int[] battlePartyRandomizer(final CharacterData2c[] characterData, final boolean seeded) {
         final var battlePartyDuplicates = config.battlePartyDuplicates;
         final var battlePartySize = config.battlePartySize;
         final var battlePartyPool = config.battlePartyPool.isEmpty()

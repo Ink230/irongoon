@@ -206,7 +206,7 @@ public class Randomizer {
                 .filter(Objects::nonNull)
                 .filter(stack -> !stack.isEmpty())
                 .collect(Collectors.toMap(
-                        stack -> stack.getItem(),
+                        ItemStack::getItem,
                         ItemStack::getSize,
                         Integer::sum
                 ));
@@ -239,20 +239,16 @@ public class Randomizer {
     }
 
     public RegistryDelegate<Element>[] doCharacterElement(RegistryDelegate<Element>[] characterElements) {
-        final var randomizedElements = switch (config.characterElements) {
+        return switch (config.characterElements) {
             case STOCK -> characterElements;
             case RANDOM_CAMPAIGN -> characterElementRandomizer.randomizeCampaign(characterElements);
             case RANDOM_BATTLE -> characterElementRandomizer.randomizeBattle(characterElements);
         };
-
-        return randomizedElements;
     }
 
     public void setLevelOneParty(final GameState52c game) {
         if(config.enableAllCharacters != EnableAllCharacters.STOCK) {
-            for(var i = 0; i < NewGame.characterStartingLevels.length; i++) {
-                NewGame.characterStartingLevels[i] = 1;
-            }
+            Arrays.fill(NewGame.characterStartingLevels, 1);
 
             final Map<EquipmentSlot, Equipment> dart = game.charData_32c[0].equipment_14;
             dart.put(EquipmentSlot.WEAPON, IrongoonEquipment.BROAD_SWORD.get());
@@ -328,12 +324,10 @@ public class Randomizer {
     }
 
     public int[] doBattleParty(final CharacterData2c[] characterData, final int[] battleParty) {
-        final var randomizedBattleParty = switch (config.battleParty) {
-            case STOCK -> battlePartyRandomizer.maintainStock(characterData, battleParty);
-            case RANDOM_CAMPAIGN -> battlePartyRandomizer.randomizeCampaign(characterData, battleParty);
-            case RANDOM_BATTLE -> battlePartyRandomizer.randomizeBattle(characterData, battleParty);
+        return switch (config.battleParty) {
+            case STOCK -> battlePartyRandomizer.maintainStock(battleParty);
+            case RANDOM_CAMPAIGN -> battlePartyRandomizer.randomizeCampaign(characterData);
+            case RANDOM_BATTLE -> battlePartyRandomizer.randomizeBattle(characterData);
         };
-
-        return randomizedBattleParty;
     }
 }
