@@ -1,6 +1,7 @@
 package lod.irongoon.services.randomizer;
 
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import legend.game.characters.Element;
 import legend.game.inventory.Equipment;
 import legend.game.inventory.InventoryEntry;
@@ -10,7 +11,6 @@ import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
-import legend.game.title.NewGame;
 import legend.game.types.CharacterData2c;
 import legend.game.types.EquipmentSlot;
 import legend.game.types.GameState52c;
@@ -24,6 +24,8 @@ import org.legendofdragoon.modloader.registries.RegistryDelegate;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static legend.game.SItem.*;
 
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
@@ -248,7 +250,16 @@ public class Randomizer {
 
     public void setLevelOneParty(final GameState52c game) {
         if(config.enableAllCharacters != EnableAllCharacters.STOCK) {
-            Arrays.fill(NewGame.characterStartingLevels, 1);
+
+            var chars = game.charData_32c;
+            var i = 0;
+            for (var character : chars) {
+                character.level_12 = 1;
+                character.hp_08 = levelStuff_80111cfc[i][1].hp_00;
+                character.mp_0a = magicStuff_80111d20[i][1].mp_00;
+                character.xp_00 = xpTables[i][1];
+                i++;
+            }
 
             final Map<EquipmentSlot, Equipment> dart = game.charData_32c[0].equipment_14;
             dart.put(EquipmentSlot.WEAPON, IrongoonEquipment.BROAD_SWORD.get());
@@ -323,7 +334,7 @@ public class Randomizer {
         }
     }
 
-    public int[] doBattleParty(final CharacterData2c[] characterData, final int[] battleParty) {
+    public IntList doBattleParty(final CharacterData2c[] characterData, final IntList battleParty ) {
         return switch (config.battleParty) {
             case STOCK -> battlePartyRandomizer.maintainStock(battleParty);
             case RANDOM_CAMPAIGN -> battlePartyRandomizer.randomizeCampaign(characterData);

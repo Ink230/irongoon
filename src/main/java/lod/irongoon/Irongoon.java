@@ -187,12 +187,13 @@ public class Irongoon {
 
         var charIds = gameState.charIds_88;
         var randomizedBattleParty = randomizer.doBattleParty(gameState.charData_32c, charIds);
+        var size = charIds.size();
 
-        for (int i = 0; i < charIds.length; i++) {
-            if (i < randomizedBattleParty.length) {
-                charIds[i] = randomizedBattleParty[i];
+        for (int i = 0; i < size; i++) {
+            if (i < randomizedBattleParty.size()) {
+                charIds.set(i, randomizedBattleParty.getInt(i));
             } else {
-                charIds[i] = -1;
+                charIds.set(i, -1);
             }
         }
     }
