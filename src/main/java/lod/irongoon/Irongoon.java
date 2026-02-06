@@ -5,6 +5,7 @@ import legend.core.GameEngine;
 import legend.game.characters.Element;
 import legend.game.inventory.EquipmentRegistryEvent;
 import legend.game.inventory.ItemStack;
+import legend.game.modding.events.battle.BattleEntityTurnEvent;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
+import static legend.game.Scus94491BpeSegment_8006.battleState_8006e398;
 import static legend.game.combat.Battle.characterElements_800c706c;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
@@ -187,14 +189,10 @@ public class Irongoon {
 
         var charIds = gameState.charIds_88;
         var randomizedBattleParty = randomizer.doBattleParty(gameState.charData_32c, charIds);
-        var size = charIds.size();
+        charIds.clear();
 
-        for (int i = 0; i < size; i++) {
-            if (i < randomizedBattleParty.size()) {
-                charIds.set(i, randomizedBattleParty.getInt(i));
-            } else {
-                charIds.set(i, -1);
-            }
+        for (int i = 0; i < randomizedBattleParty.size(); i++) {
+            charIds.add(randomizedBattleParty.getInt(i));
         }
     }
     
