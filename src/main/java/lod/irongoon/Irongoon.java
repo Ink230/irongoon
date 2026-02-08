@@ -222,7 +222,9 @@ public class Irongoon {
     public void additionUnlock(final AdditionUnlockEvent addition) {
         var additionIdentifier = addition.addition.getRegistryId().entryId();
         var additionUnlockLevel = additions.getUnlockLevelByName(additionIdentifier);
-        addition.additionStats.unlocked = addition.charData.level_12 >= additionUnlockLevel;
+        if(addition.charData.level_12 < additionUnlockLevel) {
+            addition.cancel();
+        }
     }
 
     @EventListener
