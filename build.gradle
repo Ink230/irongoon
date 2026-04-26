@@ -34,7 +34,7 @@ java {
 
 compileJava.options.encoding = 'UTF-8'
 
-project.ext.lwjglVersion = "3.4.0-SNAPSHOT"
+project.ext.lwjglVersion = "3.4.1"
 project.ext.jomlVersion = "1.10.8"
 
 final def operatingSystem = hasProperty("os") ? OperatingSystem.forName(os) : OperatingSystem.current()
@@ -71,7 +71,7 @@ repositories {
 
 dependencies {
   api group: 'org.legendofdragoon', name: 'mod-loader', version: '4.2.2'
-  api group: 'org.legendofdragoon', name: 'script-recompiler', version: '0.6.1'
+  api group: 'org.legendofdragoon', name: 'script-recompiler', version: '0.6.2'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.24.3'
   implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.24.3'

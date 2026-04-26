@@ -1,12 +1,15 @@
 package lod.irongoon;
 
 import com.github.slugify.Slugify;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import legend.core.GameEngine;
 import legend.game.characters.Element;
 import legend.game.inventory.EquipmentRegistryEvent;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleEntityTurnEvent;
 import legend.game.modding.events.battle.BattleMusicEvent;
+import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
@@ -168,6 +171,11 @@ public class Irongoon {
     }
 
     @EventListener
+    public void t(final BattleStartedEvent event) {
+        System.out.println("test");
+    }
+
+    @EventListener
     public void submapEncounterData(final SubmapEncounterEvent event) {
         processEncounter(event, submapCut_80052c30);
     }
@@ -188,12 +196,9 @@ public class Irongoon {
         event.battleStageId = randomizer.doBattleStage(event.battleStageId, encounterUniqueId, mapIdentifierId);
 
         var charIds = gameState.charIds_88;
-        var randomizedBattleParty = randomizer.doBattleParty(gameState.charData_32c, charIds);
+        var randomizedBattleParty = new IntArrayList(randomizer.doBattleParty(gameState.charData_32c, charIds));
         charIds.clear();
-
-        for (int i = 0; i < randomizedBattleParty.size(); i++) {
-            charIds.add(randomizedBattleParty.getInt(i));
-        }
+        charIds.addAll(randomizedBattleParty);
     }
     
     @EventListener
