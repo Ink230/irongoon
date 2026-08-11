@@ -27,6 +27,12 @@ A default configuration file is included in the latest release. This can be more
 Please see the [Config Reference](https://github.com/Ink230/irongoon/wiki/Config-Reference) for an explanation on all the settings.
 
 
+## Game data sources
+
+Irongoon loads character, Dragoon, monster, and addition-unlock data from Severed Chains by default. Set `csvDataOverrides: TRUE` in `mods/irongoon/config.yaml` to replace individual datasets with matching files in `mods/irongoon/US/`. When overrides are enabled, a missing CSV falls back to Severed Chains data; a present but invalid CSV fails with a descriptive error. Startup logs identify the selected source and the reason for each dataset.
+
+The bundled `scdk-addition-stats.csv` is not a runtime dependency and is not loaded.
+
 # Contributing
 
 Anyone is welcome to contribute via Pull Requests or ideas on [Discord](https://discord.gg/legendofdragoon).
