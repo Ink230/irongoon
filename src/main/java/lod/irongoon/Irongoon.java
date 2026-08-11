@@ -4,6 +4,7 @@ import com.github.slugify.Slugify;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import legend.core.GameEngine;
+import legend.game.characters.CharacterData2c;
 import legend.game.characters.Element;
 import legend.game.inventory.EquipmentRegistryEvent;
 import legend.game.inventory.ItemStack;
@@ -12,6 +13,8 @@ import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
+import legend.game.modding.events.characters.PostCharacterDragoonLevelUpEvent;
+import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
@@ -24,19 +27,16 @@ import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
-import lod.irongoon.services.StaleStats;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
 import org.legendofdragoon.modloader.registries.RegistryDelegate;
 import org.legendofdragoon.modloader.registries.RegistryId;
 import org.legendofdragoon.modloader.Mod;
-import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.gamestate.GameLoadedEvent;
 
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.services.randomizer.Randomizer;
-import lod.irongoon.services.Characters;
 import lod.irongoon.services.DataTables;
 
 import java.util.List;
@@ -59,9 +59,7 @@ public class Irongoon {
     private static final Registrar<ConfigEntry<?>, ConfigRegistryEvent> CONFIG_REGISTRAR = new Registrar<>(GameEngine.REGISTRIES.config, MOD_ID);
     private static final RegistryDelegate<SeedConfigEntry> IRONGOON_CAMPAIGN_SEED = CONFIG_REGISTRAR.register("irongoon_campaign_seed", () -> new SeedConfigEntry(randomizer.retrieveNewCampaignSeed()));
 
-    private final Characters characters = Characters.getInstance();
     private final DataTables dataTables = DataTables.getInstance();
-    private final StaleStats staleStats = StaleStats.getInstance();
     private final Additions additions = Additions.getInstance();
 
     private final RegistryDelegate<Element>[] characterElementsUnmodified = characterElements_800c706c.clone();
@@ -97,7 +95,6 @@ public class Irongoon {
     }
 
     private void refreshState() {
-        characters.initialize();
         dataTables.initialize();
         additions.initialize();
     }
@@ -108,31 +105,24 @@ public class Irongoon {
     }
 
     @EventListener
-    public void characterStats(final CharacterStatsEvent character) {
-        if (!staleStats.isCharacterStale(character)) {
-            characters.updateCharacterByReferenceCharacter(character);
-            return;
-        }
+  public void characterLevelUp(final PostCharacterLevelUpEvent event) {
+    final int characterId = getCharacterId(event.character);
+    if(characterId < 0) return;
 
-        DivineFruit bodyStatsRandomized = randomizer.doCharacterStats(character);
-        DivineFruit dragoonStatsRandomized = randomizer.doDragoonStats(character);
-        DivineFruit hpStatRandomized = randomizer.doCharacterHP(character);
-        DivineFruit speedStatRandomized = randomizer.doCharacterSpeed(character);
+    randomizer.applyCharacterStats(event.character, characterId);
 
-        character.bodyAttack = bodyStatsRandomized.bodyAttack;
-        character.bodyDefence = Math.max(1, bodyStatsRandomized.bodyDefense);
-        character.bodyMagicAttack = bodyStatsRandomized.bodyMagicAttack;
-        character.bodyMagicDefence =Math.max(1,  bodyStatsRandomized.bodyMagicDefense);
+    }
 
-        character.dragoonAttack = dragoonStatsRandomized.dragoonAttack;
-        character.dragoonDefence = Math.max(1, dragoonStatsRandomized.dragoonDefense);
-        character.dragoonMagicAttack = dragoonStatsRandomized.dragoonMagicAttack;
-        character.dragoonMagicDefence = Math.max(1, dragoonStatsRandomized.dragoonMagicDefense);
+    @EventListener
+    public void characterDragoonLevelUp(final PostCharacterDragoonLevelUpEvent event) {
+        final int characterId = getCharacterId(event.character);
+        if(characterId < 0) return;
 
-        character.maxHp = hpStatRandomized.maxHP;
-        character.bodySpeed = speedStatRandomized.bodySpeed;
+        randomizer.applyDragoonStats(event.character, characterId);
+    }
 
-        characters.saveCharacter(character);
+    private int getCharacterId(final CharacterData2c character) {
+        return character.gameState.charData_32c.indexOf(character);
     }
 
     @EventListener

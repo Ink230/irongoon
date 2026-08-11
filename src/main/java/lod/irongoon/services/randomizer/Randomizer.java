@@ -3,15 +3,14 @@ package lod.irongoon.services.randomizer;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import legend.game.characters.Element;
+import legend.game.characters.CharacterData2c;
 import legend.game.inventory.Equipment;
 import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.Item;
 import legend.game.inventory.ItemStack;
 import legend.game.inventory.screens.ShopScreen;
 import legend.game.modding.events.battle.MonsterStatsEvent;
-import legend.game.modding.events.characters.CharacterStatsEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
-import legend.game.types.CharacterData2c;
 import legend.game.types.EquipmentSlot;
 import legend.game.types.GameState52c;
 import legend.game.types.Shop;
@@ -24,6 +23,18 @@ import org.legendofdragoon.modloader.registries.RegistryDelegate;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static legend.lodmod.LodMod.ATTACK_STAT;
+import static legend.lodmod.LodMod.DEFENSE_STAT;
+import static legend.lodmod.LodMod.DRAGOON_ATTACK_STAT;
+import static legend.lodmod.LodMod.DRAGOON_DEFENSE_STAT;
+import static legend.lodmod.LodMod.DRAGOON_MAGIC_ATTACK_STAT;
+import static legend.lodmod.LodMod.DRAGOON_MAGIC_DEFENSE_STAT;
+import static legend.lodmod.LodMod.HP_STAT;
+import static legend.lodmod.LodMod.MAGIC_ATTACK_STAT;
+import static legend.lodmod.LodMod.MAGIC_DEFENSE_STAT;
+import static legend.lodmod.LodMod.MP_STAT;
+import static legend.lodmod.LodMod.SPEED_STAT;
 
 import static legend.game.SItem.*;
 
@@ -56,44 +67,67 @@ public class Randomizer {
         return config.campaignSeed;
     }
 
-    public DivineFruit doCharacterStats(CharacterStatsEvent character) {
+    public DivineFruit doCharacterStats(final int characterId, final int level) {
         return switch (config.bodyTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS_PER_LEVEL ->
-                    characterStatsRandomizer.randomizeWithBounds(character.characterId, character.level);
+                    characterStatsRandomizer.randomizeWithBounds(characterId, level);
             case MAINTAIN_STOCK ->
-                    characterStatsRandomizer.randomizeMaintainStock(character.characterId, character.level);
+                    characterStatsRandomizer.randomizeMaintainStock(characterId, level);
             case AVERAGE_ALL_CHARACTERS ->
-                    characterStatsRandomizer.randomizeAverage(character.characterId, character.level);
-            case STOCK -> characterStatsRandomizer.stock(character.characterId, character.level);
+                    characterStatsRandomizer.randomizeAverage(characterId, level);
+            case STOCK -> characterStatsRandomizer.stock(characterId, level);
         };
     }
 
-    public DivineFruit doCharacterHP(CharacterStatsEvent character) {
+    public DivineFruit doCharacterHP(final int characterId, final int level) {
         return switch (config.hpStatPerLevel) {
-            case MAINTAIN_STOCK -> characterHPRandomizer.randomizeMaintainStock(character.characterId, character.level);
-            case RANDOMIZE_BOUNDS_PER_LEVEL -> characterHPRandomizer.randomizeWithBounds(character.characterId, character.level);
-            case RANDOMIZE_STOCK_BOUNDS -> characterHPRandomizer.randomizeStockWithBounds(character.characterId, character.level);
-            case RANDOMIZE_RANDOM_STOCK_BOUNDS -> characterHPRandomizer.randomizeRandomStockWithBounds(character.characterId, character.level);
-            case RANDOMIZE_BOUNDS_PERCENT_MODIFIED_PER_LEVEL -> characterHPRandomizer.randomizeWithBoundsAndPercentModifiers(character.characterId, character.level);
+            case MAINTAIN_STOCK -> characterHPRandomizer.randomizeMaintainStock(characterId, level);
+            case RANDOMIZE_BOUNDS_PER_LEVEL -> characterHPRandomizer.randomizeWithBounds(characterId, level);
+            case RANDOMIZE_STOCK_BOUNDS -> characterHPRandomizer.randomizeStockWithBounds(characterId, level);
+            case RANDOMIZE_RANDOM_STOCK_BOUNDS -> characterHPRandomizer.randomizeRandomStockWithBounds(characterId, level);
+            case RANDOMIZE_BOUNDS_PERCENT_MODIFIED_PER_LEVEL -> characterHPRandomizer.randomizeWithBoundsAndPercentModifiers(characterId, level);
         };
     }
 
-    public DivineFruit doCharacterSpeed(CharacterStatsEvent character) {
+    public DivineFruit doCharacterSpeed(final int characterId, final int level) {
         return switch(config.speedStatPerLevel) {
-            case MAINTAIN_STOCK -> characterSpeedRandomizer.randomizeMaintainStock(character.characterId, character.level);
-            case RANDOMIZE_BOUNDS -> characterSpeedRandomizer.randomizeWithBounds(character.characterId, character.level);
-            case RANDOMIZE_RANDOM_BOUNDS -> characterSpeedRandomizer.randomizeStockWithBounds(character.characterId, character.level);
+            case MAINTAIN_STOCK -> characterSpeedRandomizer.randomizeMaintainStock(characterId, level);
+            case RANDOMIZE_BOUNDS -> characterSpeedRandomizer.randomizeWithBounds(characterId, level);
+            case RANDOMIZE_RANDOM_BOUNDS -> characterSpeedRandomizer.randomizeStockWithBounds(characterId, level);
         };
     }
 
-    public DivineFruit doDragoonStats(CharacterStatsEvent dragoon) {
+    public DivineFruit doDragoonStats(final int characterId, final int dlevel) {
         return switch (config.dragoonTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS_PER_LEVEL ->
-                    dragoonStatsRandomizer.randomizeWithBounds(dragoon.characterId, dragoon.dlevel);
-            case MAINTAIN_STOCK -> dragoonStatsRandomizer.randomizeMaintainStock(dragoon.characterId, dragoon.dlevel);
-            case AVERAGE_ALL_CHARACTERS -> dragoonStatsRandomizer.randomizeAverage(dragoon.characterId, dragoon.dlevel);
-            case STOCK -> dragoonStatsRandomizer.stock(dragoon.characterId, dragoon.dlevel);
+                    dragoonStatsRandomizer.randomizeWithBounds(characterId, dlevel);
+            case MAINTAIN_STOCK -> dragoonStatsRandomizer.randomizeMaintainStock(characterId, dlevel);
+            case AVERAGE_ALL_CHARACTERS -> dragoonStatsRandomizer.randomizeAverage(characterId, dlevel);
+            case STOCK -> dragoonStatsRandomizer.stock(characterId, dlevel);
         };
+    }
+
+    public void applyCharacterStats(final CharacterData2c character, final int characterId) {
+        final DivineFruit bodyStats = doCharacterStats(characterId, character.level_12);
+        final DivineFruit hpStat = doCharacterHP(characterId, character.level_12);
+        final DivineFruit speedStat = doCharacterSpeed(characterId, character.level_12);
+
+        character.stats.getStat(ATTACK_STAT.get()).setRaw(bodyStats.bodyAttack);
+        character.stats.getStat(DEFENSE_STAT.get()).setRaw(Math.max(1, bodyStats.bodyDefense));
+        character.stats.getStat(MAGIC_ATTACK_STAT.get()).setRaw(bodyStats.bodyMagicAttack);
+        character.stats.getStat(MAGIC_DEFENSE_STAT.get()).setRaw(Math.max(1, bodyStats.bodyMagicDefense));
+        character.stats.getStat(HP_STAT.get()).setMaxRaw(hpStat.maxHP);
+        character.stats.getStat(SPEED_STAT.get()).setRaw(speedStat.bodySpeed);
+    }
+
+    public void applyDragoonStats(final CharacterData2c character, final int characterId) {
+        final DivineFruit dragoonStats = doDragoonStats(characterId, character.dlevel_13);
+
+        character.stats.getStat(DRAGOON_ATTACK_STAT.get()).setRaw(dragoonStats.dragoonAttack);
+        character.stats.getStat(DRAGOON_DEFENSE_STAT.get()).setRaw(Math.max(1, dragoonStats.dragoonDefense));
+        character.stats.getStat(DRAGOON_MAGIC_ATTACK_STAT.get()).setRaw(dragoonStats.dragoonMagicAttack);
+        character.stats.getStat(DRAGOON_MAGIC_DEFENSE_STAT.get()).setRaw(Math.max(1, dragoonStats.dragoonMagicDefense));
+        character.stats.getStat(MP_STAT.get()).setMaxRaw(dragoonStats.maxMP);
     }
 
     public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
