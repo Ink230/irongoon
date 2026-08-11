@@ -3,6 +3,7 @@ package lod.irongoon.services.randomizer;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 import legend.game.characters.CharacterData2c;
+import legend.game.characters.Element;
 import legend.game.inventory.Equipment;
 import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.Item;
@@ -18,6 +19,7 @@ import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.registries.IrongoonEquipment;
+import org.legendofdragoon.modloader.registries.RegistryDelegate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,8 +46,9 @@ public class Randomizer {
     private static final SeedRandomizer seedRandomizer = SeedRandomizer.getInstance();
     private final CharacterStatsRandomizer characterStatsRandomizer = CharacterStatsRandomizer.getInstance();
     private final CharacterHPRandomizer characterHPRandomizer = CharacterHPRandomizer.getInstance();
-    private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
-    private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
+  private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
+  private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
+  private final CharacterElementRandomizer characterElementRandomizer = CharacterElementRandomizer.getInstance();
     private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
@@ -134,6 +137,14 @@ public class Randomizer {
       character.stats.getStat(HP_STAT.get()).getCurrent();
       character.stats.getStat(MP_STAT.get()).getCurrent();
     }
+  }
+
+  public RegistryDelegate<Element>[] doCharacterElement(final RegistryDelegate<Element>[] characterElements) {
+    return switch(config.characterElements) {
+      case STOCK -> characterElements;
+      case RANDOM_CAMPAIGN -> characterElementRandomizer.randomizeCampaign(characterElements);
+      case RANDOM_BATTLE -> characterElementRandomizer.randomizeBattle(characterElements);
+    };
   }
 
   public DivineFruit doMonsterStats(MonsterStatsEvent monster) {

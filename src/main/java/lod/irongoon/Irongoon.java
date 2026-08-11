@@ -26,8 +26,11 @@ import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
+import lod.irongoon.data.CharacterElements;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -48,7 +51,8 @@ import static legend.game.Scus94491BpeSegment_8006.battleState_8006e398;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
 public class Irongoon {
-    public static final String MOD_ID = "irongoon";
+  public static final String MOD_ID = "irongoon";
+  private static final Logger LOGGER = LogManager.getFormatterLogger(Irongoon.class);
     private static final Slugify slug = Slugify.builder().underscoreSeparator(true).customReplacement("'", "").customReplacement("-", "_").build();
     public static RegistryId id(final String entryId) {
         return new RegistryId(MOD_ID, entryId);
@@ -84,16 +88,26 @@ public class Irongoon {
     public void gameLoaded(final GameLoadedEvent game) {
         config.regenerateConfig();
 
-        if (config.useRandomSeedOnNewCampaign) {
-            config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
-            config.seed = Long.parseLong(config.publicSeed, 16);
-        }
-
-    refreshState();
-    randomizer.reapplyAllCharacterStats(game.gameState);
+    if (config.useRandomSeedOnNewCampaign) {
+      config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
+      config.seed = Long.parseLong(config.publicSeed, 16);
     }
 
-    private void refreshState() {
+    warnUnsupportedCharacterElements();
+    refreshState();
+    randomizer.reapplyAllCharacterStats(game.gameState);
+  }
+
+  private void warnUnsupportedCharacterElements() {
+    if(config.characterElements != CharacterElements.STOCK) {
+      LOGGER.warn(
+        "Character element randomization mode %s is unsupported by this SC snapshot; stock character elements will be used until SC exposes a safe override hook",
+        config.characterElements
+      );
+    }
+  }
+
+  private void refreshState() {
         dataTables.initialize();
     additions.initialize();
     }
