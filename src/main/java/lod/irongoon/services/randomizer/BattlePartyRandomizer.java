@@ -2,10 +2,11 @@ package lod.irongoon.services.randomizer;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import legend.game.types.CharacterData2c;
+import legend.game.characters.CharacterData2c;
 import lod.irongoon.config.IrongoonConfig;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -21,26 +22,26 @@ public class BattlePartyRandomizer {
         return battleParty;
     }
 
-    public IntList randomizeCampaign(final CharacterData2c[] characterData) {
+    public IntList randomizeCampaign(final List<CharacterData2c> characterData) {
         return battlePartyRandomizer(characterData, true);
     }
 
-    public IntList randomizeBattle(final CharacterData2c[] characterData) {
+    public IntList randomizeBattle(final List<CharacterData2c> characterData) {
         return battlePartyRandomizer(characterData, false);
     }
 
-    private IntList battlePartyRandomizer(final CharacterData2c[] characterData, final boolean seeded) {
+    private IntList battlePartyRandomizer(final List<CharacterData2c> characterData, final boolean seeded) {
         final var battlePartyDuplicates = config.battlePartyDuplicates;
         final var battlePartySize = config.battlePartySize;
 
         final var battlePartyPool = config.battlePartyPool.isEmpty()
-                ? IntStream.range(0, characterData.length)
-                    .filter(i -> (characterData[i].partyFlags_04 & 0x1) != 0)
+                ? IntStream.range(0, characterData.size())
+                .filter(i -> (characterData.get(i).partyFlags_04 & 0x1) != 0)
                     .toArray()
                 : config.battlePartyPool.stream()
                     .mapToInt(Integer::intValue)
-                    .filter(i -> i >= 0 && i < characterData.length)
-                    .filter(i -> (characterData[i].partyFlags_04 & 0x1) != 0)
+                .filter(i -> i >= 0 && i < characterData.size())
+                .filter(i -> (characterData.get(i).partyFlags_04 & 0x1) != 0)
                     .toArray();
 
         final var random = seeded ? new Random(config.seed) : new Random();

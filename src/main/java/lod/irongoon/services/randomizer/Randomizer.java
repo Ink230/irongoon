@@ -36,8 +36,6 @@ import static legend.lodmod.LodMod.MAGIC_DEFENSE_STAT;
 import static legend.lodmod.LodMod.MP_STAT;
 import static legend.lodmod.LodMod.SPEED_STAT;
 
-import static legend.game.SItem.*;
-
 public class Randomizer {
     private static final Randomizer instance = new Randomizer();
     public static Randomizer getInstance() { return instance; }
@@ -289,86 +287,60 @@ public class Randomizer {
             var i = 0;
             for (var character : chars) {
                 character.level_12 = 1;
-                character.hp_08 = levelStuff_80111cfc[i][1].hp_00;
-                character.mp_0a = magicStuff_80111d20[i][1].mp_00;
-                character.xp_00 = xpTables[i][1];
+                character.xp_00 = 0;
+                applyCharacterStats(character, i);
+                applyDragoonStats(character, i);
+                character.stats.getStat(HP_STAT.get()).restore();
+                character.stats.getStat(MP_STAT.get()).restore();
                 i++;
             }
 
-            final Map<EquipmentSlot, Equipment> dart = game.charData_32c[0].equipment_14;
-            dart.put(EquipmentSlot.WEAPON, IrongoonEquipment.BROAD_SWORD.get());
-            dart.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            dart.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            dart.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_BOOTS.get());
-            dart.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c dart = game.charData_32c.get(0);
+            equipStartingGear(dart, IrongoonEquipment.BROAD_SWORD.get(), LodEquipment.LEATHER_BOOTS.get());
 
-            final Map<EquipmentSlot, Equipment> lavitz = game.charData_32c[1].equipment_14;
-            lavitz.put(EquipmentSlot.WEAPON, IrongoonEquipment.SPEAR.get());
-            lavitz.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            lavitz.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            lavitz.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_BOOTS.get());
-            lavitz.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c lavitz = game.charData_32c.get(1);
+            equipStartingGear(lavitz, IrongoonEquipment.SPEAR.get(), LodEquipment.LEATHER_BOOTS.get());
 
-            final Map<EquipmentSlot, Equipment> shana = game.charData_32c[2].equipment_14;
-            shana.put(EquipmentSlot.WEAPON, IrongoonEquipment.SHORT_BOW.get());
-            shana.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            shana.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            shana.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_SHOES.get());
-            shana.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c shana = game.charData_32c.get(2);
+            equipStartingGear(shana, IrongoonEquipment.SHORT_BOW.get(), LodEquipment.LEATHER_SHOES.get());
 
-            final Map<EquipmentSlot, Equipment> rose = game.charData_32c[3].equipment_14;
-            rose.put(EquipmentSlot.WEAPON, IrongoonEquipment.RAPIER.get());
-            rose.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            rose.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            rose.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_SHOES.get());
-            rose.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c rose = game.charData_32c.get(3);
+            equipStartingGear(rose, IrongoonEquipment.RAPIER.get(), LodEquipment.LEATHER_SHOES.get());
 
-            final Map<EquipmentSlot, Equipment> haschel = game.charData_32c[4].equipment_14;
-            haschel.put(EquipmentSlot.WEAPON, IrongoonEquipment.IRON_KNUCKLE.get());
-            haschel.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            haschel.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            haschel.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_BOOTS.get());
-            haschel.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c haschel = game.charData_32c.get(4);
+            equipStartingGear(haschel, IrongoonEquipment.IRON_KNUCKLE.get(), LodEquipment.LEATHER_BOOTS.get());
 
-            final Map<EquipmentSlot, Equipment> albert = game.charData_32c[5].equipment_14;
-            albert.put(EquipmentSlot.WEAPON, IrongoonEquipment.SPEAR.get());
-            albert.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            albert.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            albert.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_BOOTS.get());
-            albert.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c albert = game.charData_32c.get(5);
+            equipStartingGear(albert, IrongoonEquipment.SPEAR.get(), LodEquipment.LEATHER_BOOTS.get());
 
-            final Map<EquipmentSlot, Equipment> meru = game.charData_32c[6].equipment_14;
-            meru.put(EquipmentSlot.WEAPON, IrongoonEquipment.MACE.get());
-            meru.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            meru.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            meru.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_SHOES.get());
-            meru.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c meru = game.charData_32c.get(6);
+            equipStartingGear(meru, IrongoonEquipment.MACE.get(), LodEquipment.LEATHER_SHOES.get());
 
-            final Map<EquipmentSlot, Equipment> kongol = game.charData_32c[7].equipment_14;
-            kongol.put(EquipmentSlot.WEAPON, IrongoonEquipment.AXE.get());
-            kongol.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            kongol.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            kongol.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_BOOTS.get());
-            kongol.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c kongol = game.charData_32c.get(7);
+            equipStartingGear(kongol, IrongoonEquipment.AXE.get(), LodEquipment.LEATHER_BOOTS.get());
 
-            final Map<EquipmentSlot, Equipment> miranda = game.charData_32c[8].equipment_14;
-            miranda.put(EquipmentSlot.WEAPON, IrongoonEquipment.SHORT_BOW.get());
-            miranda.put(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
-            miranda.put(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
-            miranda.put(EquipmentSlot.BOOTS, LodEquipment.LEATHER_SHOES.get());
-            miranda.put(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
+            final CharacterData2c miranda = game.charData_32c.get(8);
+            equipStartingGear(miranda, IrongoonEquipment.SHORT_BOW.get(), LodEquipment.LEATHER_SHOES.get());
         }
+    }
+
+    private void equipStartingGear(final CharacterData2c character, final Equipment weapon, final Equipment boots) {
+        character.equip(EquipmentSlot.WEAPON, weapon);
+        character.equip(EquipmentSlot.HELMET, LodEquipment.BANDANA.get());
+        character.equip(EquipmentSlot.ARMOUR, LodEquipment.LEATHER_ARMOR.get());
+        character.equip(EquipmentSlot.BOOTS, boots);
+        character.equip(EquipmentSlot.ACCESSORY, LodEquipment.BRACELET.get());
     }
 
     public void enableAllCharacters(final SubmapWarpEvent game) {
         if((game.submapCut == 10 && config.enableAllCharacters == EnableAllCharacters.STORY_CONTROLLED) || config.enableAllCharacters == EnableAllCharacters.PERMANENTLY) {
-            for(var i = 0; i < game.getGameState().charData_32c.length; i++) {
-                game.getGameState().charData_32c[i].partyFlags_04 |= 0x3;
+            for(final CharacterData2c character : game.getGameState().charData_32c) {
+                character.partyFlags_04 |= 0x3;
             }
         }
     }
 
-    public IntList doBattleParty(final CharacterData2c[] characterData, final IntList battleParty ) {
+    public IntList doBattleParty(final List<CharacterData2c> characterData, final IntList battleParty) {
         return switch (config.battleParty) {
             case STOCK -> battlePartyRandomizer.maintainStock(battleParty);
             case RANDOM_CAMPAIGN -> battlePartyRandomizer.randomizeCampaign(characterData);
