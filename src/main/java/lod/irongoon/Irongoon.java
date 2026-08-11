@@ -7,6 +7,7 @@ import legend.core.GameEngine;
 import legend.game.characters.CharacterData2c;
 import legend.game.characters.Element;
 import legend.game.inventory.EquipmentRegistryEvent;
+import legend.game.inventory.GatherEquipmentTypesEvent;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleEntityTurnEvent;
 import legend.game.modding.events.battle.BattleMusicEvent;
@@ -225,5 +226,10 @@ public class Irongoon {
     @EventListener
     public void registerEquipment(final EquipmentRegistryEvent event) {
         IrongoonEquipment.register(event);
+    }
+
+    @EventListener
+    public void gatherEquipmentTypes(final GatherEquipmentTypesEvent event) {
+        IrongoonEquipment.registerEquipmentTypes(event);
     }
 }
