@@ -2,7 +2,6 @@ package lod.irongoon.services.randomizer;
 
 
 import it.unimi.dsi.fastutil.ints.IntList;
-import legend.game.characters.Element;
 import legend.game.characters.CharacterData2c;
 import legend.game.inventory.Equipment;
 import legend.game.inventory.InventoryEntry;
@@ -19,7 +18,6 @@ import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.registries.IrongoonEquipment;
-import org.legendofdragoon.modloader.registries.RegistryDelegate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +55,6 @@ public class Randomizer {
     private final ShopAvailabilityRandomizer shopAvailabilityRandomizer = ShopAvailabilityRandomizer.getInstance();
     private final ShopQuantityRandomizer shopQuantityRandomizer = ShopQuantityRandomizer.getInstance();
     private final ShopContentsRandomizer shopContentsRandomizer = ShopContentsRandomizer.getInstance();
-    private final CharacterElementRandomizer characterElementRandomizer = CharacterElementRandomizer.getInstance();
     private final BattlePartyRandomizer battlePartyRandomizer = BattlePartyRandomizer.getInstance();
 
     public static String retrieveNewCampaignSeed() {
@@ -270,14 +267,6 @@ public class Randomizer {
         }
 
         return allowed;
-    }
-
-    public RegistryDelegate<Element>[] doCharacterElement(RegistryDelegate<Element>[] characterElements) {
-        return switch (config.characterElements) {
-            case STOCK -> characterElements;
-            case RANDOM_CAMPAIGN -> characterElementRandomizer.randomizeCampaign(characterElements);
-            case RANDOM_BATTLE -> characterElementRandomizer.randomizeBattle(characterElements);
-        };
     }
 
     public void setLevelOneParty(final GameState52c game) {

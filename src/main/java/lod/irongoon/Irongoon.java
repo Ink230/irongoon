@@ -45,7 +45,6 @@ import java.util.stream.StreamSupport;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
 import static legend.game.Scus94491BpeSegment_8006.battleState_8006e398;
-import static legend.game.combat.Battle.characterElements_800c706c;
 
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
 public class Irongoon {
@@ -62,8 +61,6 @@ public class Irongoon {
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
-
-    private final RegistryDelegate<Element>[] characterElementsUnmodified = characterElements_800c706c.clone();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
@@ -153,8 +150,6 @@ public class Irongoon {
         stage.musicIndex = randomizer.doMusic(stage.musicIndex);
         // stage.victoryType = randomizer.doVictory(stage.victoryIndex);
 
-        final var randomizedElements = randomizer.doCharacterElement(characterElementsUnmodified);
-        System.arraycopy(randomizedElements, 0, characterElements_800c706c, 0, randomizedElements.length);
     }
 
     public void stageEscapeChance() {
