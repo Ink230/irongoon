@@ -125,7 +125,18 @@ public class Randomizer {
         character.stats.getStat(MP_STAT.get()).setMaxRaw(dragoonStats.maxMP);
     }
 
-    public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
+  public void reapplyAllCharacterStats(final GameState52c gameState) {
+    for(int characterId = 0; characterId < gameState.charData_32c.size(); characterId++) {
+      final CharacterData2c character = gameState.charData_32c.get(characterId);
+      applyCharacterStats(character, characterId);
+      applyDragoonStats(character, characterId);
+
+      character.stats.getStat(HP_STAT.get()).getCurrent();
+      character.stats.getStat(MP_STAT.get()).getCurrent();
+    }
+  }
+
+  public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
         return switch (config.monsterTotalStatsPerLevel) {
             case RANDOMIZE_BOUNDS -> monsterStatsRandomizer.randomizeWithBounds(monster.enemyId);
             case MAINTAIN_STOCK -> monsterStatsRandomizer.randomizeMaintainStock(monster.enemyId);

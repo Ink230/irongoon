@@ -89,12 +89,13 @@ public class Irongoon {
             config.seed = Long.parseLong(config.publicSeed, 16);
         }
 
-        refreshState();
+    refreshState();
+    randomizer.reapplyAllCharacterStats(game.gameState);
     }
 
     private void refreshState() {
         dataTables.initialize();
-        additions.initialize();
+    additions.initialize();
     }
 
     @EventListener
