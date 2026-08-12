@@ -16,6 +16,8 @@ import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.characters.PostCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
+import legend.game.modding.events.characters.PreCharacterDragoonLevelUpEvent;
+import legend.game.modding.events.characters.PreCharacterLevelUpEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
@@ -42,6 +44,7 @@ import legend.game.modding.events.gamestate.GameLoadedEvent;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.services.randomizer.Randomizer;
 import lod.irongoon.services.DataTables;
+import lod.irongoon.services.data.SeveredChainsLiveDataAdapter;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -65,6 +68,7 @@ public class Irongoon {
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
+    private final SeveredChainsLiveDataAdapter liveData = new SeveredChainsLiveDataAdapter();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
@@ -118,12 +122,17 @@ public class Irongoon {
     }
 
     @EventListener
-  public void characterLevelUp(final PostCharacterLevelUpEvent event) {
+    public void characterLevelUp(final PostCharacterLevelUpEvent event) {
     final int characterId = getCharacterId(event.character);
     if(characterId < 0) return;
 
     randomizer.applyCharacterStats(event.character, characterId);
 
+    }
+
+    @EventListener(priority = Priority.LOWEST)
+    public void ingestCharacterLevelUp(final PreCharacterLevelUpEvent event) {
+        this.liveData.updateCharacterStats(event);
     }
 
     @EventListener
@@ -134,12 +143,19 @@ public class Irongoon {
         randomizer.applyDragoonStats(event.character, characterId);
     }
 
+    @EventListener(priority = Priority.LOWEST)
+    public void ingestCharacterDragoonLevelUp(final PreCharacterDragoonLevelUpEvent event) {
+        this.liveData.updateDragoonStats(event);
+    }
+
     private int getCharacterId(final CharacterData2c character) {
         return character.gameState.charData_32c.indexOf(character);
     }
 
-    @EventListener
+    @EventListener(priority = Priority.LOWEST)
     public void monsterStats(final MonsterStatsEvent monster) {
+        this.liveData.updateMonsterStats(monster);
+
         DivineFruit monsterStatsRandomized = randomizer.doMonsterStats(monster);
         DivineFruit monsterHPRandomized = randomizer.doMonsterHP(monster);
         DivineFruit monsterSpeedRandomized = randomizer.doMonsterSpeed(monster);
