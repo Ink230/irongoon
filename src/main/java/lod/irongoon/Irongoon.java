@@ -18,6 +18,7 @@ import legend.game.modding.events.characters.PostCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
 import legend.game.modding.events.characters.PreCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PreCharacterLevelUpEvent;
+import legend.game.modding.events.characters.ResolveCharacterElementEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
@@ -28,11 +29,8 @@ import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
-import lod.irongoon.data.CharacterElements;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -55,7 +53,6 @@ import static legend.game.Scus94491BpeSegment_8006.battleState_8006e398;
 @Mod(id = Irongoon.MOD_ID, version = "^3.0.0")
 public class Irongoon {
   public static final String MOD_ID = "irongoon";
-  private static final Logger LOGGER = LogManager.getFormatterLogger(Irongoon.class);
     private static final Slugify slug = Slugify.builder().underscoreSeparator(true).customReplacement("'", "").customReplacement("-", "_").build();
     public static RegistryId id(final String entryId) {
         return new RegistryId(MOD_ID, entryId);
@@ -97,18 +94,9 @@ public class Irongoon {
       config.seed = Long.parseLong(config.publicSeed, 16);
     }
 
-    warnUnsupportedCharacterElements();
+    randomizer.resetCharacterElements();
     refreshState();
     randomizer.reapplyAllCharacterStats(game.gameState);
-  }
-
-  private void warnUnsupportedCharacterElements() {
-    if(config.characterElements != CharacterElements.STOCK) {
-      LOGGER.warn(
-        "Character element randomization mode %s is unsupported by this SC snapshot; stock character elements will be used until SC exposes a safe override hook",
-        config.characterElements
-      );
-    }
   }
 
   private void refreshState() {
@@ -148,9 +136,15 @@ public class Irongoon {
         this.liveData.updateDragoonStats(event);
     }
 
-    private int getCharacterId(final CharacterData2c character) {
-        return character.gameState.charData_32c.indexOf(character);
-    }
+  private int getCharacterId(final CharacterData2c character) {
+    return character.gameState.charData_32c.indexOf(character);
+  }
+
+  @EventListener
+  public void resolveCharacterElement(final ResolveCharacterElementEvent event) {
+    final int characterId = getCharacterId(event.character);
+    event.element = randomizer.doCharacterElement(characterId, event.baseElement);
+  }
 
     @EventListener(priority = Priority.LOWEST)
     public void monsterStats(final MonsterStatsEvent monster) {
@@ -176,9 +170,10 @@ public class Irongoon {
         monster.elementalImmunityFlag.set(monsterElementRandomized.elementImmunity);
     }
 
-    @EventListener
-    public void stageData(final BattleMusicEvent stage) {
-        stage.musicIndex = randomizer.doMusic(stage.musicIndex);
+  @EventListener
+  public void stageData(final BattleMusicEvent stage) {
+    randomizer.beginCharacterElementBattle();
+    stage.musicIndex = randomizer.doMusic(stage.musicIndex);
         // stage.victoryType = randomizer.doVictory(stage.victoryIndex);
 
     }

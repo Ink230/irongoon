@@ -19,8 +19,6 @@ import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.registries.IrongoonEquipment;
-import org.legendofdragoon.modloader.registries.RegistryDelegate;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -139,12 +137,17 @@ public class Randomizer {
     }
   }
 
-  public RegistryDelegate<Element>[] doCharacterElement(final RegistryDelegate<Element>[] characterElements) {
-    return switch(config.characterElements) {
-      case STOCK -> characterElements;
-      case RANDOM_CAMPAIGN -> characterElementRandomizer.randomizeCampaign(characterElements);
-      case RANDOM_BATTLE -> characterElementRandomizer.randomizeBattle(characterElements);
-    };
+  public Element doCharacterElement(final int characterId, final Element baseElement) {
+    final var element = this.characterElementRandomizer.resolve(characterId);
+    return element == null ? baseElement : element.get();
+  }
+
+  public void resetCharacterElements() {
+    this.characterElementRandomizer.reset();
+  }
+
+  public void beginCharacterElementBattle() {
+    this.characterElementRandomizer.beginBattle();
   }
 
   public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
