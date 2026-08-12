@@ -62,6 +62,8 @@ public class Additions {
     }
 
     public void resetLevelOneAdditions(final CharacterData2c character) {
+        if (character.getAllAdditions().isEmpty()) return;
+
         var unlockTimestamp = character.gameState.timestamp_a0;
 
         for (final var additionId : character.getAllAdditions()) {
