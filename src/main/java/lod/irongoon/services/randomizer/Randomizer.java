@@ -16,6 +16,7 @@ import legend.game.types.GameState52c;
 import legend.game.types.Shop;
 import legend.lodmod.LodEquipment;
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.BattleParty;
 import lod.irongoon.data.EnableAllCharacters;
 import lod.irongoon.models.DivineFruit;
 import lod.irongoon.registries.IrongoonEquipment;
@@ -352,6 +353,27 @@ public class Randomizer {
                 character.partyFlags_04 |= 0x3;
             }
         }
+    }
+
+    public int doPartyFlags(final int currentPartyFlags, final int partyFlags) {
+        if(config.enableAllCharacters == EnableAllCharacters.PERMANENTLY) return partyFlags | 0x3;
+
+        if(config.enableAllCharacters == EnableAllCharacters.STORY_CONTROLLED && (currentPartyFlags & 0x3) == 0x3) return partyFlags | 0x3;
+
+        return partyFlags;
+    }
+
+    public int doPrimaryPartyChange(
+            final List<CharacterData2c> characterData,
+            final int activePartySlot,
+            final int characterIndex
+    ) {
+        if(config.battleParty != BattleParty.RANDOM_CAMPAIGN) return characterIndex;
+
+        final var campaignParty = battlePartyRandomizer.randomizeCampaign(characterData);
+        if(activePartySlot < 0 || activePartySlot >= campaignParty.size()) return -1;
+
+        return campaignParty.getInt(activePartySlot);
     }
 
     public IntList doBattleParty(final List<CharacterData2c> characterData, final IntList battleParty) {

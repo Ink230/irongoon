@@ -21,6 +21,8 @@ import legend.game.modding.events.characters.PreCharacterLevelUpEvent;
 import legend.game.modding.events.characters.ResolveCharacterElementEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
+import legend.game.modding.events.gamestate.PartyFlagsChangeEvent;
+import legend.game.modding.events.gamestate.PrimaryPartyChangeEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapEncounterEvent;
@@ -107,6 +109,21 @@ public class Irongoon {
     @EventListener
     public void submapWarp(final SubmapWarpEvent game) {
         randomizer.enableAllCharacters(game);
+    }
+
+    @EventListener
+    public void partyFlagsChange(final PartyFlagsChangeEvent event) {
+        final int currentPartyFlags = event.gameState.charData_32c.get(event.characterIndex).partyFlags_04;
+        event.partyFlags = randomizer.doPartyFlags(currentPartyFlags, event.partyFlags);
+    }
+
+    @EventListener
+    public void primaryPartyChange(final PrimaryPartyChangeEvent event) {
+        event.characterIndex = randomizer.doPrimaryPartyChange(
+                event.gameState.charData_32c,
+                event.activePartySlot,
+                event.characterIndex
+        );
     }
 
     @EventListener
