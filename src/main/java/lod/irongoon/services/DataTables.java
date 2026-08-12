@@ -85,6 +85,7 @@ public class DataTables {
     }
 
     public boolean allowsLiveUpdates(final ExternalData data) {
-        return this.getLoadedSource(data).liveUpdatesEnabled();
+        final LoadedDataTable loaded = this.loadedSources.get(data);
+        return loaded != null && loaded.liveUpdatesEnabled();
     }
 }

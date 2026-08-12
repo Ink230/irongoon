@@ -80,10 +80,14 @@ public class Irongoon {
 
     @EventListener(priority = Priority.LOW)
     public void newGame(final NewGameEvent game) {
+        config.regenerateConfig();
+
         if (config.useRandomSeedOnNewCampaign) {
             config.publicSeed = config.campaignSeed;
+            config.seed = Long.parseLong(config.publicSeed, 16);
         }
 
+        refreshState();
         randomizer.setLevelOneParty(game.gameState);
     }
 
