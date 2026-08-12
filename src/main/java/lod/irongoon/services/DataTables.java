@@ -24,7 +24,7 @@ public class DataTables {
 
     private final Map<ExternalData, DataTable> dataTables = new EnumMap<>(ExternalData.class);
     private final Map<ExternalData, LoadedDataTable> loadedSources = new EnumMap<>(ExternalData.class);
-    private final DataTableSourceResolver sourceResolver = new DataTableSourceResolver();
+    private final DataTableSourceResolver sourceResolver = DataTableSourceResolver.getInstance();
 
     public void initialize() {
         this.dataTables.clear();

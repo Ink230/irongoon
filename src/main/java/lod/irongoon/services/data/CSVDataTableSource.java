@@ -10,14 +10,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class CSVDataTableSource implements DataTableSource {
+    private static final CSVDataTableSource INSTANCE = new CSVDataTableSource();
+
+    public static CSVDataTableSource getInstance() {
+        return INSTANCE;
+    }
+
     private final IrongoonConfig config;
     private final DataParser parser;
 
-    public CSVDataTableSource() {
+    private CSVDataTableSource() {
         this(IrongoonConfig.getInstance(), CSVParser.getInstance());
     }
 
-    CSVDataTableSource(final IrongoonConfig config, final DataParser parser) {
+    private CSVDataTableSource(final IrongoonConfig config, final DataParser parser) {
         this.config = config;
         this.parser = parser;
     }

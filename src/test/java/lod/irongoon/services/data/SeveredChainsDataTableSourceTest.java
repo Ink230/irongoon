@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SeveredChainsDataTableSourceTest {
     @Test
     void mapsScMonsterStatsToCurrentTableShape() {
-        final SeveredChainsDataTableSource source = new SeveredChainsDataTableSource();
+        final SeveredChainsDataTableSource source = SeveredChainsDataTableSource.getInstance();
         final var table = source.load(ExternalData.MONSTER_STATS);
         final var first = monsterStats_8010ba98[0];
         final var row = table.data.get(1);

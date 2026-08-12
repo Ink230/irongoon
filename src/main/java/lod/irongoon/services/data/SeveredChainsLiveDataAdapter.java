@@ -26,16 +26,21 @@ import static legend.lodmod.LodMod.SPEED_STAT;
 
 public final class SeveredChainsLiveDataAdapter {
     private static final Logger LOGGER = LogManager.getFormatterLogger(SeveredChainsLiveDataAdapter.class);
+    private static final SeveredChainsLiveDataAdapter INSTANCE = new SeveredChainsLiveDataAdapter();
     private static final int CHARACTER_LEVELS = 61;
     private static final int DRAGOON_LEVELS = 6;
 
+    public static SeveredChainsLiveDataAdapter getInstance() {
+        return INSTANCE;
+    }
+
     private final DataTables dataTables;
 
-    public SeveredChainsLiveDataAdapter() {
+    private SeveredChainsLiveDataAdapter() {
         this(DataTables.getInstance());
     }
 
-    SeveredChainsLiveDataAdapter(final DataTables dataTables) {
+    private SeveredChainsLiveDataAdapter(final DataTables dataTables) {
         this.dataTables = dataTables;
     }
 

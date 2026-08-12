@@ -68,7 +68,7 @@ public class Irongoon {
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
-    private final SeveredChainsLiveDataAdapter liveData = new SeveredChainsLiveDataAdapter();
+    private final SeveredChainsLiveDataAdapter liveData = SeveredChainsLiveDataAdapter.getInstance();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);

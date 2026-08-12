@@ -6,15 +6,25 @@ import lod.irongoon.models.DataTable;
 import lod.irongoon.parse.schema.DataTableSchemas;
 
 public final class DataTableSourceResolver {
+    private static final DataTableSourceResolver INSTANCE = new DataTableSourceResolver();
+
+    public static DataTableSourceResolver getInstance() {
+        return INSTANCE;
+    }
+
     private final IrongoonConfig config;
     private final CSVDataTableSource csvSource;
     private final DataTableSource severedChainsSource;
 
-    public DataTableSourceResolver() {
-        this(IrongoonConfig.getInstance(), new CSVDataTableSource(), new SeveredChainsDataTableSource());
+    private DataTableSourceResolver() {
+        this(
+            IrongoonConfig.getInstance(),
+            CSVDataTableSource.getInstance(),
+            SeveredChainsDataTableSource.getInstance()
+        );
     }
 
-    DataTableSourceResolver(
+    private DataTableSourceResolver(
         final IrongoonConfig config,
         final CSVDataTableSource csvSource,
         final DataTableSource severedChainsSource

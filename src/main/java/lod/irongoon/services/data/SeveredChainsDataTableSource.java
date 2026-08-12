@@ -10,6 +10,15 @@ import java.util.List;
 import static legend.game.combat.Monsters.monsterStats_8010ba98;
 
 public final class SeveredChainsDataTableSource implements DataTableSource {
+    private static final SeveredChainsDataTableSource INSTANCE = new SeveredChainsDataTableSource();
+
+    public static SeveredChainsDataTableSource getInstance() {
+        return INSTANCE;
+    }
+
+    private SeveredChainsDataTableSource() {
+    }
+
     @Override
     public String name() {
         return "Severed Chains";
