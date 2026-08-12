@@ -6,10 +6,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import legend.core.GameEngine;
 import legend.game.characters.CharacterData2c;
 import legend.game.characters.Element;
+import legend.game.combat.bent.PlayerBattleEntity;
 import legend.game.inventory.EquipmentRegistryEvent;
 import legend.game.inventory.GatherEquipmentTypesEvent;
 import legend.game.inventory.ItemStack;
 import legend.game.modding.events.battle.BattleEntityTurnEvent;
+import legend.game.modding.events.battle.BattleEndedEvent;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
@@ -88,7 +90,8 @@ public class Irongoon {
         }
 
         refreshState();
-        randomizer.setLevelOneParty(game.gameState);
+    randomizer.setLevelOneParty(game.gameState);
+    randomizer.resetDragoonElements();
 
         for (final CharacterData2c character : game.gameState.charData_32c) {
             additions.resetLevelOneAdditions(character);
@@ -105,6 +108,7 @@ public class Irongoon {
     }
 
     randomizer.resetCharacterElements();
+    randomizer.resetDragoonElements();
     refreshState();
     randomizer.reapplyAllCharacterStats(game.gameState);
   }
@@ -173,6 +177,13 @@ public class Irongoon {
   @EventListener
   public void resolveCharacterElement(final ResolveCharacterElementEvent event) {
     final int characterId = getCharacterId(event.character);
+
+    if(event.bent != null && event.bent.isDragoon()) {
+      event.element = randomizer.doDragoonElement(characterId, event.bent, event.baseElement);
+      return;
+    }
+
+    if(event.bent != null) randomizer.synchronizeDragoonElementState(event.bent);
     event.element = randomizer.doCharacterElement(characterId, event.baseElement);
   }
 
@@ -213,9 +224,21 @@ public class Irongoon {
     }
 
     @EventListener
-    public void t(final BattleStartedEvent event) {
-        System.out.println("test");
+  public void battleStarted(final BattleStartedEvent event) {
+    randomizer.beginDragoonElementBattle();
+  }
+
+  @EventListener
+  public void battleEnded(final BattleEndedEvent event) {
+    randomizer.endDragoonElementBattle();
+  }
+
+  @EventListener
+  public void battleEntityTurn(final BattleEntityTurnEvent<?> event) {
+    if(event.bent instanceof final PlayerBattleEntity player) {
+      randomizer.synchronizeDragoonElementState(player);
     }
+  }
 
     @EventListener
     public void submapEncounterData(final SubmapEncounterEvent event) {

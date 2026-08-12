@@ -75,6 +75,9 @@ public class IrongoonConfig {
     public CharacterElements characterElements;
     public boolean characterNoElement;
     public List<String> characterElementOverride;
+    public DragoonElements dragoonElements;
+    public boolean dragoonNoElement;
+    public List<String> dragoonElementOverride;
     public EnableAllCharacters enableAllCharacters;
     public BattleParty battleParty;
     public List<Integer> battlePartyOverride;
@@ -151,6 +154,9 @@ public class IrongoonConfig {
         this.characterElements = CharacterElements.valueOf((String) yamlConfig.getOrDefault("characterElements", "STOCK"));
         this.characterNoElement = (boolean) yamlConfig.getOrDefault("characterNoElement", false);
         this.characterElementOverride = (List<String>) yamlConfig.getOrDefault("characterElementOverride", new ArrayList<>());
+        this.dragoonElements = DragoonElements.valueOf((String) yamlConfig.getOrDefault("dragoonElements", "STOCK"));
+        this.dragoonNoElement = (boolean) yamlConfig.getOrDefault("dragoonNoElement", false);
+        this.dragoonElementOverride = (List<String>) yamlConfig.getOrDefault("dragoonElementOverride", new ArrayList<>());
         this.enableAllCharacters = EnableAllCharacters.valueOf((String) yamlConfig.getOrDefault("enableAllCharacters", "PERMANENTLY"));
         this.battleParty = BattleParty.valueOf((String) yamlConfig.getOrDefault("battleParty", "RANDOM_BATTLE"));
         this.battlePartyOverride = (List<Integer>) yamlConfig.getOrDefault("battlePartyOverride", new ArrayList<>());

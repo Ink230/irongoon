@@ -22,6 +22,9 @@ battlePartyDuplicates: TRUE
 # Dragoons
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsDistributionPerLevel: RANDOM
+dragoonElements: RANDOM_CAMPAIGN
+dragoonNoElement: FALSE
+dragoonElementOverride: [] # positional by character id; built-in aliases or full registry ids such as mod_id:element_id
 # Monsters
 monsterTotalStatsPerLevel: RANDOMIZE_BOUNDS
 totalStatsMonstersUpperPercentBound: 150

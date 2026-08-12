@@ -4,6 +4,7 @@ package lod.irongoon.services.randomizer;
 import it.unimi.dsi.fastutil.ints.IntList;
 import legend.game.characters.CharacterData2c;
 import legend.game.characters.Element;
+import legend.game.combat.bent.PlayerBattleEntity;
 import legend.game.inventory.Equipment;
 import legend.game.inventory.InventoryEntry;
 import legend.game.inventory.Item;
@@ -48,6 +49,7 @@ public class Randomizer {
   private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
   private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
   private final CharacterElementRandomizer characterElementRandomizer = CharacterElementRandomizer.getInstance();
+  private final DragoonElementRandomizer dragoonElementRandomizer = DragoonElementRandomizer.getInstance();
     private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
@@ -149,6 +151,27 @@ public class Randomizer {
 
   public void beginCharacterElementBattle() {
     this.characterElementRandomizer.beginBattle();
+  }
+
+  public Element doDragoonElement(final int characterId, final PlayerBattleEntity bent, final Element baseElement) {
+    final var element = this.dragoonElementRandomizer.resolve(characterId, bent);
+    return element == null ? baseElement : element.get();
+  }
+
+  public void resetDragoonElements() {
+    this.dragoonElementRandomizer.reset();
+  }
+
+  public void beginDragoonElementBattle() {
+    this.dragoonElementRandomizer.beginBattle();
+  }
+
+  public void endDragoonElementBattle() {
+    this.dragoonElementRandomizer.endBattle();
+  }
+
+  public void synchronizeDragoonElementState(final PlayerBattleEntity bent) {
+    this.dragoonElementRandomizer.synchronize(bent);
   }
 
   public DivineFruit doMonsterStats(MonsterStatsEvent monster) {
