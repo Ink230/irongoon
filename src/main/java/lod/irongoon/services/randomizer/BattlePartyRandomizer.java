@@ -6,12 +6,17 @@ import legend.game.characters.CharacterData2c;
 import lod.irongoon.config.IrongoonConfig;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 public class BattlePartyRandomizer {
     private static final BattlePartyRandomizer INSTANCE = new BattlePartyRandomizer();
+    private static final int MAXIMUM_BATTLE_PARTY_SIZE = 3;
+
     public static BattlePartyRandomizer getInstance() { return INSTANCE; }
 
     private BattlePartyRandomizer() {}
@@ -23,60 +28,87 @@ public class BattlePartyRandomizer {
     }
 
     public IntList randomizeCampaign(final List<CharacterData2c> characterData) {
-        return battlePartyRandomizer(characterData, true);
+        return this.randomize(characterData, true);
     }
 
     public IntList randomizeBattle(final List<CharacterData2c> characterData) {
-        return battlePartyRandomizer(characterData, false);
+        return this.randomize(characterData, false);
     }
 
-    private IntList battlePartyRandomizer(final List<CharacterData2c> characterData, final boolean seeded) {
-        final var battlePartyDuplicates = config.battlePartyDuplicates;
-        final var battlePartySize = config.battlePartySize;
-
-        final var battlePartyPool = config.battlePartyPool.isEmpty()
-                ? IntStream.range(0, characterData.size())
-                .filter(i -> (characterData.get(i).partyFlags_04 & 0x1) != 0)
-                    .toArray()
-                : config.battlePartyPool.stream()
-                    .mapToInt(Integer::intValue)
-                .filter(i -> i >= 0 && i < characterData.size())
-                .filter(i -> (characterData.get(i).partyFlags_04 & 0x1) != 0)
-                    .toArray();
-
-        final var random = seeded ? new Random(config.seed) : new Random();
-
-        final var availablePool = new ArrayList<Integer>();
-        for (var index : battlePartyPool) {
-            availablePool.add(index);
+    private IntList randomize(final List<CharacterData2c> characterData, final boolean seeded) {
+        final int battlePartySize = this.config.battlePartySize;
+        if (battlePartySize < 1 || battlePartySize > MAXIMUM_BATTLE_PARTY_SIZE) {
+            throw new IllegalStateException(
+                    "Battle party size " + battlePartySize + " is invalid; expected 1 to " + MAXIMUM_BATTLE_PARTY_SIZE
+            );
         }
 
+        final int[] battlePartyPool;
+        if (this.config.battlePartyPool.isEmpty()) {
+            battlePartyPool = IntStream.range(0, characterData.size())
+                    .filter(i -> (characterData.get(i).partyFlags_04 & 0x1) != 0)
+                    .toArray();
+        } else {
+            final Set<Integer> configuredCharacters = new LinkedHashSet<>();
+            for (final Integer characterId : this.config.battlePartyPool) {
+                if (characterId == null || characterId < 0 || characterId >= characterData.size()) {
+                    throw new IllegalStateException("Battle party pool contains invalid character " + characterId);
+                }
+
+                if ((characterData.get(characterId).partyFlags_04 & 0x1) == 0) {
+                    throw new IllegalStateException("Battle party pool contains unavailable character " + characterId);
+                }
+
+                if (!configuredCharacters.add(characterId)) {
+                    throw new IllegalStateException("Battle party pool contains duplicate character " + characterId);
+                }
+            }
+
+            battlePartyPool = configuredCharacters.stream().mapToInt(Integer::intValue).toArray();
+        }
+
+        final var availablePool = new ArrayList<Integer>();
+        for (final int characterId : battlePartyPool) {
+            availablePool.add(characterId);
+        }
+
+        final Set<Integer> overriddenCharacters = new HashSet<>();
+        final var overrides = new Integer[battlePartySize];
+        for (var slot = 0; slot < this.config.battlePartyOverride.size() && slot < battlePartySize; slot++) {
+            final Integer override = this.config.battlePartyOverride.get(slot);
+            if (override == null || override < 0) continue;
+
+            if (override >= characterData.size() || (characterData.get(override).partyFlags_04 & 0x1) == 0) {
+                throw new IllegalStateException(
+                        "Battle party override for slot " + slot + " uses unavailable character " + override
+                );
+            }
+
+            if (!overriddenCharacters.add(override)) {
+                throw new IllegalStateException("Battle party override contains duplicate character " + override);
+            }
+
+            overrides[slot] = override;
+            availablePool.remove(override);
+        }
+
+        final Random random = seeded ? new Random(this.config.seed) : new Random();
         final var randomizedBattleParty = new IntArrayList();
         for (var slot = 0; slot < battlePartySize; slot++) {
-            if (availablePool.isEmpty()) {
+            if (overrides[slot] != null) {
+                randomizedBattleParty.add(overrides[slot]);
                 continue;
             }
 
-            final var selectedIndex = random.nextInt(availablePool.size());
-            randomizedBattleParty.add(availablePool.get(selectedIndex));
+            if (availablePool.isEmpty()) break;
 
-            if (!battlePartyDuplicates) {
-                availablePool.remove(selectedIndex);
-            }
+            final int selectedIndex = random.nextInt(availablePool.size());
+            randomizedBattleParty.add(availablePool.remove(selectedIndex).intValue());
         }
 
-        for (var slot = 0; slot < config.battlePartyOverride.size() && slot < battlePartySize; slot++) {
-            final var override = config.battlePartyOverride.get(slot);
-            if (override == null || override < 0) continue;
-
-            if (slot < randomizedBattleParty.size()) {
-                randomizedBattleParty.removeInt(slot);
-                randomizedBattleParty.add(slot, override);
-            } else {
-                randomizedBattleParty.add(override);
-            }
+        if (randomizedBattleParty.isEmpty()) {
+            throw new IllegalStateException("Battle party has no available characters; expected at least one");
         }
-
 
         return randomizedBattleParty;
     }

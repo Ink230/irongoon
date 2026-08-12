@@ -80,7 +80,6 @@ public class IrongoonConfig {
     public List<Integer> battlePartyOverride;
     public int battlePartySize;
     public List<Integer> battlePartyPool;
-    public boolean battlePartyDuplicates;
 
 
     private IrongoonConfig() {
@@ -156,6 +155,8 @@ public class IrongoonConfig {
         this.battlePartyOverride = (List<Integer>) yamlConfig.getOrDefault("battlePartyOverride", new ArrayList<>());
         this.battlePartySize = (int) yamlConfig.getOrDefault("battlePartySize", 3);
         this.battlePartyPool = (List<Integer>) yamlConfig.getOrDefault("battlePartyPool", new ArrayList<>());
-        this.battlePartyDuplicates = (boolean) yamlConfig.getOrDefault("battlePartyDuplicates", false);
+        if ((boolean) yamlConfig.getOrDefault("battlePartyDuplicates", false)) {
+            throw new IllegalStateException("battlePartyDuplicates is unsupported because Severed Chains requires unique player characters");
+        }
     }
 }
