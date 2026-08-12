@@ -1,6 +1,5 @@
 package lod.irongoon.services;
 
-import lod.irongoon.data.ExternalData;
 import lod.irongoon.parse.game.AdditionUnlockParser;
 
 import java.util.HashMap;
@@ -15,14 +14,11 @@ public class Additions {
     private Additions() {}
 
     private final AdditionUnlockParser additionUnlockParser = AdditionUnlockParser.getInstance();
-    private final DataTables dataTables = DataTables.getInstance();
 
     private final Map<Integer, AdditionUnlock> additions = new HashMap<>();
 
     public void initialize() {
         additions.clear();
-
-        if (!dataTables.hasCsvOverride(ExternalData.ADDITION_UNLOCK_LEVELS)) return;
 
         var totalAdditions = additionUnlockParser.getTotalAdditions();
 
@@ -58,10 +54,6 @@ public class Additions {
                 .filter(a -> a.name.equals(additionName.trim()))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public boolean hasUnlockOverrides() {
-        return dataTables.hasCsvOverride(ExternalData.ADDITION_UNLOCK_LEVELS);
     }
 
     public static class AdditionUnlock {

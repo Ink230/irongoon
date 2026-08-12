@@ -64,7 +64,6 @@ itemCarryLimit: 2
 # Additions
 # Randomizer
 useRandomSeedOnNewCampaign: TRUE
-csvDataOverrides: FALSE
 # Encounters
 battleStage: RANDOM
 battleStageList: []

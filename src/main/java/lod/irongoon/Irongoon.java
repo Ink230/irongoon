@@ -24,7 +24,6 @@ import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
-import legend.game.types.GameState52c;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.data.CharacterElements;
@@ -95,7 +94,7 @@ public class Irongoon {
     }
 
     warnUnsupportedCharacterElements();
-    refreshState(game.gameState);
+    refreshState();
     randomizer.reapplyAllCharacterStats(game.gameState);
   }
 
@@ -108,10 +107,10 @@ public class Irongoon {
     }
   }
 
-  private void refreshState(final GameState52c gameState) {
-    dataTables.initialize(gameState);
+  private void refreshState() {
+        dataTables.initialize();
     additions.initialize();
-  }
+    }
 
     @EventListener
     public void submapWarp(final SubmapWarpEvent game) {
@@ -227,16 +226,9 @@ public class Irongoon {
 
     @EventListener
     public void additionUnlock(final AdditionUnlockEvent addition) {
-        if (!additions.hasUnlockOverrides()) return;
-
         var additionIdentifier = addition.addition.getRegistryId().entryId();
-        var additionOverride = additions.getAdditionByName(additionIdentifier);
-        if (additionOverride == null) {
-            LOGGER.warn("Using Severed Chains unlock criteria for addition %s because the active CSV override has no matching row", additionIdentifier);
-            return;
-        }
-
-        if(addition.charData.level_12 < additionOverride.unlockLevel) {
+        var additionUnlockLevel = additions.getUnlockLevelByName(additionIdentifier);
+        if(addition.charData.level_12 < additionUnlockLevel) {
             addition.cancel();
         }
     }

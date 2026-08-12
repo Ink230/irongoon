@@ -26,7 +26,6 @@ public class IrongoonConfig {
     public long seed;
     public String campaignSeed;
     public boolean useRandomSeedOnNewCampaign;
-    public boolean csvDataOverrides;
     public int bodyNumberOfStatsAmount = 4;
     public int dragoonNumberOfStatsAmount = 4;
     public TotalStatsPerLevel bodyTotalStatsPerLevel;
@@ -104,7 +103,6 @@ public class IrongoonConfig {
         this.publicSeed = (String) yamlConfig.getOrDefault("publicSeed", "AF51FA7B");
         this.seed = Long.parseLong(this.publicSeed, 16);
         this.useRandomSeedOnNewCampaign = (boolean) yamlConfig.getOrDefault("useRandomSeedOnNewCampaign", false);
-        this.csvDataOverrides = (boolean) yamlConfig.getOrDefault("csvDataOverrides", false);
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.monsterTotalStatsPerLevel = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStatsPerLevel", "RANDOMIZE_BOUNDS"));
