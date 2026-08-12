@@ -136,6 +136,8 @@ public class Irongoon {
 
     @EventListener
     public void characterLevelUp(final PostCharacterLevelUpEvent event) {
+        if (!this.dataTables.isInitialized()) return;
+
         final int characterId = getCharacterId(event.character);
         if(characterId < 0) return;
 
@@ -151,6 +153,8 @@ public class Irongoon {
 
     @EventListener
     public void characterDragoonLevelUp(final PostCharacterDragoonLevelUpEvent event) {
+        if (!this.dataTables.isInitialized()) return;
+
         final int characterId = getCharacterId(event.character);
         if(characterId < 0) return;
 

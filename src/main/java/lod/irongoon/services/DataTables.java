@@ -25,8 +25,10 @@ public class DataTables {
     private final Map<ExternalData, DataTable> dataTables = new EnumMap<>(ExternalData.class);
     private final Map<ExternalData, LoadedDataTable> loadedSources = new EnumMap<>(ExternalData.class);
     private final DataTableSourceResolver sourceResolver = DataTableSourceResolver.getInstance();
+    private boolean initialized;
 
     public void initialize() {
+        this.initialized = false;
         this.dataTables.clear();
         this.loadedSources.clear();
 
@@ -42,6 +44,12 @@ public class DataTables {
                 loaded.liveUpdatesEnabled() ? "enabled" : "disabled"
             );
         }
+
+        this.initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
     }
 
     public DataTable getDataTable(final ExternalData data) {
