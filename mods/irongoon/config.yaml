@@ -58,6 +58,8 @@ shopDuplicates: NONE
 itemCarryLimit: 2
 # Enemies
 # Sound
+# Data sources
+csvDataOverrides: FALSE
 # Options
 # Custom
 # Scaling
