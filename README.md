@@ -26,6 +26,26 @@ A default configuration file is included in the latest release. This can be more
 
 Please see the [Config Reference](https://github.com/Ink230/irongoon/wiki/Config-Reference) for an explanation on all the settings.
 
+## Game data sources
+
+Irongoon keeps its existing table-based data layer and selects a source independently for each logical dataset.
+
+With `csvDataOverrides: FALSE`, Irongoon loads monster stats from Severed Chains and uses the bundled CSVs as compatibility tables for character progression, Dragoon progression, addition hits, and addition unlock levels. Character and Dragoon tables receive live updates from real SC level events, and monster rows receive live updates from `MonsterStatsEvent`, after higher-priority mods have changed those events.
+
+Set `csvDataOverrides: TRUE` in `mods/irongoon/config.yaml` to make any matching file in `mods/irongoon/US` a fixed override. A missing file still follows the normal SC-or-compatibility resolution policy. A present but invalid override stops initialization with its logical dataset and validation error rather than silently falling back.
+
+The recognized logical filenames are:
+
+- `scdk-addition-stats.csv`
+- `scdk-character-stats.csv`
+- `scdk-dragoon-stats.csv`
+- `scdk-monster-stats.csv`
+- `scdk-addition-unlock-levels.csv`
+
+Startup logs report the selected source, the reason it was selected, and whether live SC updates are enabled for each dataset.
+
+Current SC does not expose side-effect-free complete progression tables for character or Dragoon levels, so their bundled CSVs provide the full bootstrap tables. Irongoon does not simulate level-ups to reconstruct them. SC addition hits are contextual, and addition unlocks are semantic criteria rather than one numeric threshold, so both addition datasets remain CSV compatibility sources in this implementation.
+
 
 # Contributing
 
