@@ -26,7 +26,7 @@ public class BattleStageRandomizer {
     }
 
     private int getBattleUpperBound() {
-        return this.usingCustomBattleStageList() ? config.battleStageList.size() - 1 : config.battleStageSize;
+        return this.usingCustomBattleStageList() ? config.battleStageList.size() - 1 : config.battleStageSize - 1;
     }
 
     private boolean usingCustomBattleStageList() {

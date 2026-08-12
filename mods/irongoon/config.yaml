@@ -18,6 +18,7 @@ battleParty: RANDOM_BATTLE
 battlePartyOverride: [] # slot0: rose, slot1: meru, slot2: randomized would be ex: [3, 6]
 battlePartySize: 3
 battlePartyPool: [] # list of char ids to randomize from ex: [4,0,2,5], empty is all available
+battlePartyDuplicates: TRUE
 # Dragoons
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsDistributionPerLevel: RANDOM

@@ -7,7 +7,6 @@ import lod.irongoon.config.IrongoonConfig;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -49,7 +48,7 @@ public class BattlePartyRandomizer {
                     .filter(i -> (characterData.get(i).partyFlags_04 & 0x1) != 0)
                     .toArray();
         } else {
-            final Set<Integer> configuredCharacters = new LinkedHashSet<>();
+            final Set<Integer> configuredCharacters = new HashSet<>();
             for (final Integer characterId : this.config.battlePartyPool) {
                 if (characterId == null || characterId < 0 || characterId >= characterData.size()) {
                     throw new IllegalStateException("Battle party pool contains invalid character " + characterId);
@@ -59,12 +58,12 @@ public class BattlePartyRandomizer {
                     throw new IllegalStateException("Battle party pool contains unavailable character " + characterId);
                 }
 
-                if (!configuredCharacters.add(characterId)) {
+                if (!this.config.battlePartyDuplicates && !configuredCharacters.add(characterId)) {
                     throw new IllegalStateException("Battle party pool contains duplicate character " + characterId);
                 }
             }
 
-            battlePartyPool = configuredCharacters.stream().mapToInt(Integer::intValue).toArray();
+            battlePartyPool = this.config.battlePartyPool.stream().mapToInt(Integer::intValue).toArray();
         }
 
         final var availablePool = new ArrayList<Integer>();
@@ -84,12 +83,14 @@ public class BattlePartyRandomizer {
                 );
             }
 
-            if (!overriddenCharacters.add(override)) {
+            if (!this.config.battlePartyDuplicates && !overriddenCharacters.add(override)) {
                 throw new IllegalStateException("Battle party override contains duplicate character " + override);
             }
 
             overrides[slot] = override;
-            availablePool.remove(override);
+            if (!this.config.battlePartyDuplicates) {
+                availablePool.remove(override);
+            }
         }
 
         final Random random = seeded ? new Random(this.config.seed) : new Random();
@@ -103,7 +104,10 @@ public class BattlePartyRandomizer {
             if (availablePool.isEmpty()) break;
 
             final int selectedIndex = random.nextInt(availablePool.size());
-            randomizedBattleParty.add(availablePool.remove(selectedIndex).intValue());
+            randomizedBattleParty.add(availablePool.get(selectedIndex).intValue());
+            if (!this.config.battlePartyDuplicates) {
+                availablePool.remove(selectedIndex);
+            }
         }
 
         if (randomizedBattleParty.isEmpty()) {
