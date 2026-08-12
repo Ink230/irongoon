@@ -86,7 +86,7 @@ Use singleton ownership for:
 
 Use static-only classes with private constructors for declaration-only registries or schema catalogs. Use ordinary models, records, enums, and engine-owned event objects as values rather than singletons.
 
-Singleton services acquire other singleton leaves directly in fields. Do not add public constructors solely for tests, service locators, containers, factories, or runtime setter injection. Tests should exercise public behavior and restore modified singleton state in teardown.
+Singleton services acquire other singleton leaves directly in fields. Do not add public constructors, service locators, containers, factories, or runtime setter injection solely for validation convenience.
 
 ## Data-source architecture
 
@@ -133,7 +133,7 @@ Seed behavior is user-visible policy:
 2. Add one focused method to the owning randomizer leaf
 3. Route the enum case in the corresponding `Randomizer.do*` method
 4. Apply the returned value in `Irongoon` only if engine state needs adaptation
-5. Test deterministic and boundary behavior at the narrowest public seam
+5. Verify deterministic and boundary behavior through compilation and targeted runtime checks at the narrowest public seam
 
 ### Add a logical dataset
 
@@ -142,7 +142,7 @@ Seed behavior is user-visible policy:
 3. Add support to the appropriate source implementations
 4. Extend resolver policy only when the dataset needs different source capabilities
 5. Add a game parser if consumers need domain conversion
-6. Test source selection, invalid data, and defensive state behavior
+6. Verify source selection, invalid data, and defensive state behavior through relevant runtime or manual checks
 
 ### Add an engine event integration
 

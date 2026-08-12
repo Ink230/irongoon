@@ -8,7 +8,6 @@
 - Control flow
 - State and mutation
 - Errors and logging
-- Tests
 - Build and repository handling
 - Review checklist
 
@@ -58,7 +57,6 @@ Apply these conventions to new and touched code. Preserve nearby formatting when
 - Mutate Severed Chains event/game objects only at the event adapter boundary or in a leaf explicitly designed for that event
 - Clone mutable arrays/lists when crossing canonical state boundaries
 - Clear and rebuild service state during `initialize()` so reloads cannot retain stale entries
-- Restore singleton configuration/state modified by tests in `@AfterEach`
 - Never add hidden global state outside an owning singleton or static declaration catalog
 
 ## Errors and logging
@@ -71,25 +69,15 @@ Apply these conventions to new and touched code. Preserve nearby formatting when
 - Do not add `System.out.println`, swallowed exceptions, or bare generic messages
 - Log selected data source, selection reason, and live-update state when source behavior changes
 
-## Tests
-
-- Use JUnit Jupiter from `src/test/java` with the production package mirrored
-- Use package-private test classes and test methods
-- Name tests for observable behavior, not implementation mechanics
-- Import assertions statically
-- Test public seams unless a package-private seam is already intentionally exposed
-- Cover both routed modes/source choices and invalid/boundary behavior
-- Verify deterministic modes repeat for the same seed and stable modifier when changing randomization
-- Verify defensive copying when changing mutable table/model boundaries
-- Restore singleton config and reinitialize state after each test that mutates shared state
-- Do not introduce public constructors or production reset hooks only to make testing easier
-
 ## Build and repository handling
 
 - Target the Java version and dependencies declared in `build.gradle`; do not downgrade language/API usage based on generic assumptions
 - Use the Gradle wrapper, not a globally installed Gradle
-- Run `gradlew.bat test` on Windows or `./gradlew test` elsewhere
-- Run the relevant packaging/build task when dependencies, registries, resources, patches, or runtime integration change
+- Automated tests are not required; do not add JUnit coverage or run the Gradle test task unless the user explicitly requests it
+- Run `gradlew.bat compileJava` on Windows or `./gradlew compileJava` elsewhere for production changes
+- Run `gradlew.bat assemble` on Windows or `./gradlew assemble` elsewhere when dependencies, registries, resources, patches, runtime integration, or packaging change
+- Use targeted manual Severed Chains runtime checks for behavior compilation cannot verify
+- Run `git diff --check` and inspect the final diff for preserved behavior, scope, and unrelated changes
 - Preserve bundled CSV compatibility data and patch assets unless the task explicitly changes them
 - Keep changes minimal and do not reformat unrelated legacy code
 - Never commit crash logs, local saves, generated build output, IDE state, or the local Severed Chains snapshot JAR
@@ -104,5 +92,6 @@ Apply these conventions to new and touched code. Preserve nearby formatting when
 - Are mutable canonical values copied across boundaries?
 - Are enum modes routed exhaustively with explicit stock behavior?
 - Are event priorities and other-mod interactions preserved?
-- Do tests restore singleton state and cover negative behavior?
+- Were relevant manual runtime checks identified or completed for behavior compilation cannot verify?
+- Was the final diff inspected for preserved behavior and unrelated changes?
 - Are unrelated files and existing user changes untouched?

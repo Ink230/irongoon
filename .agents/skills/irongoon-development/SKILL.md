@@ -1,6 +1,6 @@
 ---
 name: irongoon-development
-description: Apply Irongoon's leaf-based Java architecture and repository conventions when reviewing, planning, implementing, refactoring, or testing code in the irongoon repository, especially event handlers, singleton services, randomizers, parsers, data sources, configuration, enum policies, and Severed Chains integrations.
+description: Apply Irongoon's leaf-based Java architecture and repository conventions when reviewing, planning, implementing, or refactoring code in the irongoon repository, especially event handlers, singleton services, randomizers, parsers, data sources, configuration, enum policies, and Severed Chains integrations.
 ---
 
 # Irongoon Development
@@ -10,12 +10,13 @@ Preserve Irongoon's established dependency direction: engine events enter at the
 ## Required workflow
 
 1. Read [references/architecture.md](references/architecture.md) before changing production structure or behavior
-2. Read [references/code-conventions.md](references/code-conventions.md) before writing or reviewing Java, tests, configuration, or data-source code
+2. Read [references/code-conventions.md](references/code-conventions.md) before writing or reviewing Java, configuration, or data-source code
 3. Inspect the nearest analogous implementation and its callers; repository evidence overrides generic Java fashion
 4. Identify the layer that owns the behavior and keep dependencies pointing downward toward leaves
 5. Make the smallest coherent change and preserve unrelated worktree changes
-6. Add or update focused JUnit tests for changed policy, routing, validation, or state behavior
-7. Run `gradlew.bat test` on Windows or `./gradlew test` elsewhere; run the relevant build when integration or packaging changes
+6. Run `gradlew.bat compileJava` on Windows or `./gradlew compileJava` elsewhere for production changes
+7. Run `gradlew.bat assemble` on Windows or `./gradlew assemble` elsewhere when integration or packaging changes
+8. Use targeted manual Severed Chains runtime checks for behavior compilation cannot verify, then inspect the final diff for preserved behavior and unrelated changes
 
 ## Non-negotiable rules
 
@@ -32,6 +33,7 @@ Preserve Irongoon's established dependency direction: engine events enter at the
 - Validate external tables at their source boundary and fail with contextual `IllegalStateException` messages; do not silently fall back from an invalid explicit override
 - Return or store defensive copies at mutable table boundaries so callers cannot mutate canonical state accidentally
 - Use Severed Chains events as the integration seam and honor listener priority when ingestion must occur before transformation
+- Automated tests are not required; do not add JUnit coverage or run the Gradle test task unless the user explicitly requests it
 - Avoid speculative abstractions, broad refactors, new frameworks, or style-only cleanup outside the requested behavior
 
 ## Decision test for leaf placement
