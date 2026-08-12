@@ -19,7 +19,7 @@ public class IrongoonConfig {
         return INSTANCE;
     }
 
-    public final String externalDataLoadPath = "./mods/irongoon/US/";
+    public final String externalDataLoadPath = "./mods/irongoon/irongoon-data/";
     public final String externalDataLoadExtension = ".csv";
     public final String externalConfigLoadPath = "./mods/irongoon/config.yaml";
     public String publicSeed;

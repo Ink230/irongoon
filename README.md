@@ -32,7 +32,7 @@ Irongoon keeps its existing table-based data layer and selects a source independ
 
 With `csvDataOverrides: FALSE`, Irongoon loads monster stats from Severed Chains and uses the bundled CSVs as compatibility tables for character progression, Dragoon progression, addition hits, and addition unlock levels. Character and Dragoon tables receive live updates from real SC level events, and monster rows receive live updates from `MonsterStatsEvent`, after higher-priority mods have changed those events.
 
-Set `csvDataOverrides: TRUE` in `mods/irongoon/config.yaml` to make any matching file in `mods/irongoon/US` a fixed override. A missing file still follows the normal SC-or-compatibility resolution policy. A present but invalid override stops initialization with its logical dataset and validation error rather than silently falling back.
+Set `csvDataOverrides: TRUE` in `mods/irongoon/config.yaml` to make any matching file in `mods/irongoon/irongoon-data` a fixed override. A missing file still follows the normal SC-or-compatibility resolution policy. A present but invalid override stops initialization with its logical dataset and validation error rather than silently falling back.
 
 The recognized logical filenames are:
 

@@ -14,7 +14,7 @@ class DataTableSchemasTest {
     @Test
     void validatesEveryBundledLogicalDataTable() {
         for (final ExternalData data : ExternalData.values()) {
-            final Path path = Path.of("mods", "irongoon", "US", data.getValue() + ".csv");
+            final Path path = Path.of("mods", "irongoon", "irongoon-data", data.getValue() + ".csv");
             final DataTable table = new DataTable(CSVParser.getInstance().load(path.toString()));
 
             assertDoesNotThrow(() -> DataTableSchemas.get(data).validateTable(table, path.toString()));
