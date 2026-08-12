@@ -1,5 +1,8 @@
 package lod.irongoon.services;
 
+import legend.game.additions.UnlockState;
+import legend.game.characters.CharacterAdditionInfo;
+import legend.game.characters.CharacterData2c;
 import lod.irongoon.parse.game.AdditionUnlockParser;
 
 import java.util.HashMap;
@@ -7,6 +10,8 @@ import java.util.Map;
 
 public class Additions {
     private static final Additions INSTANCE = new Additions();
+    private static final int MASTERY_UNLOCK_LEVEL = 255;
+
     public static Additions getInstance() {
         return INSTANCE;
     }
@@ -54,6 +59,60 @@ public class Additions {
                 .filter(a -> a.name.equals(additionName.trim()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void resetLevelOneAdditions(final CharacterData2c character) {
+        var unlockTimestamp = character.gameState.timestamp_a0;
+
+        for (final var additionId : character.getAllAdditions()) {
+            final CharacterAdditionInfo info = character.getAdditionInfo(additionId);
+            info.level = 1;
+            info.xp = 0;
+
+            final int unlockLevel = this.getRequiredUnlockLevel(additionId.entryId().toString());
+            if (unlockLevel <= character.level_12) {
+                info.setUnlockState(UnlockState.UNLOCKED, unlockTimestamp++);
+            } else {
+                info.setUnlockState(
+                        unlockLevel == MASTERY_UNLOCK_LEVEL ? UnlockState.UNLOCKABLE : UnlockState.LOCKED,
+                        -1
+                );
+            }
+        }
+
+        final var unlockedAdditions = character.getUnlockedAdditions();
+        if (unlockedAdditions.isEmpty()) {
+            throw new IllegalStateException("Character has no additions available at level " + character.level_12);
+        }
+
+        character.selectedAddition_19 = unlockedAdditions.getFirst();
+    }
+
+    public void unlockEligibleAdditions(final CharacterData2c character) {
+        if (this.additions.isEmpty()) return;
+
+        var unlockTimestamp = character.gameState.timestamp_a0;
+
+        for (final var additionId : character.getAllAdditions()) {
+            final CharacterAdditionInfo info = character.getAdditionInfo(additionId);
+            if (info.getUnlockState().isUsable()) continue;
+
+            final int unlockLevel = this.getRequiredUnlockLevel(additionId.entryId().toString());
+            final boolean levelUnlocked = unlockLevel < MASTERY_UNLOCK_LEVEL && character.level_12 >= unlockLevel;
+            final boolean masteryUnlocked = unlockLevel == MASTERY_UNLOCK_LEVEL && info.checkUnlockCriteria(character);
+            if (levelUnlocked || masteryUnlocked) {
+                info.unlock(unlockTimestamp++);
+            }
+        }
+    }
+
+    private int getRequiredUnlockLevel(final String additionName) {
+        final var addition = this.getAdditionByName(additionName);
+        if (addition == null) {
+            throw new IllegalStateException("Addition unlock metadata is unavailable for " + additionName);
+        }
+
+        return addition.unlockLevel;
     }
 
     public static class AdditionUnlock {

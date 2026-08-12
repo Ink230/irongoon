@@ -89,6 +89,10 @@ public class Irongoon {
 
         refreshState();
         randomizer.setLevelOneParty(game.gameState);
+
+        for (final CharacterData2c character : game.gameState.charData_32c) {
+            additions.resetLevelOneAdditions(character);
+        }
     }
 
     @EventListener
@@ -132,10 +136,11 @@ public class Irongoon {
 
     @EventListener
     public void characterLevelUp(final PostCharacterLevelUpEvent event) {
-    final int characterId = getCharacterId(event.character);
-    if(characterId < 0) return;
+        final int characterId = getCharacterId(event.character);
+        if(characterId < 0) return;
 
-    randomizer.applyCharacterStats(event.character, characterId);
+        randomizer.applyCharacterStats(event.character, characterId);
+        additions.unlockEligibleAdditions(event.character);
 
     }
 
