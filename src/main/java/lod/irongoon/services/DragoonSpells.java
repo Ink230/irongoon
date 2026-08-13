@@ -149,7 +149,7 @@ public final class DragoonSpells {
         for(final RegistryId spellId : GameEngine.REGISTRIES.spells) {
             if(!spellId.toString().startsWith("lod:") || !STOCK_SPELLS.contains(spellId.entryId().toString())) continue;
             final SpellStats0c spell = this.baseSpell(spellId);
-            this.profiles.putIfAbsent(spellId, new DragoonSpellProfile(true, true, spell.getEffectPlan(), true, true));
+            this.profiles.putIfAbsent(spellId, new DragoonSpellProfile(true, !spellId.entryId().toString().equals("demons_gate"), spell.getEffectPlan(), true, true));
         }
     }
 
