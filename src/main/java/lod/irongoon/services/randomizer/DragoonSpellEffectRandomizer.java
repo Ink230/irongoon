@@ -44,7 +44,7 @@ public final class DragoonSpellEffectRandomizer {
 
     private DragoonSpellEffectRandomizer() { }
 
-    public SpellEffectPlan resolve(final RegistryId characterId, final RegistryId spellId, final DragoonSpellProfile profile, final List<DragoonSpellProfile> pool) {
+    public SpellEffectPlan resolve(final RegistryId characterId, final RegistryId spellId, final DragoonSpellProfile profile, final List<DragoonSpellProfile> pool, final boolean firstSlot) {
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.STOCK) return profile.stockEffectPlan();
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_RAW) return SpellEffectPlan.legacy();
         if(!profile.declarativeEffectsSafe() || !profile.deffPresentationOnly()) return profile.stockEffectPlan();
@@ -61,18 +61,29 @@ public final class DragoonSpellEffectRandomizer {
                     break;
                 }
             }
+            if(firstSlot && shuffled.get(targetIndex).stockEffectPlan().target().lifeState() == TargetLifeState.DEAD) {
+                for(var offset = 1; offset < shuffled.size(); offset++) {
+                    final int candidate = (targetIndex + offset) % shuffled.size();
+                    if(shuffled.get(candidate).stockEffectPlan().target().lifeState() != TargetLifeState.DEAD) {
+                        targetIndex = candidate;
+                        break;
+                    }
+                }
+            }
             return this.declarative(shuffled.get(targetIndex).stockEffectPlan());
         }
 
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_ARCHETYPE) {
-            return this.randomArchetype(profile, random);
+            return this.randomArchetype(profile, random, firstSlot);
         }
 
-        return this.randomIndependent(profile, random);
+        return this.randomIndependent(profile, random, firstSlot);
     }
 
-    private SpellEffectPlan randomArchetype(final DragoonSpellProfile profile, final Random random) {
+    private SpellEffectPlan randomArchetype(final DragoonSpellProfile profile, final Random random, final boolean firstSlot) {
         final List<DragoonSpellEffectKind> kinds = this.allowedKinds(profile);
+        if(firstSlot) kinds.remove(DragoonSpellEffectKind.REVIVE);
+        if(kinds.isEmpty()) throw new IllegalStateException("Dragoon spell effect configuration cannot produce a living-target first spell for " + profile);
         final DragoonSpellEffectKind kind = kinds.get(random.nextInt(kinds.size()));
         final List<SpellEffect> effects = new ArrayList<>();
         TargetSide side = TargetSide.ALLIES;
@@ -97,7 +108,7 @@ public final class DragoonSpellEffectRandomizer {
         return new SpellEffectPlan(new SpellTargetProfile(side, random.nextBoolean() ? TargetScope.SINGLE : TargetScope.ALL, lifeState), effects, ExecutionMode.DECLARATIVE);
     }
 
-    private SpellEffectPlan randomIndependent(final DragoonSpellProfile profile, final Random random) {
+    private SpellEffectPlan randomIndependent(final DragoonSpellProfile profile, final Random random, final boolean firstSlot) {
         final List<SpellEffect> effects = new ArrayList<>();
         boolean offensive = false;
         boolean supportive = false;
@@ -121,7 +132,7 @@ public final class DragoonSpellEffectRandomizer {
                 case REVIVE -> { }
             }
         }
-        if(effects.isEmpty() || offensive == supportive) return this.randomArchetype(profile, random);
+        if(effects.isEmpty() || offensive == supportive) return this.randomArchetype(profile, random, firstSlot);
         final TargetSide side = offensive ? TargetSide.ENEMIES : TargetSide.ALLIES;
         return new SpellEffectPlan(new SpellTargetProfile(side, random.nextBoolean() ? TargetScope.SINGLE : TargetScope.ALL, TargetLifeState.LIVING), effects, ExecutionMode.DECLARATIVE);
     }

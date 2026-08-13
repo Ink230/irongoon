@@ -141,8 +141,17 @@ public final class DragoonSpells {
         final SpellEffectPlan plan = spell.getEffectPlan();
         final String target = plan.target().scope() == TargetScope.ALL ? "All " : "One ";
         final String side = plan.target().side() == TargetSide.ENEMIES ? "enemy" : plan.target().side() == TargetSide.SELF ? "self" : "ally";
-        final String effects = plan.effects().isEmpty() ? "legacy effects" : plan.effects().stream().map(this::effectName).distinct().reduce((left, right) -> left + ", " + right).orElse("effects");
-        return "%s%s; %s; %d MP".formatted(target, side, effects, spell.mp_06);
+        final String effects = plan.effects().isEmpty() ? "legacy effects" : plan.effects().stream().map(Object::toString).reduce((left, right) -> left + ", " + right).orElse("effects");
+        return "%s%s; %s; %s; %d power; %d%% accuracy; %d%% status; %d MP".formatted(
+            target,
+            side,
+            effects,
+            spell.element_08.getId(),
+            this.statsRandomizer.normalizedPower(spell),
+            spell.accuracy_05,
+            spell.statusChance_07,
+            spell.mp_06
+        );
     }
 
     private void registerStockProfiles() {
@@ -174,7 +183,7 @@ public final class DragoonSpells {
         final var element = profile.metadataReplacementSafe()
             ? this.elementRandomizer.resolve(characterId, spellId, baseSpell, spellPool)
             : baseSpell.element_08;
-        SpellEffectPlan plan = this.effectRandomizer.resolve(characterId, spellId, profile, profilePool);
+        SpellEffectPlan plan = this.effectRandomizer.resolve(characterId, spellId, profile, profilePool, firstSlot);
         if(this.config.dragoonSpellStats != DragoonSpellStats.STOCK) {
             plan = this.withScalarMetadata(plan, scalar.power(), scalar.statusChance());
         }

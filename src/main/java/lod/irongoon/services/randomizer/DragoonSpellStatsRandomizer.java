@@ -93,6 +93,10 @@ public final class DragoonSpellStatsRandomizer {
         return spell.multi_04;
     }
 
+    public int normalizedPower(final SpellStats0c spell) {
+        return this.spellPower(spell);
+    }
+
     private int percentBound(final int source, final Random random) {
         return Math.max(0, source * this.between(this.config.dragoonSpellPowerLowerPercentBound, this.config.dragoonSpellPowerUpperPercentBound, random) / 100);
     }
