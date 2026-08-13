@@ -144,68 +144,106 @@ public final class DragoonSpells {
 
   public String describe(final CharacterData2c character, final RegistryId spellId, final SpellStats0c spell, final String baseDescription) {
     if(!this.resolvedSpells.containsKey(new CacheKey(character.template.getRegistryId(), spellId))) return baseDescription;
+    if(this.metadataStock()) return baseDescription;
     final SpellEffectPlan plan = spell.getEffectPlan();
-    final String effects = plan.effects().isEmpty() ? baseDescription : String.join(", ", plan.effects().stream().map(this::describeEffect).toList());
-    if(plan.effects().isEmpty()) return effects;
-    return "%s; %s; %s; %d MP".formatted(
-      this.describeTarget(plan),
-      effects,
-      this.displayName(spell.element_08.getId()),
-      spell.mp_06
-    );
+    if(plan.effects().isEmpty()) return baseDescription;
+    final String scope = plan.target().scope() == TargetScope.ALL ? "All" : "Single";
+    final String element = this.displayName(spell.element_08.getId());
+    final List<String> primary = new ArrayList<>();
+    final List<String> additions = new ArrayList<>();
+    final List<String> recovery = new ArrayList<>();
+    final List<StatModifierSpellEffect> modifiers = new ArrayList<>();
+
+    for(final SpellEffect effect : plan.effects()) {
+      switch(effect) {
+        case DamageSpellEffect damage -> primary.add(this.describeDamage(element, damage.power(), scope));
+        case HealHpSpellEffect heal -> recovery.add("%s Rec".formatted(this.amount(heal.potency(), heal.percentage())));
+        case RestoreMpSpellEffect restore -> recovery.add("%s MP Rec".formatted(this.amount(restore.potency(), restore.percentage())));
+        case RestoreSpSpellEffect restore -> recovery.add("%s SP Rec".formatted(this.amount(restore.potency(), restore.percentage())));
+        case ReviveSpellEffect revive -> recovery.add("%d%% Rev".formatted(revive.hpPercent()));
+        case CleanseSpellEffect ignored -> recovery.add("Cure");
+        case DrainHpSpellEffect ignored -> additions.add("HP");
+        case DrainMpSpellEffect ignored -> additions.add("MP");
+        case DrainSpSpellEffect ignored -> additions.add("SP");
+        case ApplyStatusSpellEffect status -> additions.add(this.describeStatusApplication(status));
+        case StatModifierSpellEffect modifier -> modifiers.add(modifier);
+        case RegenHpSpellEffect regen -> recovery.add("HP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+        case RegenMpSpellEffect regen -> recovery.add("MP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+        case RegenSpSpellEffect regen -> recovery.add("SP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+      }
+    }
+
+    if(!modifiers.isEmpty()) primary.add(this.describeModifiers(modifiers, scope));
+    if(!recovery.isEmpty()) {
+      final String target = primary.isEmpty() && plan.target().scope() == TargetScope.ALL ? "Ally All" : primary.isEmpty() ? "Ally" : "Allies";
+      primary.add(target + ' ' + this.joinRecovery(recovery));
+    }
+
+    String description = String.join(" & ", primary);
+    if(!additions.isEmpty()) description += " & " + String.join(", ", additions);
+    return description;
   }
 
-  private String describeTarget(final SpellEffectPlan plan) {
-    if(plan.target().side() == TargetSide.SELF) return "Self";
-    final String scope = plan.target().scope() == TargetScope.ALL ? "All " : "One ";
-    final String side = switch(plan.target().side()) {
-      case ALLIES -> "ally";
-      case ENEMIES -> "enemy";
-      case ANY -> "target";
-      case SELF -> throw new IllegalStateException("Self target handled before side selection");
+  private String amount(final int potency, final boolean percentage) {
+    return "%d%s".formatted(potency, percentage ? "%" : "");
+  }
+
+  private String describeDamage(final String element, final int power, final String scope) {
+    final String elementPrefix = element.equals("No Element") ? "" : element + ' ';
+    return "%sSTR %d%% %s".formatted(elementPrefix, power, scope);
+  }
+
+  private String joinRecovery(final List<String> recovery) {
+    final List<String> restorative = recovery.stream().filter(value -> !value.equals("Cure")).toList();
+    final boolean cure = recovery.contains("Cure");
+    final String joined = String.join(" & ", restorative);
+    if(!cure) return joined;
+    return joined.isEmpty() ? "Cure" : joined + ", Cure";
+  }
+
+  private String describeStatusApplication(final ApplyStatusSpellEffect status) {
+    final String statuses = this.describeStatuses(status.statusMask());
+    return status.chance() == 100 ? statuses : "%s %d%%".formatted(statuses, status.chance());
+  }
+
+  private String describeModifiers(final List<StatModifierSpellEffect> modifiers, final String scope) {
+    if(modifiers.size() == 2
+      && modifiers.stream().allMatch(modifier -> modifier.amount() > 0)
+      && modifiers.stream().map(StatModifierSpellEffect::stat).collect(java.util.stream.Collectors.toSet()).equals(Set.of(legend.game.combat.spells.SpellStat.DEFENCE, legend.game.combat.spells.SpellStat.MAGIC_DEFENCE))
+      && modifiers.get(0).amount() == modifiers.get(1).amount()
+      && modifiers.get(0).turns() == modifiers.get(1).turns()
+    ) {
+      return "Damage Resist %d%% %d Turns".formatted(modifiers.get(0).amount(), modifiers.get(0).turns());
+    }
+    return String.join(" & ", modifiers.stream().map(modifier -> "%s %d%% %d Turns %s".formatted(
+      this.statName(modifier),
+      Math.abs(modifier.amount()),
+      modifier.turns(),
+      scope
+    )).toList());
+  }
+
+  private String statName(final StatModifierSpellEffect modifier) {
+    final String stat = switch(modifier.stat()) {
+      case ATTACK -> "AT";
+      case MAGIC_ATTACK -> "MAT";
+      case DEFENCE -> "DF";
+      case MAGIC_DEFENCE -> "MDF";
     };
-    return scope + side + (plan.target().scope() == TargetScope.ALL ? "s" : "");
-  }
-
-  private String describeEffect(final SpellEffect effect) {
-    return switch(effect) {
-      case DamageSpellEffect damage -> "%d damage".formatted(damage.power());
-      case HealHpSpellEffect heal -> "%s HP".formatted(this.amount(heal.potency(), heal.percentage(), "heal"));
-      case RestoreMpSpellEffect restore -> "%s MP".formatted(this.amount(restore.potency(), restore.percentage(), "restore"));
-      case RestoreSpSpellEffect restore -> "%s SP".formatted(this.amount(restore.potency(), restore.percentage(), "restore"));
-      case ReviveSpellEffect revive -> "revive at %d%% HP".formatted(revive.hpPercent());
-      case CleanseSpellEffect cleanse -> "cleanse %s".formatted(this.describeStatuses(cleanse.statusMask()));
-      case DrainHpSpellEffect drain -> "drain %d%% HP".formatted(drain.percent());
-      case DrainMpSpellEffect drain -> "drain %d%% MP".formatted(drain.percent());
-      case DrainSpSpellEffect drain -> "drain %d%% SP".formatted(drain.percent());
-      case ApplyStatusSpellEffect status -> "%s %d%%".formatted(this.describeStatuses(status.statusMask()), status.chance());
-      case StatModifierSpellEffect modifier -> "%s %s%d%% for %d turns".formatted(
-        this.displayName(modifier.stat().name()),
-        modifier.amount() >= 0 ? "+" : "",
-        modifier.amount(),
-        modifier.turns()
-      );
-      case RegenHpSpellEffect regen -> "%s HP regen for %d turns".formatted(this.amount(regen.potency(), regen.percentage(), ""), regen.turns());
-      case RegenMpSpellEffect regen -> "%s MP regen for %d turns".formatted(this.amount(regen.potency(), regen.percentage(), ""), regen.turns());
-      case RegenSpSpellEffect regen -> "%s SP regen for %d turns".formatted(this.amount(regen.potency(), regen.percentage(), ""), regen.turns());
-    };
-  }
-
-  private String amount(final int potency, final boolean percentage, final String action) {
-    return "%s%s%d%s".formatted(action, action.isEmpty() ? "" : " ", potency, percentage ? "%" : "");
+    return modifier.amount() >= 0 ? stat + " Up" : stat + " Down";
   }
 
   private String describeStatuses(final int statusMask) {
     final List<String> statuses = new ArrayList<>();
-    if((statusMask & 0x80) != 0) statuses.add("poison");
-    if((statusMask & 0x40) != 0) statuses.add("dispirit");
-    if((statusMask & 0x20) != 0) statuses.add("weapon block");
-    if((statusMask & 0x10) != 0) statuses.add("stun");
-    if((statusMask & 0x08) != 0) statuses.add("fear");
-    if((statusMask & 0x04) != 0) statuses.add("confusion");
-    if((statusMask & 0x02) != 0) statuses.add("bewitchment");
-    if((statusMask & 0x01) != 0) statuses.add("petrify");
-    return statuses.isEmpty() ? "status" : String.join("/", statuses);
+    if((statusMask & 0x80) != 0) statuses.add("Poison");
+    if((statusMask & 0x40) != 0) statuses.add("Dispirit");
+    if((statusMask & 0x20) != 0) statuses.add("Arm Block");
+    if((statusMask & 0x10) != 0) statuses.add("Stun");
+    if((statusMask & 0x08) != 0) statuses.add("Fear");
+    if((statusMask & 0x04) != 0) statuses.add("Confusion");
+    if((statusMask & 0x02) != 0) statuses.add("Bewitchment");
+    if((statusMask & 0x01) != 0) statuses.add("Petrify");
+    return statuses.isEmpty() ? "Status" : String.join("/", statuses);
   }
 
   private String displayName(final RegistryId id) {
