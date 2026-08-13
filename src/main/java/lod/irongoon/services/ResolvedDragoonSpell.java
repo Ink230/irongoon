@@ -8,7 +8,6 @@ import legend.game.inventory.SpellStats0c;
 import legend.game.scripting.ScriptState;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
-import java.util.Objects;
 
 public final class ResolvedDragoonSpell extends SpellStats0c {
     private final RegistryId spellId;
@@ -32,8 +31,10 @@ public final class ResolvedDragoonSpell extends SpellStats0c {
         final SpellEffectPlan effectPlan
     ) {
         super(targetType, flags, specialEffect, damageMultiplier, multi, accuracy, mp, statusChance, element, statusType, buffType, unknown);
-        this.spellId = Objects.requireNonNull(spellId, "spellId");
-        this.baseSpell = Objects.requireNonNull(baseSpell, "baseSpell");
+    if(spellId == null) throw new IllegalArgumentException("Resolved Dragoon spell ID cannot be null");
+    if(baseSpell == null) throw new IllegalArgumentException("Resolved Dragoon base spell cannot be null");
+    this.spellId = spellId;
+    this.baseSpell = baseSpell;
         this.setEffectPlan(effectPlan);
     }
 

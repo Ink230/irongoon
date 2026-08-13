@@ -6,7 +6,6 @@ import legend.game.combat.spells.TargetScope;
 import legend.game.combat.spells.TargetSide;
 
 import java.util.Set;
-import java.util.Objects;
 
 public record DragoonSpellProfile(
     boolean metadataReplacementSafe,
@@ -21,7 +20,11 @@ public record DragoonSpellProfile(
     boolean rawLegacyRandomizationSafe
 ) {
     public DragoonSpellProfile {
-        Objects.requireNonNull(stockEffectPlan, "stockEffectPlan");
+    if(stockEffectPlan == null) throw new IllegalArgumentException("Dragoon spell stock effect plan cannot be null");
+    if(allowedTargetSides == null) throw new IllegalArgumentException("Dragoon spell allowed target sides cannot be null");
+    if(allowedTargetScopes == null) throw new IllegalArgumentException("Dragoon spell allowed target scopes cannot be null");
+    if(allowedTargetLifeStates == null) throw new IllegalArgumentException("Dragoon spell allowed target life states cannot be null");
+    if(allowedEffects == null) throw new IllegalArgumentException("Dragoon spell allowed effects cannot be null");
         allowedTargetSides = Set.copyOf(allowedTargetSides);
         allowedTargetScopes = Set.copyOf(allowedTargetScopes);
         allowedTargetLifeStates = Set.copyOf(allowedTargetLifeStates);
