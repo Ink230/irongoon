@@ -41,9 +41,9 @@ public final class DragoonSpellStatsRandomizer {
     private int resolvePower(final RegistryId characterId, final RegistryId spellId, final SpellStats0c baseSpell, final List<SpellStats0c> pool) {
         final long salt = 0x504f574552L;
         final DragoonSpellStats mode = this.fieldMode(characterId, spellId, salt);
-        if(mode == DragoonSpellStats.STOCK) return baseSpell.multi_04;
-        if(mode == DragoonSpellStats.SHUFFLE) return this.shuffledSource(characterId, spellId, pool, salt).multi_04;
-        return this.percentBound(baseSpell.multi_04, new Random(this.seed(characterId, spellId) ^ salt));
+        if(mode == DragoonSpellStats.STOCK) return this.spellPower(baseSpell);
+        if(mode == DragoonSpellStats.SHUFFLE) return this.spellPower(this.shuffledSource(characterId, spellId, pool, salt));
+        return this.percentBound(this.spellPower(baseSpell), new Random(this.seed(characterId, spellId) ^ salt));
     }
 
     private int resolveField(
@@ -79,6 +79,20 @@ public final class DragoonSpellStatsRandomizer {
         return shuffled.get(targetIndex);
     }
 
+    private int spellPower(final SpellStats0c spell) {
+        for(final var effect : spell.getEffectPlan().effects()) {
+            if(effect instanceof final legend.game.combat.spells.DamageSpellEffect damage) return damage.power();
+            if(effect instanceof final legend.game.combat.spells.HealHpSpellEffect heal) return heal.potency();
+            if(effect instanceof final legend.game.combat.spells.RestoreMpSpellEffect restore) return restore.potency();
+            if(effect instanceof final legend.game.combat.spells.RestoreSpSpellEffect restore) return restore.potency();
+            if(effect instanceof final legend.game.combat.spells.ReviveSpellEffect revive) return revive.hpPercent();
+            if(effect instanceof final legend.game.combat.spells.RegenHpSpellEffect regen) return regen.potency();
+            if(effect instanceof final legend.game.combat.spells.RegenMpSpellEffect regen) return regen.potency();
+            if(effect instanceof final legend.game.combat.spells.RegenSpSpellEffect regen) return regen.potency();
+        }
+        return spell.multi_04;
+    }
+
     private int percentBound(final int source, final Random random) {
         return Math.max(0, source * this.between(this.config.dragoonSpellPowerLowerPercentBound, this.config.dragoonSpellPowerUpperPercentBound, random) / 100);
     }
@@ -93,7 +107,7 @@ public final class DragoonSpellStatsRandomizer {
 
     public record ScalarStats(int power, int mp, int accuracy, int statusChance) {
         public static ScalarStats from(final SpellStats0c spell) {
-            return new ScalarStats(spell.multi_04, spell.mp_06, spell.accuracy_05, spell.statusChance_07);
+            return new ScalarStats(INSTANCE.spellPower(spell), spell.mp_06, spell.accuracy_05, spell.statusChance_07);
         }
     }
 }

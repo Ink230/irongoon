@@ -54,7 +54,13 @@ public final class DragoonSpellEffectRandomizer {
             final List<DragoonSpellProfile> safe = pool.stream().filter(DragoonSpellProfile::declarativeEffectsSafe).filter(DragoonSpellProfile::deffPresentationOnly).toList();
             final List<DragoonSpellProfile> shuffled = new ArrayList<>(safe);
             java.util.Collections.shuffle(shuffled, new Random(this.config.seed ^ EFFECT_SEED_SALT ^ characterId.hashCode()));
-            final int targetIndex = Math.floorMod(spellId.hashCode(), shuffled.size());
+            var targetIndex = 0;
+            for(var index = 0; index < safe.size(); index++) {
+                if(safe.get(index) == profile) {
+                    targetIndex = index;
+                    break;
+                }
+            }
             return this.declarative(shuffled.get(targetIndex).stockEffectPlan());
         }
 

@@ -175,7 +175,9 @@ public final class DragoonSpells {
             ? this.elementRandomizer.resolve(characterId, spellId, baseSpell, spellPool)
             : baseSpell.element_08;
         SpellEffectPlan plan = this.effectRandomizer.resolve(characterId, spellId, profile, profilePool);
-        plan = this.withScalarMetadata(plan, scalar.power(), scalar.statusChance());
+        if(this.config.dragoonSpellStats != DragoonSpellStats.STOCK) {
+            plan = this.withScalarMetadata(plan, scalar.power(), scalar.statusChance());
+        }
 
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_RAW && profile.rawLegacyRandomizationSafe()) {
             return this.raw(characterId, spellId, baseSpell, element, mp, scalar.accuracy(), scalar.statusChance());
