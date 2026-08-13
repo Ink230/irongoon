@@ -1,9 +1,10 @@
-package lod.irongoon.api;
+package lod.irongoon.models;
 
 import legend.game.combat.spells.SpellEffectPlan;
 import legend.game.combat.spells.TargetLifeState;
 import legend.game.combat.spells.TargetScope;
 import legend.game.combat.spells.TargetSide;
+import lod.irongoon.data.DragoonSpellEffectKind;
 
 import java.util.Set;
 

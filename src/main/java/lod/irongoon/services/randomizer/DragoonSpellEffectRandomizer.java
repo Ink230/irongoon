@@ -22,10 +22,10 @@ import legend.game.combat.spells.StatModifierSpellEffect;
 import legend.game.combat.spells.TargetLifeState;
 import legend.game.combat.spells.TargetScope;
 import legend.game.combat.spells.TargetSide;
-import lod.irongoon.api.DragoonSpellEffectKind;
-import lod.irongoon.api.DragoonSpellProfile;
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.data.DragoonSpellEffectKind;
 import lod.irongoon.data.DragoonSpellEffects;
+import lod.irongoon.models.DragoonSpellProfile;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
 import java.util.ArrayList;

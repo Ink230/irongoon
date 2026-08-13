@@ -1,4 +1,4 @@
-package lod.irongoon.api;
+package lod.irongoon.data;
 
 public enum DragoonSpellEffectKind {
     DAMAGE,

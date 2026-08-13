@@ -1,5 +1,6 @@
-package lod.irongoon.api;
+package lod.irongoon.events;
 
+import lod.irongoon.models.DragoonSpellProfile;
 import org.legendofdragoon.modloader.events.Event;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
