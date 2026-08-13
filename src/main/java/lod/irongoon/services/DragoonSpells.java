@@ -3,7 +3,11 @@ package lod.irongoon.services;
 import legend.core.GameEngine;
 import legend.game.characters.CharacterData2c;
 import legend.game.combat.spells.ApplyStatusSpellEffect;
+import legend.game.combat.spells.CleanseSpellEffect;
 import legend.game.combat.spells.DamageSpellEffect;
+import legend.game.combat.spells.DrainHpSpellEffect;
+import legend.game.combat.spells.DrainMpSpellEffect;
+import legend.game.combat.spells.DrainSpSpellEffect;
 import legend.game.combat.spells.ExecutionMode;
 import legend.game.combat.spells.HealHpSpellEffect;
 import legend.game.combat.spells.RegenHpSpellEffect;
@@ -14,6 +18,7 @@ import legend.game.combat.spells.RestoreSpSpellEffect;
 import legend.game.combat.spells.ReviveSpellEffect;
 import legend.game.combat.spells.SpellEffect;
 import legend.game.combat.spells.SpellEffectPlan;
+import legend.game.combat.spells.StatModifierSpellEffect;
 import legend.game.combat.spells.TargetLifeState;
 import legend.game.combat.spells.TargetScope;
 import legend.game.combat.spells.TargetSide;
@@ -38,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -136,23 +142,83 @@ public final class DragoonSpells {
         return this.resolvedSpells.getOrDefault(new CacheKey(character.template.getRegistryId(), spellId), baseSpell);
     }
 
-    public String describe(final CharacterData2c character, final RegistryId spellId, final SpellStats0c spell, final String baseDescription) {
-        if(!this.resolvedSpells.containsKey(new CacheKey(character.template.getRegistryId(), spellId))) return baseDescription;
-        final SpellEffectPlan plan = spell.getEffectPlan();
-        final String target = plan.target().scope() == TargetScope.ALL ? "All " : "One ";
-        final String side = plan.target().side() == TargetSide.ENEMIES ? "enemy" : plan.target().side() == TargetSide.SELF ? "self" : "ally";
-        final String effects = plan.effects().isEmpty() ? "legacy effects" : plan.effects().stream().map(Object::toString).reduce((left, right) -> left + ", " + right).orElse("effects");
-        return "%s%s; %s; %s; %d power; %d%% accuracy; %d%% status; %d MP".formatted(
-            target,
-            side,
-            effects,
-            spell.element_08.getId(),
-            this.statsRandomizer.normalizedPower(spell),
-            spell.accuracy_05,
-            spell.statusChance_07,
-            spell.mp_06
-        );
+  public String describe(final CharacterData2c character, final RegistryId spellId, final SpellStats0c spell, final String baseDescription) {
+    if(!this.resolvedSpells.containsKey(new CacheKey(character.template.getRegistryId(), spellId))) return baseDescription;
+    final SpellEffectPlan plan = spell.getEffectPlan();
+    final String effects = plan.effects().isEmpty() ? baseDescription : String.join(", ", plan.effects().stream().map(this::describeEffect).toList());
+    if(plan.effects().isEmpty()) return effects;
+    return "%s; %s; %s; %d MP".formatted(
+      this.describeTarget(plan),
+      effects,
+      this.displayName(spell.element_08.getId()),
+      spell.mp_06
+    );
+  }
+
+  private String describeTarget(final SpellEffectPlan plan) {
+    if(plan.target().side() == TargetSide.SELF) return "Self";
+    final String scope = plan.target().scope() == TargetScope.ALL ? "All " : "One ";
+    final String side = switch(plan.target().side()) {
+      case ALLIES -> "ally";
+      case ENEMIES -> "enemy";
+      case ANY -> "target";
+      case SELF -> throw new IllegalStateException("Self target handled before side selection");
+    };
+    return scope + side + (plan.target().scope() == TargetScope.ALL ? "s" : "");
+  }
+
+  private String describeEffect(final SpellEffect effect) {
+    return switch(effect) {
+      case DamageSpellEffect damage -> "%d damage".formatted(damage.power());
+      case HealHpSpellEffect heal -> "%s HP".formatted(this.amount(heal.potency(), heal.percentage(), "heal"));
+      case RestoreMpSpellEffect restore -> "%s MP".formatted(this.amount(restore.potency(), restore.percentage(), "restore"));
+      case RestoreSpSpellEffect restore -> "%s SP".formatted(this.amount(restore.potency(), restore.percentage(), "restore"));
+      case ReviveSpellEffect revive -> "revive at %d%% HP".formatted(revive.hpPercent());
+      case CleanseSpellEffect cleanse -> "cleanse %s".formatted(this.describeStatuses(cleanse.statusMask()));
+      case DrainHpSpellEffect drain -> "drain %d%% HP".formatted(drain.percent());
+      case DrainMpSpellEffect drain -> "drain %d%% MP".formatted(drain.percent());
+      case DrainSpSpellEffect drain -> "drain %d%% SP".formatted(drain.percent());
+      case ApplyStatusSpellEffect status -> "%s %d%%".formatted(this.describeStatuses(status.statusMask()), status.chance());
+      case StatModifierSpellEffect modifier -> "%s %s%d%% for %d turns".formatted(
+        this.displayName(modifier.stat().name()),
+        modifier.amount() >= 0 ? "+" : "",
+        modifier.amount(),
+        modifier.turns()
+      );
+      case RegenHpSpellEffect regen -> "%s HP regen for %d turns".formatted(this.amount(regen.potency(), regen.percentage(), ""), regen.turns());
+      case RegenMpSpellEffect regen -> "%s MP regen for %d turns".formatted(this.amount(regen.potency(), regen.percentage(), ""), regen.turns());
+      case RegenSpSpellEffect regen -> "%s SP regen for %d turns".formatted(this.amount(regen.potency(), regen.percentage(), ""), regen.turns());
+    };
+  }
+
+  private String amount(final int potency, final boolean percentage, final String action) {
+    return "%s%s%d%s".formatted(action, action.isEmpty() ? "" : " ", potency, percentage ? "%" : "");
+  }
+
+  private String describeStatuses(final int statusMask) {
+    final List<String> statuses = new ArrayList<>();
+    if((statusMask & 0x80) != 0) statuses.add("poison");
+    if((statusMask & 0x40) != 0) statuses.add("dispirit");
+    if((statusMask & 0x20) != 0) statuses.add("weapon block");
+    if((statusMask & 0x10) != 0) statuses.add("stun");
+    if((statusMask & 0x08) != 0) statuses.add("fear");
+    if((statusMask & 0x04) != 0) statuses.add("confusion");
+    if((statusMask & 0x02) != 0) statuses.add("bewitchment");
+    if((statusMask & 0x01) != 0) statuses.add("petrify");
+    return statuses.isEmpty() ? "status" : String.join("/", statuses);
+  }
+
+  private String displayName(final RegistryId id) {
+    return this.displayName(id.entryId().toString());
+  }
+
+  private String displayName(final String internalName) {
+    final String[] words = internalName.toLowerCase(Locale.ROOT).split("_");
+    for(int i = 0; i < words.length; i++) {
+      if(!words[i].isEmpty()) words[i] = Character.toUpperCase(words[i].charAt(0)) + words[i].substring(1);
     }
+    return String.join(" ", words);
+  }
 
     private void registerStockProfiles() {
         for(final RegistryId spellId : GameEngine.REGISTRIES.spells) {
