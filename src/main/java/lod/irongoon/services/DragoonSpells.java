@@ -184,7 +184,10 @@ public final class DragoonSpells {
         }
 
         final int targetType = this.targetType(baseSpell.targetType_00, plan);
-        return new ResolvedDragoonSpell(spellId, baseSpell, targetType, baseSpell.flags_01, baseSpell.specialEffect_02, baseSpell.damageMultiplier_03, scalar.power(), scalar.accuracy(), mp, scalar.statusChance(), element, baseSpell.statusType_09, baseSpell.buffType_0a, baseSpell._0b, plan);
+        final int legacyMulti = this.config.dragoonSpellStats != DragoonSpellStats.STOCK && plan.executionMode() != ExecutionMode.DECLARATIVE
+            ? scalar.power()
+            : baseSpell.multi_04;
+        return new ResolvedDragoonSpell(spellId, baseSpell, targetType, baseSpell.flags_01, baseSpell.specialEffect_02, baseSpell.damageMultiplier_03, legacyMulti, scalar.accuracy(), mp, scalar.statusChance(), element, baseSpell.statusType_09, baseSpell.buffType_0a, baseSpell._0b, plan);
     }
 
     private ResolvedDragoonSpell raw(final RegistryId characterId, final RegistryId spellId, final SpellStats0c baseSpell, final org.legendofdragoon.modloader.registries.RegistryDelegate<legend.game.characters.Element> element, final int mp, final int accuracy, final int statusChance) {
