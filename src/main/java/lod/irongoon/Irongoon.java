@@ -15,6 +15,8 @@ import legend.game.modding.events.battle.BattleEndedEvent;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import legend.game.modding.events.battle.ResolveSpellDescriptionEvent;
+import legend.game.modding.events.battle.SpellStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.characters.PostCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
@@ -30,11 +32,13 @@ import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
+import legend.game.types.GameState52c;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
+import lod.irongoon.services.DragoonSpells;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -69,6 +73,7 @@ public class Irongoon {
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
+    private final DragoonSpells dragoonSpells = DragoonSpells.getInstance();
     private final SeveredChainsLiveDataAdapter liveData = SeveredChainsLiveDataAdapter.getInstance();
 
     public Irongoon() {
@@ -91,6 +96,7 @@ public class Irongoon {
 
         refreshState();
     randomizer.setLevelOneParty(game.gameState);
+    this.initializeDragoonSpells(game.gameState);
     randomizer.resetDragoonElements();
 
         for (final CharacterData2c character : game.gameState.charData_32c) {
@@ -111,6 +117,24 @@ public class Irongoon {
     randomizer.resetDragoonElements();
     refreshState();
     randomizer.reapplyAllCharacterStats(game.gameState);
+    this.initializeDragoonSpells(game.gameState);
+  }
+
+  private void initializeDragoonSpells(final GameState52c gameState) {
+    this.dragoonSpells.initialize(gameState, characterId -> randomizer.doDragoonStats(characterId, 1).maxMP);
+    for(final CharacterData2c character : gameState.charData_32c) {
+      randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
+    }
+  }
+
+  @EventListener
+  public void spellStats(final SpellStatsEvent event) {
+    event.spell = this.dragoonSpells.resolve(event.character, event.spellId, event.baseSpell);
+  }
+
+  @EventListener
+  public void resolveSpellDescription(final ResolveSpellDescriptionEvent event) {
+    event.description = this.dragoonSpells.describe(event.character, event.spellId, event.spell, event.baseDescription);
   }
 
   private void refreshState() {
