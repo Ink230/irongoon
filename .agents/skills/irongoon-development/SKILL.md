@@ -1,11 +1,19 @@
 ---
 name: irongoon-development
-description: Apply Irongoon's leaf-based Java architecture and repository conventions when reviewing, planning, implementing, or refactoring code in the irongoon repository, especially event handlers, singleton services, randomizers, parsers, data sources, configuration, enum policies, and Severed Chains integrations.
+description: Identify and work across the Irongoon project space, including the Irongoon Java mod repository, its GitHub Wiki, and the DragoonMods/LodTools website, while applying Irongoon's leaf-based Java architecture and repository conventions. Use for Irongoon code, configuration, documentation, config-reference, config-template, config-builder, tooltip, how-to, target-version, and Severed Chains integration work.
 ---
 
 # Irongoon Development
 
 Preserve Irongoon's established dependency direction: engine events enter at the root, coordinators select behavior, and leaf services perform one bounded operation. Prefer a new or extended leaf over adding domain logic to an event handler or coordinator.
+
+## Project identity and authority
+
+- **Irongoon**: The base Java mod loaded by Severed Chains (`sc`). Its hosted repository is `https://github.com/Ink230/irongoon`, and its usual local checkout is `D:\java\irongoon`. Treat this repository as authoritative for implemented mod behavior, supported configuration, defaults, versioning, and packaging
+- **Irongoon Wiki**: The GitHub Wiki attached to the Irongoon repository at `https://github.com/Ink230/irongoon/wiki`. It contains the config reference, config templates, and other pages explaining the project. Treat it as the user-facing documentation surface and keep it synchronized with the implemented Irongoon configuration
+- **DragoonMods / LodTools / Website**: The `https://dragoonmods.com/` website is implemented by the LodTools repository at `https://github.com/Ink230/LoD-Tools`, usually checked out at `C:\webprojects\lodtools\web`. Its Irongoon page provides the config builder, field tooltips, copy-paste configuration output, how-to guidance, and the Irongoon target version. The website may host other mods, so scope Irongoon work to its Irongoon-specific page and services unless the request explicitly includes shared or other-mod behavior
+
+Route a request to the surface that owns it: mod/runtime and schema changes belong in Irongoon; config reference, templates, and explanatory pages belong in the Irongoon Wiki; builder UX, tooltips, generated copy-paste config, how-to content, and displayed target version belong in LodTools. When a change spans surfaces, derive documentation and website behavior from the current Irongoon implementation and validate that names, values, defaults, output order, and version claims remain aligned. Use the Severed Chains repository as authority for engine APIs and game behavior rather than copying assumptions from Irongoon or LodTools.
 
 ## Required workflow
 
