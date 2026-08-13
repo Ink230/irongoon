@@ -23,26 +23,60 @@ public final class DragoonSpellStatsRandomizer {
     public ScalarStats resolve(final RegistryId characterId, final RegistryId spellId, final SpellStats0c baseSpell, final List<SpellStats0c> pool) {
         if(this.config.dragoonSpellStats == DragoonSpellStats.STOCK) return ScalarStats.from(baseSpell);
 
-        final Random random = new Random(this.seed(characterId, spellId));
-        final DragoonSpellStats mode = this.config.dragoonSpellStats == DragoonSpellStats.RANDOMIZE_RANDOM
-            ? DragoonSpellStats.values()[random.nextInt(3)]
-            : this.config.dragoonSpellStats;
-        if(mode == DragoonSpellStats.STOCK) return ScalarStats.from(baseSpell);
-
-        final SpellStats0c source = mode == DragoonSpellStats.SHUFFLE ? pool.get(random.nextInt(pool.size())) : baseSpell;
         final int power = this.config.dragoonSpellRandomizePower
-            ? mode == DragoonSpellStats.SHUFFLE ? source.multi_04 : this.percentBound(baseSpell.multi_04, random)
+            ? this.resolvePower(characterId, spellId, baseSpell, pool)
             : baseSpell.multi_04;
         final int mp = this.config.dragoonSpellRandomizeMpCost
-            ? mode == DragoonSpellStats.SHUFFLE ? source.mp_06 : this.between(this.config.dragoonSpellMpCostLowerBound, this.config.dragoonSpellMpCostUpperBound, random)
+            ? this.resolveField(characterId, spellId, baseSpell.mp_06, pool, spell -> spell.mp_06, this.config.dragoonSpellMpCostLowerBound, this.config.dragoonSpellMpCostUpperBound, 0x4d50L)
             : baseSpell.mp_06;
         final int accuracy = this.config.dragoonSpellRandomizeAccuracy
-            ? mode == DragoonSpellStats.SHUFFLE ? source.accuracy_05 : this.between(this.config.dragoonSpellAccuracyLowerBound, this.config.dragoonSpellAccuracyUpperBound, random)
+            ? this.resolveField(characterId, spellId, baseSpell.accuracy_05, pool, spell -> spell.accuracy_05, this.config.dragoonSpellAccuracyLowerBound, this.config.dragoonSpellAccuracyUpperBound, 0x414343L)
             : baseSpell.accuracy_05;
         final int statusChance = this.config.dragoonSpellRandomizeStatusChance
-            ? mode == DragoonSpellStats.SHUFFLE ? source.statusChance_07 : this.between(this.config.dragoonSpellStatusChanceLowerBound, this.config.dragoonSpellStatusChanceUpperBound, random)
+            ? this.resolveField(characterId, spellId, baseSpell.statusChance_07, pool, spell -> spell.statusChance_07, this.config.dragoonSpellStatusChanceLowerBound, this.config.dragoonSpellStatusChanceUpperBound, 0x53544154L)
             : baseSpell.statusChance_07;
         return new ScalarStats(power, Math.max(0, mp), accuracy, statusChance);
+    }
+
+    private int resolvePower(final RegistryId characterId, final RegistryId spellId, final SpellStats0c baseSpell, final List<SpellStats0c> pool) {
+        final long salt = 0x504f574552L;
+        final DragoonSpellStats mode = this.fieldMode(characterId, spellId, salt);
+        if(mode == DragoonSpellStats.STOCK) return baseSpell.multi_04;
+        if(mode == DragoonSpellStats.SHUFFLE) return this.shuffledSource(characterId, spellId, pool, salt).multi_04;
+        return this.percentBound(baseSpell.multi_04, new Random(this.seed(characterId, spellId) ^ salt));
+    }
+
+    private int resolveField(
+        final RegistryId characterId,
+        final RegistryId spellId,
+        final int stock,
+        final List<SpellStats0c> pool,
+        final java.util.function.ToIntFunction<SpellStats0c> field,
+        final int lower,
+        final int upper,
+        final long salt
+    ) {
+        final DragoonSpellStats mode = this.fieldMode(characterId, spellId, salt);
+        if(mode == DragoonSpellStats.STOCK) return stock;
+        if(mode == DragoonSpellStats.SHUFFLE) return field.applyAsInt(this.shuffledSource(characterId, spellId, pool, salt));
+        return this.between(lower, upper, new Random(this.seed(characterId, spellId) ^ salt));
+    }
+
+    private DragoonSpellStats fieldMode(final RegistryId characterId, final RegistryId spellId, final long salt) {
+        if(this.config.dragoonSpellStats != DragoonSpellStats.RANDOMIZE_RANDOM) return this.config.dragoonSpellStats;
+        return DragoonSpellStats.values()[new Random(this.seed(characterId, spellId) ^ salt).nextInt(3)];
+    }
+
+    private SpellStats0c shuffledSource(final RegistryId characterId, final RegistryId spellId, final List<SpellStats0c> pool, final long salt) {
+        final List<SpellStats0c> sorted = new java.util.ArrayList<>(pool);
+        sorted.sort(java.util.Comparator.comparing(spell -> spell.getRegistryId().toString()));
+        final int targetIndex = Math.max(0, java.util.stream.IntStream.range(0, sorted.size())
+            .filter(index -> sorted.get(index).getRegistryId().equals(spellId))
+            .findFirst()
+            .orElse(Math.floorMod(spellId.hashCode(), sorted.size())));
+        final List<SpellStats0c> shuffled = new java.util.ArrayList<>(sorted);
+        java.util.Collections.shuffle(shuffled, new Random(this.config.seed ^ STATS_SEED_SALT ^ characterId.hashCode() ^ salt));
+        return shuffled.get(targetIndex);
     }
 
     private int percentBound(final int source, final Random random) {

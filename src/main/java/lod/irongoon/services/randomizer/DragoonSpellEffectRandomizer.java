@@ -52,7 +52,10 @@ public final class DragoonSpellEffectRandomizer {
         final Random random = new Random(this.config.seed ^ EFFECT_SEED_SALT ^ characterId.hashCode() ^ Long.rotateLeft(spellId.hashCode(), 23));
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.SHUFFLE_PACKAGES) {
             final List<DragoonSpellProfile> safe = pool.stream().filter(DragoonSpellProfile::declarativeEffectsSafe).filter(DragoonSpellProfile::deffPresentationOnly).toList();
-            return this.declarative(safe.get(random.nextInt(safe.size())).stockEffectPlan());
+            final List<DragoonSpellProfile> shuffled = new ArrayList<>(safe);
+            java.util.Collections.shuffle(shuffled, new Random(this.config.seed ^ EFFECT_SEED_SALT ^ characterId.hashCode()));
+            final int targetIndex = Math.floorMod(spellId.hashCode(), shuffled.size());
+            return this.declarative(shuffled.get(targetIndex).stockEffectPlan());
         }
 
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_ARCHETYPE) {

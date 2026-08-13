@@ -31,7 +31,15 @@ public final class DragoonSpellElementRandomizer {
 
         final Random random = new Random(this.config.seed ^ ELEMENT_SEED_SALT ^ characterId.hashCode() ^ Long.rotateLeft(spellId.hashCode(), 17));
         if(this.config.dragoonSpellElements == DragoonSpellElements.SHUFFLE) {
-            return pool.get(random.nextInt(pool.size())).element_08;
+            final List<SpellStats0c> sorted = new ArrayList<>(pool);
+            sorted.sort(Comparator.comparing(spell -> spell.getRegistryId().toString()));
+            final int targetIndex = java.util.stream.IntStream.range(0, sorted.size())
+                .filter(index -> sorted.get(index).getRegistryId().equals(spellId))
+                .findFirst()
+                .orElse(Math.floorMod(spellId.hashCode(), sorted.size()));
+            final List<RegistryDelegate<Element>> elements = sorted.stream().map(spell -> spell.element_08).collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+            java.util.Collections.shuffle(elements, new Random(this.config.seed ^ ELEMENT_SEED_SALT ^ characterId.hashCode()));
+            return elements.get(targetIndex);
         }
 
         final List<RegistryDelegate<Element>> elements = new ArrayList<>();
