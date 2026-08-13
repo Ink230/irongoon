@@ -121,10 +121,11 @@ public class Irongoon {
   }
 
   private void initializeDragoonSpells(final GameState52c gameState) {
-    this.dragoonSpells.initialize(gameState, characterId -> randomizer.doDragoonStats(characterId, 1).maxMP);
+    this.dragoonSpells.gatherProfiles();
     for(final CharacterData2c character : gameState.charData_32c) {
       randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
     }
+    this.dragoonSpells.initialize(gameState, characterId -> randomizer.doDragoonStats(characterId, 1).maxMP);
   }
 
   @EventListener

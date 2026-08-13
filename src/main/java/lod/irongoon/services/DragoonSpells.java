@@ -66,18 +66,20 @@ public final class DragoonSpells {
     private final DragoonSpellEffectRandomizer effectRandomizer = DragoonSpellEffectRandomizer.getInstance();
     private final Map<RegistryId, DragoonSpellProfile> profiles = new LinkedHashMap<>();
     private final Map<CacheKey, SpellStats0c> resolvedSpells = new HashMap<>();
-    private final Map<RegistryId, RegistryId> originalFirstSpells = new HashMap<>();
 
     private DragoonSpells() { }
 
-    public void initialize(final GameState52c gameState, final IntUnaryOperator dragoonLevelOneMp) {
+    public void gatherProfiles() {
         this.validateSafeEffectPool();
         this.profiles.clear();
-        this.resolvedSpells.clear();
-        this.originalFirstSpells.clear();
         final GatherDragoonSpellProfilesEvent gather = GameEngine.EVENTS.postEvent(new GatherDragoonSpellProfilesEvent());
         this.profiles.putAll(gather.profiles());
         this.registerStockProfiles();
+    }
+
+    public void initialize(final GameState52c gameState, final IntUnaryOperator dragoonLevelOneMp) {
+        if(this.profiles.isEmpty()) this.gatherProfiles();
+        this.resolvedSpells.clear();
 
         final List<SpellStats0c> globalSpellPool = this.profiles.keySet().stream()
             .sorted(Comparator.comparing(RegistryId::toString))
@@ -92,7 +94,6 @@ public final class DragoonSpells {
             final CharacterData2c character = gameState.charData_32c.get(characterIndex);
             final RegistryId characterId = character.template.getRegistryId();
             final List<RegistryId> eligibleIds = character.getAllSpells().stream().filter(this.profiles::containsKey).toList();
-            if(!eligibleIds.isEmpty()) this.originalFirstSpells.put(characterId, eligibleIds.getFirst());
             final List<SpellStats0c> spellPool = this.config.dragoonSpellRandomizationPool == DragoonSpellRandomizationPool.GLOBAL
                 ? globalSpellPool
                 : eligibleIds.stream().sorted(Comparator.comparing(RegistryId::toString)).map(this::baseSpell).toList();
@@ -100,10 +101,11 @@ public final class DragoonSpells {
                 ? globalProfilePool
                 : eligibleIds.stream().sorted(Comparator.comparing(RegistryId::toString)).map(this.profiles::get).toList();
             final RegistryId firstEligible = eligibleIds.isEmpty() ? null : eligibleIds.getFirst();
+            final int levelOneMp = dragoonLevelOneMp.applyAsInt(characterIndex);
 
             for(final RegistryId spellId : eligibleIds) {
                 final boolean firstSlot = spellId.equals(firstEligible);
-                final SpellStats0c resolved = this.resolve(characterId, spellId, spellPool, profilePool, firstSlot, dragoonLevelOneMp.applyAsInt(characterIndex));
+                final SpellStats0c resolved = this.resolve(characterId, spellId, spellPool, profilePool, firstSlot, levelOneMp);
                 this.resolvedSpells.put(new CacheKey(characterId, spellId), resolved);
             }
 
@@ -112,7 +114,9 @@ public final class DragoonSpells {
                 alternateIds.addAll(dart.getRedEyeSpells());
                 alternateIds.addAll(dart.getDivineSpells());
                 for(final RegistryId spellId : alternateIds.stream().distinct().filter(this.profiles::containsKey).toList()) {
-                    final SpellStats0c resolved = this.resolve(characterId, spellId, globalSpellPool, globalProfilePool, false, dragoonLevelOneMp.applyAsInt(characterIndex));
+                    final boolean alternateFirst = dart.getRedEyeSpells().stream().findFirst().map(spellId::equals).orElse(false)
+                        || dart.getDivineSpells().stream().findFirst().map(spellId::equals).orElse(false);
+                    final SpellStats0c resolved = this.resolve(characterId, spellId, globalSpellPool, globalProfilePool, alternateFirst, levelOneMp);
                     this.resolvedSpells.putIfAbsent(new CacheKey(characterId, spellId), resolved);
                 }
             }
@@ -126,10 +130,6 @@ public final class DragoonSpells {
     public boolean isUsableAsFirstSpell(final RegistryId spellId) {
         final DragoonSpellProfile profile = this.profiles.get(spellId);
         return profile != null && profile.usableAsFirstLivingTargetSpell();
-    }
-
-    public RegistryId originalFirstSpell(final CharacterData2c character) {
-        return this.originalFirstSpells.get(character.template.getRegistryId());
     }
 
     public SpellStats0c resolve(final CharacterData2c character, final RegistryId spellId, final SpellStats0c baseSpell) {
