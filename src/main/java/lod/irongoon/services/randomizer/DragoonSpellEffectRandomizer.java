@@ -44,10 +44,10 @@ public final class DragoonSpellEffectRandomizer {
 
     private DragoonSpellEffectRandomizer() { }
 
-    public SpellEffectPlan resolve(final RegistryId characterId, final RegistryId spellId, final DragoonSpellProfile profile, final List<DragoonSpellProfile> pool, final boolean firstSlot) {
-        if(this.config.dragoonSpellEffects == DragoonSpellEffects.STOCK) return profile.stockEffectPlan();
-        if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_RAW) return SpellEffectPlan.legacy();
-        if(!profile.declarativeEffectsSafe() || !profile.deffPresentationOnly()) return profile.stockEffectPlan();
+    public List<SpellEffectPlan> resolve(final RegistryId characterId, final RegistryId spellId, final DragoonSpellProfile profile, final List<DragoonSpellProfile> pool, final boolean firstSlot) {
+        if(this.config.dragoonSpellEffects == DragoonSpellEffects.STOCK) return profile.stockEffectPlans();
+        if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_RAW) return List.of(SpellEffectPlan.legacy());
+        if(!profile.declarativeEffectsSafe() || !profile.deffPresentationOnly()) return profile.stockEffectPlans();
 
         final Random random = new Random(this.config.seed ^ EFFECT_SEED_SALT ^ characterId.hashCode() ^ Long.rotateLeft(spellId.hashCode(), 23));
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.SHUFFLE_PACKAGES) {
@@ -70,14 +70,14 @@ public final class DragoonSpellEffectRandomizer {
                     }
                 }
             }
-            return this.declarative(shuffled.get(targetIndex).stockEffectPlan());
+            return this.declarative(shuffled.get(targetIndex).stockEffectPlans());
         }
 
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_ARCHETYPE) {
-            return this.randomArchetype(profile, random, firstSlot);
+            return List.of(this.randomArchetype(profile, random, firstSlot));
         }
 
-        return this.randomIndependent(profile, random, firstSlot);
+        return List.of(this.randomIndependent(profile, random, firstSlot));
     }
 
     private SpellEffectPlan randomArchetype(final DragoonSpellProfile profile, final Random random, final boolean firstSlot) {
@@ -164,6 +164,10 @@ public final class DragoonSpellEffectRandomizer {
 
     private SpellEffectPlan declarative(final SpellEffectPlan plan) {
         return new SpellEffectPlan(plan.target(), plan.effects(), ExecutionMode.DECLARATIVE);
+    }
+
+    private List<SpellEffectPlan> declarative(final List<SpellEffectPlan> plans) {
+        return plans.stream().map(this::declarative).toList();
     }
 
     private int power(final Random random) {

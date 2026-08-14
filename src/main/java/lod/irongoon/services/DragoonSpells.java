@@ -145,37 +145,40 @@ public final class DragoonSpells {
   public String describe(final CharacterData2c character, final RegistryId spellId, final SpellStats0c spell, final String baseDescription) {
     if(!this.resolvedSpells.containsKey(new CacheKey(character.template.getRegistryId(), spellId))) return baseDescription;
     if(this.metadataStock()) return baseDescription;
-    final SpellEffectPlan plan = spell.getEffectPlan();
-    if(plan.effects().isEmpty()) return baseDescription;
-    final String scope = plan.target().scope() == TargetScope.ALL ? "All" : "Single";
+    final List<SpellEffectPlan> plans = spell.getEffectPlans();
+    if(plans.stream().allMatch(plan -> plan.effects().isEmpty())) return baseDescription;
+    final String scope = plans.get(0).target().scope() == TargetScope.ALL ? "All" : "Single";
     final String element = this.displayName(spell.element_08.getId());
     final List<String> primary = new ArrayList<>();
     final List<String> additions = new ArrayList<>();
     final List<String> recovery = new ArrayList<>();
     final List<StatModifierSpellEffect> modifiers = new ArrayList<>();
 
-    for(final SpellEffect effect : plan.effects()) {
-      switch(effect) {
-        case DamageSpellEffect damage -> primary.add(this.describeDamage(element, damage.power(), scope));
-        case HealHpSpellEffect heal -> recovery.add("%s Rec".formatted(this.amount(heal.potency(), heal.percentage())));
-        case RestoreMpSpellEffect restore -> recovery.add("%s MP Rec".formatted(this.amount(restore.potency(), restore.percentage())));
-        case RestoreSpSpellEffect restore -> recovery.add("%s SP Rec".formatted(this.amount(restore.potency(), restore.percentage())));
-        case ReviveSpellEffect revive -> recovery.add("%d%% Rev".formatted(revive.hpPercent()));
-        case CleanseSpellEffect ignored -> recovery.add("Cure");
-        case DrainHpSpellEffect ignored -> additions.add("HP");
-        case DrainMpSpellEffect ignored -> additions.add("MP");
-        case DrainSpSpellEffect ignored -> additions.add("SP");
-        case ApplyStatusSpellEffect status -> additions.add(this.describeStatusApplication(status));
-        case StatModifierSpellEffect modifier -> modifiers.add(modifier);
-        case RegenHpSpellEffect regen -> recovery.add("HP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
-        case RegenMpSpellEffect regen -> recovery.add("MP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
-        case RegenSpSpellEffect regen -> recovery.add("SP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+    for(final SpellEffectPlan plan : plans) {
+      final String planScope = plan.target().scope() == TargetScope.ALL ? "All" : "Single";
+      for(final SpellEffect effect : plan.effects()) {
+        switch(effect) {
+          case DamageSpellEffect damage -> primary.add(this.describeDamage(element, damage.power(), planScope));
+          case HealHpSpellEffect heal -> recovery.add("%s Rec".formatted(this.amount(heal.potency(), heal.percentage())));
+          case RestoreMpSpellEffect restore -> recovery.add("%s MP Rec".formatted(this.amount(restore.potency(), restore.percentage())));
+          case RestoreSpSpellEffect restore -> recovery.add("%s SP Rec".formatted(this.amount(restore.potency(), restore.percentage())));
+          case ReviveSpellEffect revive -> recovery.add("%d%% Rev".formatted(revive.hpPercent()));
+          case CleanseSpellEffect ignored -> recovery.add("Cure");
+          case DrainHpSpellEffect ignored -> additions.add("HP");
+          case DrainMpSpellEffect ignored -> additions.add("MP");
+          case DrainSpSpellEffect ignored -> additions.add("SP");
+          case ApplyStatusSpellEffect status -> additions.add(this.describeStatusApplication(status));
+          case StatModifierSpellEffect modifier -> modifiers.add(modifier);
+          case RegenHpSpellEffect regen -> recovery.add("HP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+          case RegenMpSpellEffect regen -> recovery.add("MP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+          case RegenSpSpellEffect regen -> recovery.add("SP %s Regen %d Turns".formatted(this.amount(regen.potency(), regen.percentage()), regen.turns()));
+        }
       }
     }
 
     if(!modifiers.isEmpty()) primary.add(this.describeModifiers(modifiers, scope));
     if(!recovery.isEmpty()) {
-      final String target = primary.isEmpty() && plan.target().scope() == TargetScope.ALL ? "Ally All" : primary.isEmpty() ? "Ally" : "Allies";
+      final String target = primary.isEmpty() && plans.get(0).target().scope() == TargetScope.ALL ? "Ally All" : primary.isEmpty() ? "Ally" : "Allies";
       primary.add(target + ' ' + this.joinRecovery(recovery));
     }
 
@@ -262,7 +265,7 @@ public final class DragoonSpells {
         for(final RegistryId spellId : GameEngine.REGISTRIES.spells) {
             if(!spellId.toString().startsWith("lod:") || !STOCK_SPELLS.contains(spellId.entryId().toString())) continue;
             final SpellStats0c spell = this.baseSpell(spellId);
-            this.profiles.putIfAbsent(spellId, new DragoonSpellProfile(true, !spellId.entryId().toString().equals("demons_gate"), spell.getEffectPlan(), true, true));
+            this.profiles.putIfAbsent(spellId, new DragoonSpellProfile(true, !spellId.entryId().toString().equals("demons_gate"), spell.getEffectPlans(), true, true));
         }
     }
 
@@ -287,20 +290,21 @@ public final class DragoonSpells {
         final var element = profile.metadataReplacementSafe()
             ? this.elementRandomizer.resolve(characterId, spellId, baseSpell, spellPool)
             : baseSpell.element_08;
-        SpellEffectPlan plan = this.effectRandomizer.resolve(characterId, spellId, profile, profilePool, firstSlot);
+        List<SpellEffectPlan> plans = this.effectRandomizer.resolve(characterId, spellId, profile, profilePool, firstSlot);
         if(this.config.dragoonSpellStats != DragoonSpellStats.STOCK) {
-            plan = this.withScalarMetadata(plan, scalar.power(), scalar.statusChance());
+            plans = plans.stream().map(plan -> this.withScalarMetadata(plan, scalar.power(), scalar.statusChance())).toList();
         }
 
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_RAW && profile.rawLegacyRandomizationSafe()) {
             return this.raw(characterId, spellId, baseSpell, element, mp, scalar.accuracy(), scalar.statusChance());
         }
 
-        final int targetType = this.targetType(baseSpell.targetType_00, plan);
-        final int legacyMulti = this.config.dragoonSpellStats != DragoonSpellStats.STOCK && plan.executionMode() != ExecutionMode.DECLARATIVE
+        final SpellEffectPlan primaryPlan = plans.get(0);
+        final int targetType = this.targetType(baseSpell.targetType_00, primaryPlan);
+        final int legacyMulti = this.config.dragoonSpellStats != DragoonSpellStats.STOCK && primaryPlan.executionMode() != ExecutionMode.DECLARATIVE
             ? scalar.power()
             : baseSpell.multi_04;
-        return new ResolvedDragoonSpell(spellId, baseSpell, targetType, baseSpell.flags_01, baseSpell.specialEffect_02, baseSpell.damageMultiplier_03, legacyMulti, scalar.accuracy(), mp, scalar.statusChance(), element, baseSpell.statusType_09, baseSpell.buffType_0a, baseSpell._0b, plan);
+        return new ResolvedDragoonSpell(spellId, baseSpell, targetType, baseSpell.flags_01, baseSpell.specialEffect_02, baseSpell.damageMultiplier_03, legacyMulti, scalar.accuracy(), mp, scalar.statusChance(), element, baseSpell.statusType_09, baseSpell.buffType_0a, baseSpell._0b, plans);
     }
 
     private ResolvedDragoonSpell raw(final RegistryId characterId, final RegistryId spellId, final SpellStats0c baseSpell, final org.legendofdragoon.modloader.registries.RegistryDelegate<legend.game.characters.Element> element, final int mp, final int accuracy, final int statusChance) {

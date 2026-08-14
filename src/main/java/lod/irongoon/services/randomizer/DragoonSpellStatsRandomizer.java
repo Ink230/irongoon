@@ -80,15 +80,17 @@ public final class DragoonSpellStatsRandomizer {
     }
 
     private int spellPower(final SpellStats0c spell) {
-        for(final var effect : spell.getEffectPlan().effects()) {
-            if(effect instanceof final legend.game.combat.spells.DamageSpellEffect damage) return damage.power();
-            if(effect instanceof final legend.game.combat.spells.HealHpSpellEffect heal) return heal.potency();
-            if(effect instanceof final legend.game.combat.spells.RestoreMpSpellEffect restore) return restore.potency();
-            if(effect instanceof final legend.game.combat.spells.RestoreSpSpellEffect restore) return restore.potency();
-            if(effect instanceof final legend.game.combat.spells.ReviveSpellEffect revive) return revive.hpPercent();
-            if(effect instanceof final legend.game.combat.spells.RegenHpSpellEffect regen) return regen.potency();
-            if(effect instanceof final legend.game.combat.spells.RegenMpSpellEffect regen) return regen.potency();
-            if(effect instanceof final legend.game.combat.spells.RegenSpSpellEffect regen) return regen.potency();
+        for(final var plan : spell.getEffectPlans()) {
+            for(final var effect : plan.effects()) {
+                if(effect instanceof final legend.game.combat.spells.DamageSpellEffect damage) return damage.power();
+                if(effect instanceof final legend.game.combat.spells.HealHpSpellEffect heal) return heal.potency();
+                if(effect instanceof final legend.game.combat.spells.RestoreMpSpellEffect restore) return restore.potency();
+                if(effect instanceof final legend.game.combat.spells.RestoreSpSpellEffect restore) return restore.potency();
+                if(effect instanceof final legend.game.combat.spells.ReviveSpellEffect revive) return revive.hpPercent();
+                if(effect instanceof final legend.game.combat.spells.RegenHpSpellEffect regen) return regen.potency();
+                if(effect instanceof final legend.game.combat.spells.RegenMpSpellEffect regen) return regen.potency();
+                if(effect instanceof final legend.game.combat.spells.RegenSpSpellEffect regen) return regen.potency();
+            }
         }
         return spell.multi_04;
     }

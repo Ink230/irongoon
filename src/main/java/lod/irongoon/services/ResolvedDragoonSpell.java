@@ -8,6 +8,8 @@ import legend.game.inventory.SpellStats0c;
 import legend.game.scripting.ScriptState;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
+import java.util.List;
+
 
 public final class ResolvedDragoonSpell extends SpellStats0c {
     private final RegistryId spellId;
@@ -30,12 +32,32 @@ public final class ResolvedDragoonSpell extends SpellStats0c {
         final int unknown,
         final SpellEffectPlan effectPlan
     ) {
+        this(spellId, baseSpell, targetType, flags, specialEffect, damageMultiplier, multi, accuracy, mp, statusChance, element, statusType, buffType, unknown, List.of(effectPlan));
+    }
+
+    public ResolvedDragoonSpell(
+        final RegistryId spellId,
+        final SpellStats0c baseSpell,
+        final int targetType,
+        final int flags,
+        final int specialEffect,
+        final int damageMultiplier,
+        final int multi,
+        final int accuracy,
+        final int mp,
+        final int statusChance,
+        final org.legendofdragoon.modloader.registries.RegistryDelegate<legend.game.characters.Element> element,
+        final int statusType,
+        final int buffType,
+        final int unknown,
+        final List<SpellEffectPlan> effectPlans
+    ) {
         super(targetType, flags, specialEffect, damageMultiplier, multi, accuracy, mp, statusChance, element, statusType, buffType, unknown);
-    if(spellId == null) throw new IllegalArgumentException("Resolved Dragoon spell ID cannot be null");
-    if(baseSpell == null) throw new IllegalArgumentException("Resolved Dragoon base spell cannot be null");
-    this.spellId = spellId;
-    this.baseSpell = baseSpell;
-        this.setEffectPlan(effectPlan);
+        if(spellId == null) throw new IllegalArgumentException("Resolved Dragoon spell ID cannot be null");
+        if(baseSpell == null) throw new IllegalArgumentException("Resolved Dragoon base spell cannot be null");
+        this.spellId = spellId;
+        this.baseSpell = baseSpell;
+        this.setEffectPlans(effectPlans);
     }
 
     @Override
