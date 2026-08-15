@@ -34,6 +34,7 @@ import lod.irongoon.data.DragoonSpellRandomizationPool;
 import lod.irongoon.data.DragoonSpellStats;
 import lod.irongoon.events.GatherDragoonSpellProfilesEvent;
 import lod.irongoon.models.DragoonSpellProfile;
+import lod.irongoon.services.compatibility.SpellEffectPlans;
 import lod.irongoon.services.randomizer.DragoonSpellEffectRandomizer;
 import lod.irongoon.services.randomizer.DragoonSpellElementRandomizer;
 import lod.irongoon.services.randomizer.DragoonSpellMpCostRandomizer;
@@ -177,7 +178,7 @@ public final class DragoonSpells {
   public String describe(final CharacterData2c character, final RegistryId spellId, final SpellStats0c spell, final String baseDescription) {
     if(!this.resolvedSpells.containsKey(new CacheKey(character.template.getRegistryId(), spellId))) return baseDescription;
     if(this.metadataStock()) return baseDescription;
-    final List<SpellEffectPlan> plans = spell.getEffectPlans();
+        final List<SpellEffectPlan> plans = SpellEffectPlans.get(spell);
     if(plans.stream().allMatch(plan -> plan.effects().isEmpty())) return baseDescription;
     final String scope = plans.get(0).target().scope() == TargetScope.ALL ? "All" : "Single";
     final String element = this.displayName(spell.element_08.getId());
@@ -297,7 +298,7 @@ public final class DragoonSpells {
         for(final RegistryId spellId : GameEngine.REGISTRIES.spells) {
             if(!spellId.toString().startsWith("lod:") || !STOCK_SPELLS.contains(spellId.entryId().toString())) continue;
             final SpellStats0c spell = this.baseSpell(spellId);
-            this.profiles.putIfAbsent(spellId, new DragoonSpellProfile(true, !spellId.entryId().toString().equals("demons_gate"), spell.getEffectPlans(), true, true));
+            this.profiles.putIfAbsent(spellId, new DragoonSpellProfile(true, !spellId.entryId().toString().equals("demons_gate"), SpellEffectPlans.get(spell), true, true));
         }
     }
 

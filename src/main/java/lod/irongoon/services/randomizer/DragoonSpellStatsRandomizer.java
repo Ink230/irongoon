@@ -3,6 +3,7 @@ package lod.irongoon.services.randomizer;
 import legend.game.inventory.SpellStats0c;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.DragoonSpellStats;
+import lod.irongoon.services.compatibility.SpellEffectPlans;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
 import java.util.List;
@@ -77,7 +78,7 @@ public final class DragoonSpellStatsRandomizer {
     }
 
     private int spellPower(final SpellStats0c spell) {
-        for(final var plan : spell.getEffectPlans()) {
+        for(final var plan : SpellEffectPlans.get(spell)) {
             for(final var effect : plan.effects()) {
                 if(effect instanceof final legend.game.combat.spells.DamageSpellEffect damage) return damage.power();
                 if(effect instanceof final legend.game.combat.spells.HealHpSpellEffect heal) return heal.potency();

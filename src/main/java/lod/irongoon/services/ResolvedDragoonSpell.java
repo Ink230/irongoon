@@ -6,6 +6,7 @@ import legend.game.combat.spells.SpellEffectPlan;
 import legend.game.combat.types.BattleObject;
 import legend.game.inventory.SpellStats0c;
 import legend.game.scripting.ScriptState;
+import lod.irongoon.services.compatibility.SpellEffectPlans;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public final class ResolvedDragoonSpell extends SpellStats0c {
         this.spellId = spellId;
         this.baseSpell = baseSpell;
         this.effectPlans = List.copyOf(effectPlans);
-        this.setEffectPlans(this.effectPlans);
+        SpellEffectPlans.set(this, this.effectPlans);
     }
 
     public ResolvedDragoonSpell withMp(final int mp) {
