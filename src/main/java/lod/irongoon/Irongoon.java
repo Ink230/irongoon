@@ -125,7 +125,7 @@ public class Irongoon {
     for(final CharacterData2c character : gameState.charData_32c) {
       randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
     }
-    this.dragoonSpells.initialize(gameState, characterId -> randomizer.doDragoonStats(characterId, 1).maxMP);
+        this.dragoonSpells.initialize(gameState);
   }
 
   @EventListener
@@ -208,7 +208,10 @@ public class Irongoon {
       return;
     }
 
-    if(event.bent != null) randomizer.synchronizeDragoonElementState(event.bent);
+        if(event.bent != null) {
+            randomizer.synchronizeDragoonElementState(event.bent);
+            this.dragoonSpells.synchronize(event.bent);
+        }
     event.element = randomizer.doCharacterElement(characterId, event.baseElement);
   }
 
@@ -251,17 +254,20 @@ public class Irongoon {
     @EventListener
   public void battleStarted(final BattleStartedEvent event) {
     randomizer.beginDragoonElementBattle();
+    this.dragoonSpells.beginBattle();
   }
 
   @EventListener
   public void battleEnded(final BattleEndedEvent event) {
     randomizer.endDragoonElementBattle();
+    this.dragoonSpells.endBattle();
   }
 
   @EventListener
   public void battleEntityTurn(final BattleEntityTurnEvent<?> event) {
     if(event.bent instanceof final PlayerBattleEntity player) {
       randomizer.synchronizeDragoonElementState(player);
+      this.dragoonSpells.synchronize(player);
     }
   }
 

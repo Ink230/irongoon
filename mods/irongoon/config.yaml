@@ -31,7 +31,7 @@ dragoonSpellStats: STOCK
 dragoonSpellRandomizePower: TRUE
 dragoonSpellPowerLowerPercentBound: 50
 dragoonSpellPowerUpperPercentBound: 150
-dragoonSpellRandomizeMpCost: TRUE
+dragoonSpellMpCosts: RANDOM_CAMPAIGN_CHARACTER
 dragoonSpellMpCostLowerBound: 1
 dragoonSpellMpCostUpperBound: 80
 dragoonSpellRandomizeAccuracy: FALSE

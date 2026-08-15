@@ -26,16 +26,13 @@ public final class DragoonSpellStatsRandomizer {
         final int power = this.config.dragoonSpellRandomizePower
             ? this.resolvePower(characterId, spellId, baseSpell, pool)
             : baseSpell.multi_04;
-        final int mp = this.config.dragoonSpellRandomizeMpCost
-            ? this.resolveField(characterId, spellId, baseSpell.mp_06, pool, spell -> spell.mp_06, this.config.dragoonSpellMpCostLowerBound, this.config.dragoonSpellMpCostUpperBound, 0x4d50L)
-            : baseSpell.mp_06;
         final int accuracy = this.config.dragoonSpellRandomizeAccuracy
             ? this.resolveField(characterId, spellId, baseSpell.accuracy_05, pool, spell -> spell.accuracy_05, this.config.dragoonSpellAccuracyLowerBound, this.config.dragoonSpellAccuracyUpperBound, 0x414343L)
             : baseSpell.accuracy_05;
         final int statusChance = this.config.dragoonSpellRandomizeStatusChance
             ? this.resolveField(characterId, spellId, baseSpell.statusChance_07, pool, spell -> spell.statusChance_07, this.config.dragoonSpellStatusChanceLowerBound, this.config.dragoonSpellStatusChanceUpperBound, 0x53544154L)
             : baseSpell.statusChance_07;
-        return new ScalarStats(power, Math.max(0, mp), accuracy, statusChance);
+        return new ScalarStats(power, baseSpell.mp_06, accuracy, statusChance);
     }
 
     private int resolvePower(final RegistryId characterId, final RegistryId spellId, final SpellStats0c baseSpell, final List<SpellStats0c> pool) {

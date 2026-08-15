@@ -84,7 +84,7 @@ public class IrongoonConfig {
     public boolean dragoonSpellRandomizePower;
     public int dragoonSpellPowerLowerPercentBound;
     public int dragoonSpellPowerUpperPercentBound;
-    public boolean dragoonSpellRandomizeMpCost;
+    public DragoonSpellMpCosts dragoonSpellMpCosts;
     public int dragoonSpellMpCostLowerBound;
     public int dragoonSpellMpCostUpperBound;
     public boolean dragoonSpellRandomizeAccuracy;
@@ -196,7 +196,9 @@ public class IrongoonConfig {
         this.dragoonSpellRandomizePower = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizePower", true);
         this.dragoonSpellPowerLowerPercentBound = (int) yamlConfig.getOrDefault("dragoonSpellPowerLowerPercentBound", 50);
         this.dragoonSpellPowerUpperPercentBound = (int) yamlConfig.getOrDefault("dragoonSpellPowerUpperPercentBound", 150);
-        this.dragoonSpellRandomizeMpCost = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizeMpCost", true);
+        final boolean legacyRandomizeMpCost = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizeMpCost", false);
+        final String defaultMpCosts = legacyRandomizeMpCost ? "RANDOM_CAMPAIGN_CHARACTER" : "STOCK";
+        this.dragoonSpellMpCosts = DragoonSpellMpCosts.valueOf((String) yamlConfig.getOrDefault("dragoonSpellMpCosts", defaultMpCosts));
         this.dragoonSpellMpCostLowerBound = (int) yamlConfig.getOrDefault("dragoonSpellMpCostLowerBound", 1);
         this.dragoonSpellMpCostUpperBound = (int) yamlConfig.getOrDefault("dragoonSpellMpCostUpperBound", 80);
         this.dragoonSpellRandomizeAccuracy = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizeAccuracy", false);

@@ -2,6 +2,7 @@ package lod.irongoon.services;
 
 import legend.core.GameEngine;
 import legend.game.characters.CharacterData2c;
+import legend.game.combat.bent.PlayerBattleEntity;
 import legend.game.combat.spells.ApplyStatusSpellEffect;
 import legend.game.combat.spells.CleanseSpellEffect;
 import legend.game.combat.spells.DamageSpellEffect;
@@ -28,12 +29,14 @@ import legend.lodmod.characters.DartCharacterData;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.DragoonSpellEffects;
 import lod.irongoon.data.DragoonSpellElements;
+import lod.irongoon.data.DragoonSpellMpCosts;
 import lod.irongoon.data.DragoonSpellRandomizationPool;
 import lod.irongoon.data.DragoonSpellStats;
 import lod.irongoon.events.GatherDragoonSpellProfilesEvent;
 import lod.irongoon.models.DragoonSpellProfile;
 import lod.irongoon.services.randomizer.DragoonSpellEffectRandomizer;
 import lod.irongoon.services.randomizer.DragoonSpellElementRandomizer;
+import lod.irongoon.services.randomizer.DragoonSpellMpCostRandomizer;
 import lod.irongoon.services.randomizer.DragoonSpellStatsRandomizer;
 import org.legendofdragoon.modloader.registries.RegistryId;
 
@@ -47,7 +50,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.IntUnaryOperator;
 
 public final class DragoonSpells {
     private static final DragoonSpells INSTANCE = new DragoonSpells();
@@ -68,10 +70,12 @@ public final class DragoonSpells {
 
     private final IrongoonConfig config = IrongoonConfig.getInstance();
     private final DragoonSpellStatsRandomizer statsRandomizer = DragoonSpellStatsRandomizer.getInstance();
+    private final DragoonSpellMpCostRandomizer mpCostRandomizer = DragoonSpellMpCostRandomizer.getInstance();
     private final DragoonSpellElementRandomizer elementRandomizer = DragoonSpellElementRandomizer.getInstance();
     private final DragoonSpellEffectRandomizer effectRandomizer = DragoonSpellEffectRandomizer.getInstance();
     private final Map<RegistryId, DragoonSpellProfile> profiles = new LinkedHashMap<>();
     private final Map<CacheKey, SpellStats0c> resolvedSpells = new HashMap<>();
+    private final Map<CacheKey, Integer> unlockIndices = new HashMap<>();
 
     private DragoonSpells() { }
 
@@ -83,9 +87,11 @@ public final class DragoonSpells {
         this.registerStockProfiles();
     }
 
-    public void initialize(final GameState52c gameState, final IntUnaryOperator dragoonLevelOneMp) {
+    public void initialize(final GameState52c gameState) {
         if(this.profiles.isEmpty()) this.gatherProfiles();
         this.resolvedSpells.clear();
+        this.unlockIndices.clear();
+        this.mpCostRandomizer.reset();
 
         final List<SpellStats0c> globalSpellPool = this.profiles.keySet().stream()
             .sorted(Comparator.comparing(RegistryId::toString))
@@ -107,23 +113,29 @@ public final class DragoonSpells {
                 ? globalProfilePool
                 : eligibleIds.stream().sorted(Comparator.comparing(RegistryId::toString)).map(this.profiles::get).toList();
             final RegistryId firstEligible = eligibleIds.isEmpty() ? null : eligibleIds.getFirst();
-            final int levelOneMp = dragoonLevelOneMp.applyAsInt(characterIndex);
 
-            for(final RegistryId spellId : eligibleIds) {
+            for(int unlockIndex = 0; unlockIndex < eligibleIds.size(); unlockIndex++) {
+                final RegistryId spellId = eligibleIds.get(unlockIndex);
                 final boolean firstSlot = spellId.equals(firstEligible);
-                final SpellStats0c resolved = this.resolve(characterId, spellId, spellPool, profilePool, firstSlot, levelOneMp);
-                this.resolvedSpells.put(new CacheKey(characterId, spellId), resolved);
+                final CacheKey key = new CacheKey(characterId, spellId);
+                final SpellStats0c resolved = this.resolve(characterId, spellId, spellPool, profilePool, firstSlot);
+                this.resolvedSpells.put(key, resolved);
+                this.unlockIndices.put(key, unlockIndex);
             }
 
             if(character instanceof final DartCharacterData dart) {
-                final List<RegistryId> alternateIds = new ArrayList<>();
-                alternateIds.addAll(dart.getRedEyeSpells());
-                alternateIds.addAll(dart.getDivineSpells());
-                for(final RegistryId spellId : alternateIds.stream().distinct().filter(this.profiles::containsKey).toList()) {
-                    final boolean alternateFirst = dart.getRedEyeSpells().stream().findFirst().map(spellId::equals).orElse(false)
-                        || dart.getDivineSpells().stream().findFirst().map(spellId::equals).orElse(false);
-                    final SpellStats0c resolved = this.resolve(characterId, spellId, globalSpellPool, globalProfilePool, alternateFirst, levelOneMp);
-                    this.resolvedSpells.putIfAbsent(new CacheKey(characterId, spellId), resolved);
+                final List<List<RegistryId>> alternateSequences = List.of(
+                    dart.getRedEyeSpells().stream().filter(this.profiles::containsKey).toList(),
+                    dart.getDivineSpells().stream().filter(this.profiles::containsKey).toList()
+                );
+                for(final List<RegistryId> sequence : alternateSequences) {
+                    for(int unlockIndex = 0; unlockIndex < sequence.size(); unlockIndex++) {
+                        final RegistryId spellId = sequence.get(unlockIndex);
+                        final CacheKey key = new CacheKey(characterId, spellId);
+                        final SpellStats0c resolved = this.resolve(characterId, spellId, globalSpellPool, globalProfilePool, unlockIndex == 0);
+                        this.resolvedSpells.putIfAbsent(key, resolved);
+                        this.unlockIndices.putIfAbsent(key, unlockIndex);
+                    }
                 }
             }
         }
@@ -139,7 +151,27 @@ public final class DragoonSpells {
     }
 
     public SpellStats0c resolve(final CharacterData2c character, final RegistryId spellId, final SpellStats0c baseSpell) {
-        return this.resolvedSpells.getOrDefault(new CacheKey(character.template.getRegistryId(), spellId), baseSpell);
+        final RegistryId characterId = character.template.getRegistryId();
+        final CacheKey key = new CacheKey(characterId, spellId);
+        final SpellStats0c resolved = this.resolvedSpells.getOrDefault(key, baseSpell);
+        if(this.config.dragoonSpellMpCosts == DragoonSpellMpCosts.STOCK) return resolved;
+        if(!(resolved instanceof final ResolvedDragoonSpell dragoonSpell)) return resolved;
+
+        final int unlockIndex = this.unlockIndices.getOrDefault(key, -1);
+        final int mp = this.mpCostRandomizer.resolve(characterId, unlockIndex, baseSpell.mp_06);
+        return dragoonSpell.withMp(mp);
+    }
+
+    public void beginBattle() {
+        this.mpCostRandomizer.beginBattle();
+    }
+
+    public void endBattle() {
+        this.mpCostRandomizer.endBattle();
+    }
+
+    public void synchronize(final PlayerBattleEntity bent) {
+        this.mpCostRandomizer.synchronize(bent);
     }
 
   public String describe(final CharacterData2c character, final RegistryId spellId, final SpellStats0c spell, final String baseDescription) {
@@ -274,19 +306,16 @@ public final class DragoonSpells {
         final RegistryId spellId,
         final List<SpellStats0c> spellPool,
         final List<DragoonSpellProfile> profilePool,
-        final boolean firstSlot,
-        final int dragoonLevelOneMp
+        final boolean firstSlot
     ) {
         final SpellStats0c baseSpell = this.baseSpell(spellId);
-        if(this.metadataStock()) return baseSpell;
+        if(this.metadataStock() && this.config.dragoonSpellMpCosts == DragoonSpellMpCosts.STOCK) return baseSpell;
 
         final DragoonSpellProfile profile = this.profiles.get(spellId);
         final DragoonSpellStatsRandomizer.ScalarStats scalar = profile.metadataReplacementSafe()
             ? this.statsRandomizer.resolve(characterId, spellId, baseSpell, spellPool)
             : DragoonSpellStatsRandomizer.ScalarStats.from(baseSpell);
-        final int mp = firstSlot && this.config.dragoonSpellEffects != DragoonSpellEffects.RANDOMIZE_RAW
-            ? Math.min(scalar.mp(), Math.max(0, dragoonLevelOneMp))
-            : scalar.mp();
+        final int mp = scalar.mp();
         final var element = profile.metadataReplacementSafe()
             ? this.elementRandomizer.resolve(characterId, spellId, baseSpell, spellPool)
             : baseSpell.element_08;
