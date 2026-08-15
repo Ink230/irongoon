@@ -211,7 +211,10 @@ public final class DragoonSpells {
 
     if(!modifiers.isEmpty()) primary.add(this.describeModifiers(modifiers, scope));
     if(!recovery.isEmpty()) {
-      final String target = primary.isEmpty() && plans.get(0).target().scope() == TargetScope.ALL ? "Ally All" : primary.isEmpty() ? "Ally" : "Allies";
+      final boolean recoveryAll = plans.stream()
+        .filter(plan -> plan.effects().stream().anyMatch(this::isRecovery))
+        .allMatch(plan -> plan.target().scope() == TargetScope.ALL);
+      final String target = primary.isEmpty() ? recoveryAll ? "Ally All" : "Ally" : recoveryAll ? "Allies All" : "Allies";
       primary.add(target + ' ' + this.joinRecovery(recovery));
     }
 
@@ -227,6 +230,20 @@ public final class DragoonSpells {
   private String describeDamage(final String element, final int power, final String scope) {
     final String elementPrefix = element.equals("No Element") ? "" : element + ' ';
     return "%sSTR %d%% %s".formatted(elementPrefix, power, scope);
+  }
+
+  private boolean isRecovery(final SpellEffect effect) {
+    return switch(effect) {
+      case HealHpSpellEffect ignored -> true;
+      case RestoreMpSpellEffect ignored -> true;
+      case RestoreSpSpellEffect ignored -> true;
+      case ReviveSpellEffect ignored -> true;
+      case CleanseSpellEffect ignored -> true;
+      case RegenHpSpellEffect ignored -> true;
+      case RegenMpSpellEffect ignored -> true;
+      case RegenSpSpellEffect ignored -> true;
+      default -> false;
+    };
   }
 
   private String joinRecovery(final List<String> recovery) {
@@ -323,6 +340,7 @@ public final class DragoonSpells {
         List<SpellEffectPlan> plans = this.effectRandomizer.resolve(characterId, spellId, profile, profilePool, firstSlot);
         if(this.config.dragoonSpellStats != DragoonSpellStats.STOCK) {
             plans = plans.stream().map(plan -> this.withScalarMetadata(plan, scalar.power(), scalar.statusChance())).toList();
+            plans = this.effectRandomizer.ensureUsable(plans);
         }
 
         if(this.config.dragoonSpellEffects == DragoonSpellEffects.RANDOMIZE_RAW && profile.rawLegacyRandomizationSafe()) {

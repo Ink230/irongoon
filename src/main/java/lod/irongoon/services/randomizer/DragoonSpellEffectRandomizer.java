@@ -80,6 +80,24 @@ public final class DragoonSpellEffectRandomizer {
         return List.of(this.randomIndependent(profile, random, firstSlot));
     }
 
+    public List<SpellEffectPlan> ensureUsable(final List<SpellEffectPlan> plans) {
+        if(plans.isEmpty() || plans.stream().anyMatch(this::isUsable)) return plans;
+
+        final SpellEffectPlan primary = plans.getFirst();
+        if(primary.executionMode() != ExecutionMode.DECLARATIVE) return plans;
+
+        final int damagePower = Math.max(1, this.config.dragoonSpellPowerLowerPercentBound);
+        if(primary.target().scope() == TargetScope.ALL) {
+            return List.of(
+                this.fallbackDamage(TargetScope.ALL, damagePower),
+                this.fallbackHealing(TargetScope.ALL)
+            );
+        }
+
+        final boolean offensive = primary.target().side() == TargetSide.ENEMIES || primary.effects().stream().anyMatch(this::isOffensive);
+        return List.of(offensive ? this.fallbackDamage(TargetScope.SINGLE, damagePower) : this.fallbackHealing(TargetScope.SINGLE));
+    }
+
     private SpellEffectPlan randomArchetype(final DragoonSpellProfile profile, final Random random, final boolean firstSlot) {
         final List<DragoonSpellEffectKind> kinds = this.allowedKinds(profile);
         if(firstSlot) kinds.remove(DragoonSpellEffectKind.REVIVE);
@@ -156,6 +174,54 @@ public final class DragoonSpellEffectRandomizer {
         this.add(kinds, profile, DragoonSpellEffectKind.REGEN_SP, this.config.dragoonSpellAllowRegenSp);
         if(kinds.isEmpty()) throw new IllegalStateException("Dragoon spell effect configuration cannot produce a supported effect for " + profile);
         return kinds;
+    }
+
+    private boolean isUsable(final SpellEffectPlan plan) {
+        if(plan.executionMode() != ExecutionMode.DECLARATIVE) return true;
+        return plan.effects().stream().anyMatch(effect -> switch(effect) {
+            case DamageSpellEffect damage -> damage.power() > 0;
+            case HealHpSpellEffect heal -> heal.potency() > 0;
+            case RestoreMpSpellEffect restore -> restore.potency() > 0;
+            case RestoreSpSpellEffect restore -> restore.potency() > 0;
+            case ReviveSpellEffect ignored -> true;
+            case CleanseSpellEffect cleanse -> cleanse.statusMask() != 0;
+            case DrainHpSpellEffect ignored -> false;
+            case DrainMpSpellEffect ignored -> false;
+            case DrainSpSpellEffect ignored -> false;
+            case ApplyStatusSpellEffect status -> status.statusMask() != 0 && status.chance() > 0;
+            case StatModifierSpellEffect modifier -> modifier.amount() != 0 && modifier.turns() > 0;
+            case RegenHpSpellEffect regen -> regen.potency() > 0 && regen.turns() > 0;
+            case RegenMpSpellEffect regen -> regen.potency() > 0 && regen.turns() > 0;
+            case RegenSpSpellEffect regen -> regen.potency() > 0 && regen.turns() > 0;
+        });
+    }
+
+    private boolean isOffensive(final SpellEffect effect) {
+        return switch(effect) {
+            case DamageSpellEffect ignored -> true;
+            case DrainHpSpellEffect ignored -> true;
+            case DrainMpSpellEffect ignored -> true;
+            case DrainSpSpellEffect ignored -> true;
+            case ApplyStatusSpellEffect ignored -> true;
+            case StatModifierSpellEffect modifier -> modifier.amount() < 0;
+            default -> false;
+        };
+    }
+
+    private SpellEffectPlan fallbackDamage(final TargetScope scope, final int power) {
+        return new SpellEffectPlan(
+            new SpellTargetProfile(TargetSide.ENEMIES, scope, TargetLifeState.LIVING),
+            List.of(new DamageSpellEffect(power)),
+            ExecutionMode.DECLARATIVE
+        );
+    }
+
+    private SpellEffectPlan fallbackHealing(final TargetScope scope) {
+        return new SpellEffectPlan(
+            new SpellTargetProfile(TargetSide.ALLIES, scope, TargetLifeState.LIVING),
+            List.of(new HealHpSpellEffect(1, false)),
+            ExecutionMode.DECLARATIVE
+        );
     }
 
     private void add(final List<DragoonSpellEffectKind> kinds, final DragoonSpellProfile profile, final DragoonSpellEffectKind kind, final boolean configured) {
