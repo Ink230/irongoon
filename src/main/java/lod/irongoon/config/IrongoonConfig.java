@@ -78,6 +78,39 @@ public class IrongoonConfig {
     public DragoonElements dragoonElements;
     public boolean dragoonNoElement;
     public List<String> dragoonElementOverride;
+    public DragoonSpellUnlocks dragoonSpellUnlocks;
+    public DragoonSpellRandomizationPool dragoonSpellRandomizationPool;
+    public DragoonSpellStats dragoonSpellStats;
+    public boolean dragoonSpellRandomizePower;
+    public int dragoonSpellPowerLowerPercentBound;
+    public int dragoonSpellPowerUpperPercentBound;
+    public DragoonSpellMpCosts dragoonSpellMpCosts;
+    public int dragoonSpellMpCostLowerBound;
+    public int dragoonSpellMpCostUpperBound;
+    public boolean dragoonSpellRandomizeAccuracy;
+    public int dragoonSpellAccuracyLowerBound;
+    public int dragoonSpellAccuracyUpperBound;
+    public boolean dragoonSpellRandomizeStatusChance;
+    public int dragoonSpellStatusChanceLowerBound;
+    public int dragoonSpellStatusChanceUpperBound;
+    public DragoonSpellElements dragoonSpellElements;
+    public boolean dragoonSpellNoElement;
+    public DragoonSpellEffects dragoonSpellEffects;
+    public boolean dragoonSpellAllowDamage;
+    public boolean dragoonSpellAllowHealHp;
+    public boolean dragoonSpellAllowRestoreMp;
+    public boolean dragoonSpellAllowRestoreSp;
+    public boolean dragoonSpellAllowRevive;
+    public boolean dragoonSpellAllowCleanse;
+    public boolean dragoonSpellAllowDrainHp;
+    public boolean dragoonSpellAllowDrainMp;
+    public boolean dragoonSpellAllowDrainSp;
+    public boolean dragoonSpellAllowStatus;
+    public boolean dragoonSpellAllowBuff;
+    public boolean dragoonSpellAllowDebuff;
+    public boolean dragoonSpellAllowRegenHp;
+    public boolean dragoonSpellAllowRegenMp;
+    public boolean dragoonSpellAllowRegenSp;
     public EnableAllCharacters enableAllCharacters;
     public BattleParty battleParty;
     public List<Integer> battlePartyOverride;
@@ -157,11 +190,81 @@ public class IrongoonConfig {
         this.dragoonElements = DragoonElements.valueOf((String) yamlConfig.getOrDefault("dragoonElements", "STOCK"));
         this.dragoonNoElement = (boolean) yamlConfig.getOrDefault("dragoonNoElement", false);
         this.dragoonElementOverride = (List<String>) yamlConfig.getOrDefault("dragoonElementOverride", new ArrayList<>());
+        this.dragoonSpellUnlocks = DragoonSpellUnlocks.valueOf((String) yamlConfig.getOrDefault("dragoonSpellUnlocks", "STOCK"));
+        this.dragoonSpellRandomizationPool = DragoonSpellRandomizationPool.valueOf((String) yamlConfig.getOrDefault("dragoonSpellRandomizationPool", "GLOBAL"));
+        this.dragoonSpellStats = DragoonSpellStats.valueOf((String) yamlConfig.getOrDefault("dragoonSpellStats", "STOCK"));
+        this.dragoonSpellRandomizePower = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizePower", true);
+        this.dragoonSpellPowerLowerPercentBound = (int) yamlConfig.getOrDefault("dragoonSpellPowerLowerPercentBound", 50);
+        this.dragoonSpellPowerUpperPercentBound = (int) yamlConfig.getOrDefault("dragoonSpellPowerUpperPercentBound", 150);
+        final boolean legacyRandomizeMpCost = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizeMpCost", false);
+        final String defaultMpCosts = legacyRandomizeMpCost ? "RANDOM_CAMPAIGN_CHARACTER" : "STOCK";
+        this.dragoonSpellMpCosts = DragoonSpellMpCosts.valueOf((String) yamlConfig.getOrDefault("dragoonSpellMpCosts", defaultMpCosts));
+        this.dragoonSpellMpCostLowerBound = (int) yamlConfig.getOrDefault("dragoonSpellMpCostLowerBound", 1);
+        this.dragoonSpellMpCostUpperBound = (int) yamlConfig.getOrDefault("dragoonSpellMpCostUpperBound", 80);
+        this.dragoonSpellRandomizeAccuracy = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizeAccuracy", false);
+        this.dragoonSpellAccuracyLowerBound = (int) yamlConfig.getOrDefault("dragoonSpellAccuracyLowerBound", 75);
+        this.dragoonSpellAccuracyUpperBound = (int) yamlConfig.getOrDefault("dragoonSpellAccuracyUpperBound", 100);
+        this.dragoonSpellRandomizeStatusChance = (boolean) yamlConfig.getOrDefault("dragoonSpellRandomizeStatusChance", true);
+        this.dragoonSpellStatusChanceLowerBound = (int) yamlConfig.getOrDefault("dragoonSpellStatusChanceLowerBound", 25);
+        this.dragoonSpellStatusChanceUpperBound = (int) yamlConfig.getOrDefault("dragoonSpellStatusChanceUpperBound", 100);
+        this.dragoonSpellElements = DragoonSpellElements.valueOf((String) yamlConfig.getOrDefault("dragoonSpellElements", "STOCK"));
+        this.dragoonSpellNoElement = (boolean) yamlConfig.getOrDefault("dragoonSpellNoElement", false);
+        this.dragoonSpellEffects = DragoonSpellEffects.valueOf((String) yamlConfig.getOrDefault("dragoonSpellEffects", "STOCK"));
+        this.dragoonSpellAllowDamage = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowDamage", true);
+        this.dragoonSpellAllowHealHp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowHealHp", true);
+        this.dragoonSpellAllowRestoreMp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowRestoreMp", true);
+        this.dragoonSpellAllowRestoreSp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowRestoreSp", true);
+        this.dragoonSpellAllowRevive = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowRevive", true);
+        this.dragoonSpellAllowCleanse = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowCleanse", true);
+        this.dragoonSpellAllowDrainHp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowDrainHp", true);
+        this.dragoonSpellAllowDrainMp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowDrainMp", true);
+        this.dragoonSpellAllowDrainSp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowDrainSp", true);
+        this.dragoonSpellAllowStatus = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowStatus", true);
+        this.dragoonSpellAllowBuff = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowBuff", true);
+        this.dragoonSpellAllowDebuff = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowDebuff", true);
+        this.dragoonSpellAllowRegenHp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowRegenHp", true);
+        this.dragoonSpellAllowRegenMp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowRegenMp", true);
+        this.dragoonSpellAllowRegenSp = (boolean) yamlConfig.getOrDefault("dragoonSpellAllowRegenSp", true);
+        this.validateDragoonSpellConfig();
         this.enableAllCharacters = EnableAllCharacters.valueOf((String) yamlConfig.getOrDefault("enableAllCharacters", "PERMANENTLY"));
         this.battleParty = BattleParty.valueOf((String) yamlConfig.getOrDefault("battleParty", "RANDOM_BATTLE"));
         this.battlePartyOverride = (List<Integer>) yamlConfig.getOrDefault("battlePartyOverride", new ArrayList<>());
         this.battlePartySize = (int) yamlConfig.getOrDefault("battlePartySize", 3);
         this.battlePartyPool = (List<Integer>) yamlConfig.getOrDefault("battlePartyPool", new ArrayList<>());
         this.battlePartyDuplicates = (boolean) yamlConfig.getOrDefault("battlePartyDuplicates", false);
+    }
+
+    private void validateDragoonSpellConfig() {
+        this.validateBounds("dragoonSpellPowerPercent", this.dragoonSpellPowerLowerPercentBound, this.dragoonSpellPowerUpperPercentBound, 0, Integer.MAX_VALUE);
+        this.validateBounds("dragoonSpellMpCost", this.dragoonSpellMpCostLowerBound, this.dragoonSpellMpCostUpperBound, 0, Integer.MAX_VALUE);
+        this.validateBounds("dragoonSpellAccuracy", this.dragoonSpellAccuracyLowerBound, this.dragoonSpellAccuracyUpperBound, 0, 100);
+        this.validateBounds("dragoonSpellStatusChance", this.dragoonSpellStatusChanceLowerBound, this.dragoonSpellStatusChanceUpperBound, 0, 100);
+
+        if(this.dragoonSpellEffects != DragoonSpellEffects.STOCK && this.dragoonSpellEffects != DragoonSpellEffects.RANDOMIZE_RAW && !this.hasSafeDragoonSpellEffect()) {
+            throw new IllegalStateException("Dragoon spell effect configuration cannot produce a living-target spell; enable damage, healing, restore, cleanse, drain, status, buff, debuff, or regeneration");
+        }
+    }
+
+    private void validateBounds(final String name, final int lower, final int upper, final int minimum, final int maximum) {
+        if(lower < minimum || upper > maximum || lower > upper) {
+            throw new IllegalStateException(name + " bounds must satisfy " + minimum + " <= lower <= upper <= " + maximum + "; received " + lower + " to " + upper);
+        }
+    }
+
+    private boolean hasSafeDragoonSpellEffect() {
+        return this.dragoonSpellAllowDamage
+            || this.dragoonSpellAllowHealHp
+            || this.dragoonSpellAllowRestoreMp
+            || this.dragoonSpellAllowRestoreSp
+            || this.dragoonSpellAllowCleanse
+            || this.dragoonSpellAllowDrainHp
+            || this.dragoonSpellAllowDrainMp
+            || this.dragoonSpellAllowDrainSp
+            || this.dragoonSpellAllowStatus
+            || this.dragoonSpellAllowBuff
+            || this.dragoonSpellAllowDebuff
+            || this.dragoonSpellAllowRegenHp
+            || this.dragoonSpellAllowRegenMp
+            || this.dragoonSpellAllowRegenSp;
     }
 }
