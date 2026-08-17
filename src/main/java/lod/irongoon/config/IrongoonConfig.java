@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.yaml.snakeyaml.Yaml;
 
 public class IrongoonConfig {
+    private static final int MAX_RANDOM_PERCENT_BOUND = Integer.MAX_VALUE - 1;
     private static IrongoonConfig INSTANCE = new IrongoonConfig();
     public static IrongoonConfig getInstance() {
         return INSTANCE;
@@ -27,6 +28,39 @@ public class IrongoonConfig {
     public String campaignSeed;
     public boolean useRandomSeedOnNewCampaign;
     public boolean csvDataOverrides;
+    public AdditionUnlocks additionUnlocks;
+    public int additionUnlockLevelLowerBound;
+    public int additionUnlockLevelUpperBound;
+    public AdditionValueMode additionBaseStats;
+    public boolean additionRandomizeDamage;
+    public int additionDamageLowerPercentBound;
+    public int additionDamageUpperPercentBound;
+    public boolean additionRandomizeSp;
+    public int additionSpLowerPercentBound;
+    public int additionSpUpperPercentBound;
+    public AdditionValueMode additionLevelScaling;
+    public boolean additionRandomizeDamageScaling;
+    public int additionDamageScalingLowerPercentBound;
+    public int additionDamageScalingUpperPercentBound;
+    public boolean additionRandomizeSpScaling;
+    public int additionSpScalingLowerPercentBound;
+    public int additionSpScalingUpperPercentBound;
+    public AdditionHitTiming additionHitTiming;
+    public int additionHitTimingLowerPercentBound;
+    public int additionHitTimingUpperPercentBound;
+    public AdditionElements additionElements;
+    public boolean additionNoElement;
+    public AdditionStatuses additionStatuses;
+    public int additionStatusChanceLowerBound;
+    public int additionStatusChanceUpperBound;
+    public boolean additionStatusAllowPetrify;
+    public boolean additionStatusAllowBewitch;
+    public boolean additionStatusAllowConfuse;
+    public boolean additionStatusAllowFear;
+    public boolean additionStatusAllowStun;
+    public boolean additionStatusAllowWeaponBlock;
+    public boolean additionStatusAllowDispirit;
+    public boolean additionStatusAllowPoison;
     public int bodyNumberOfStatsAmount = 4;
     public int dragoonNumberOfStatsAmount = 4;
     public TotalStatsPerLevel bodyTotalStatsPerLevel;
@@ -108,6 +142,39 @@ public class IrongoonConfig {
         this.seed = Long.parseLong(this.publicSeed, 16);
         this.useRandomSeedOnNewCampaign = (boolean) yamlConfig.getOrDefault("useRandomSeedOnNewCampaign", false);
         this.csvDataOverrides = (boolean) yamlConfig.getOrDefault("csvDataOverrides", false);
+        this.additionUnlocks = AdditionUnlocks.valueOf((String) yamlConfig.getOrDefault("additionUnlocks", "STOCK"));
+        this.additionUnlockLevelLowerBound = (int) yamlConfig.getOrDefault("additionUnlockLevelLowerBound", 2);
+        this.additionUnlockLevelUpperBound = (int) yamlConfig.getOrDefault("additionUnlockLevelUpperBound", 60);
+        this.additionBaseStats = AdditionValueMode.valueOf((String) yamlConfig.getOrDefault("additionBaseStats", "STOCK"));
+        this.additionRandomizeDamage = (boolean) yamlConfig.getOrDefault("additionRandomizeDamage", true);
+        this.additionDamageLowerPercentBound = (int) yamlConfig.getOrDefault("additionDamageLowerPercentBound", 50);
+        this.additionDamageUpperPercentBound = (int) yamlConfig.getOrDefault("additionDamageUpperPercentBound", 150);
+        this.additionRandomizeSp = (boolean) yamlConfig.getOrDefault("additionRandomizeSp", true);
+        this.additionSpLowerPercentBound = (int) yamlConfig.getOrDefault("additionSpLowerPercentBound", 50);
+        this.additionSpUpperPercentBound = (int) yamlConfig.getOrDefault("additionSpUpperPercentBound", 150);
+        this.additionLevelScaling = AdditionValueMode.valueOf((String) yamlConfig.getOrDefault("additionLevelScaling", "STOCK"));
+        this.additionRandomizeDamageScaling = (boolean) yamlConfig.getOrDefault("additionRandomizeDamageScaling", true);
+        this.additionDamageScalingLowerPercentBound = (int) yamlConfig.getOrDefault("additionDamageScalingLowerPercentBound", 50);
+        this.additionDamageScalingUpperPercentBound = (int) yamlConfig.getOrDefault("additionDamageScalingUpperPercentBound", 150);
+        this.additionRandomizeSpScaling = (boolean) yamlConfig.getOrDefault("additionRandomizeSpScaling", true);
+        this.additionSpScalingLowerPercentBound = (int) yamlConfig.getOrDefault("additionSpScalingLowerPercentBound", 50);
+        this.additionSpScalingUpperPercentBound = (int) yamlConfig.getOrDefault("additionSpScalingUpperPercentBound", 150);
+        this.additionHitTiming = AdditionHitTiming.valueOf((String) yamlConfig.getOrDefault("additionHitTiming", "STOCK"));
+        this.additionHitTimingLowerPercentBound = (int) yamlConfig.getOrDefault("additionHitTimingLowerPercentBound", 50);
+        this.additionHitTimingUpperPercentBound = (int) yamlConfig.getOrDefault("additionHitTimingUpperPercentBound", 150);
+        this.additionElements = AdditionElements.valueOf((String) yamlConfig.getOrDefault("additionElements", "STOCK"));
+        this.additionNoElement = (boolean) yamlConfig.getOrDefault("additionNoElement", false);
+        this.additionStatuses = AdditionStatuses.valueOf((String) yamlConfig.getOrDefault("additionStatuses", "STOCK"));
+        this.additionStatusChanceLowerBound = (int) yamlConfig.getOrDefault("additionStatusChanceLowerBound", 0);
+        this.additionStatusChanceUpperBound = (int) yamlConfig.getOrDefault("additionStatusChanceUpperBound", 100);
+        this.additionStatusAllowPetrify = (boolean) yamlConfig.getOrDefault("additionStatusAllowPetrify", true);
+        this.additionStatusAllowBewitch = (boolean) yamlConfig.getOrDefault("additionStatusAllowBewitch", true);
+        this.additionStatusAllowConfuse = (boolean) yamlConfig.getOrDefault("additionStatusAllowConfuse", true);
+        this.additionStatusAllowFear = (boolean) yamlConfig.getOrDefault("additionStatusAllowFear", true);
+        this.additionStatusAllowStun = (boolean) yamlConfig.getOrDefault("additionStatusAllowStun", true);
+        this.additionStatusAllowWeaponBlock = (boolean) yamlConfig.getOrDefault("additionStatusAllowWeaponBlock", true);
+        this.additionStatusAllowDispirit = (boolean) yamlConfig.getOrDefault("additionStatusAllowDispirit", true);
+        this.additionStatusAllowPoison = (boolean) yamlConfig.getOrDefault("additionStatusAllowPoison", true);
         this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("bodyTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) yamlConfig.getOrDefault("dragoonTotalStatsPerLevel", "RANDOMIZE_BOUNDS_PER_LEVEL"));
         this.monsterTotalStatsPerLevel = TotalStatsMonsters.valueOf((String) yamlConfig.getOrDefault("monsterTotalStatsPerLevel", "RANDOMIZE_BOUNDS"));
@@ -163,5 +230,46 @@ public class IrongoonConfig {
         this.battlePartySize = (int) yamlConfig.getOrDefault("battlePartySize", 3);
         this.battlePartyPool = (List<Integer>) yamlConfig.getOrDefault("battlePartyPool", new ArrayList<>());
         this.battlePartyDuplicates = (boolean) yamlConfig.getOrDefault("battlePartyDuplicates", false);
+        this.normalizeAdditionUnlockLevels();
+        this.validateAdditionConfig();
+    }
+
+    private void normalizeAdditionUnlockLevels() {
+        if(this.additionUnlockLevelLowerBound == 1) this.additionUnlockLevelLowerBound = 2;
+        if(this.additionUnlockLevelUpperBound == 1) this.additionUnlockLevelUpperBound = 2;
+    }
+
+    private void validateAdditionConfig() {
+        validateRange("addition unlock levels", this.additionUnlockLevelLowerBound, this.additionUnlockLevelUpperBound, 2, 60);
+        validateRange("addition damage percentages", this.additionDamageLowerPercentBound, this.additionDamageUpperPercentBound, 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange("addition SP percentages", this.additionSpLowerPercentBound, this.additionSpUpperPercentBound, 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange("addition damage scaling percentages", this.additionDamageScalingLowerPercentBound, this.additionDamageScalingUpperPercentBound, 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange("addition SP scaling percentages", this.additionSpScalingLowerPercentBound, this.additionSpScalingUpperPercentBound, 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange("addition hit timing percentages", this.additionHitTimingLowerPercentBound, this.additionHitTimingUpperPercentBound, 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange("addition status chances", this.additionStatusChanceLowerBound, this.additionStatusChanceUpperBound, 0, 100);
+
+        if(this.additionStatuses == AdditionStatuses.RANDOMIZE && !this.hasAllowedAdditionStatus()) {
+            throw new IllegalStateException("Addition status randomization requires at least one additionStatusAllow* entry");
+        }
+    }
+
+    private boolean hasAllowedAdditionStatus() {
+        return this.additionStatusAllowPetrify
+            || this.additionStatusAllowBewitch
+            || this.additionStatusAllowConfuse
+            || this.additionStatusAllowFear
+            || this.additionStatusAllowStun
+            || this.additionStatusAllowWeaponBlock
+            || this.additionStatusAllowDispirit
+            || this.additionStatusAllowPoison;
+    }
+
+    private static void validateRange(final String name, final int lowerBound, final int upperBound, final int minimum, final int maximum) {
+        if(lowerBound < minimum || upperBound > maximum || lowerBound > upperBound) {
+            throw new IllegalStateException(
+                "Invalid " + name + ": expected " + minimum + " <= lower <= upper <= " + maximum
+                    + ", got " + lowerBound + ".." + upperBound
+            );
+        }
     }
 }
