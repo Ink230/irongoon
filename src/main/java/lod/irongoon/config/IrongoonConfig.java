@@ -228,7 +228,7 @@ public class IrongoonConfig {
         this.hpStatMonsters = HPStatMonsters.valueOf((String) yamlConfig.getOrDefault("hpStatMonsters", yamlConfig.getOrDefault("hpStatMonster", "RANDOMIZE_BOUNDS")));
         this.hpStatMonstersUpperPercentBound = (int) yamlConfig.getOrDefault("hpStatMonstersUpperPercentBound", 150);
         this.hpStatMonstersLowerPercentBound = (int) yamlConfig.getOrDefault("hpStatMonstersLowerPercentBound", 50);
-        this.speedStatMonsters = SpeedStatMonsters.valueOf((String) yamlConfig.getOrDefault("speedStatMonster", "RANDOMIZE_BOUNDS"));
+        this.speedStatMonsters = SpeedStatMonsters.valueOf((String) yamlConfig.getOrDefault("speedStatMonsters", yamlConfig.getOrDefault("speedStatMonster", "RANDOMIZE_BOUNDS")));
         this.speedStatMonstersUpperBound = (int) yamlConfig.getOrDefault("speedStatMonstersUpperBound", 100);
         this.speedStatMonstersLowerBound = (int) yamlConfig.getOrDefault("speedStatMonstersLowerBound", 30);
         this.statsVarianceMonsters = StatsVarianceMonsters.valueOf((String) yamlConfig.getOrDefault("statsVarianceMonsters", "RANDOM_PERCENT_BOUNDS"));
