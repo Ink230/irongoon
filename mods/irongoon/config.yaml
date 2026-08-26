@@ -55,6 +55,7 @@ battlePartySize: 3
 battlePartyPool: [] # list of char ids to randomize from ex: [4,0,2,5], empty is all available
 battlePartyDuplicates: TRUE
 # Dragoons
+enableAllDragoons: PERMANENTLY # only works on new campaign start
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 dragoonTotalStatsDistributionPerLevel: RANDOM
 dragoonElements: RANDOM_CAMPAIGN

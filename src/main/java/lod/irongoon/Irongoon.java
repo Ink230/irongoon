@@ -33,6 +33,7 @@ import legend.game.modding.events.gamestate.PartyFlagsChangeEvent;
 import legend.game.modding.events.gamestate.PrimaryPartyChangeEvent;
 import legend.game.modding.events.inventory.GiveItemEvent;
 import legend.game.modding.events.inventory.ShopContentsEvent;
+import legend.game.modding.events.inventory.TakeGoodsEvent;
 import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
@@ -43,6 +44,7 @@ import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
 import lod.irongoon.services.DragoonSpells;
+import lod.irongoon.services.DragoonUnlocks;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -78,6 +80,7 @@ public class Irongoon {
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
     private final DragoonSpells dragoonSpells = DragoonSpells.getInstance();
+    private final DragoonUnlocks dragoonUnlocks = DragoonUnlocks.getInstance();
     private final SeveredChainsLiveDataAdapter liveData = SeveredChainsLiveDataAdapter.getInstance();
 
     public Irongoon() {
@@ -101,6 +104,7 @@ public class Irongoon {
         refreshState();
         additions.initializeCampaign(game.gameState);
         randomizer.setLevelOneParty(game.gameState);
+        this.dragoonUnlocks.initializeCampaign(game.gameState.goods_19c);
         this.initializeDragoonSpells(game.gameState);
         randomizer.resetDragoonElements();
 
@@ -129,6 +133,11 @@ public class Irongoon {
             randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
         }
         this.dragoonSpells.initialize(gameState);
+    }
+
+    @EventListener
+    public void takeGoods(final TakeGoodsEvent event) {
+        this.dragoonUnlocks.preservePermanentUnlocks(event.takenGoods);
     }
 
     @EventListener
