@@ -17,6 +17,8 @@ import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
 import legend.game.modding.events.battle.ResolvePhysicalAttackElementsEvent;
 import legend.game.modding.events.battle.ResolvePhysicalAttackStatusEvent;
+import legend.game.modding.events.battle.ResolveSpellDescriptionEvent;
+import legend.game.modding.events.battle.SpellStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
 import legend.game.modding.events.characters.PostCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
@@ -34,11 +36,13 @@ import legend.game.modding.events.inventory.ShopContentsEvent;
 import legend.game.modding.events.submap.SubmapEncounterEvent;
 import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
+import legend.game.types.GameState52c;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
+import lod.irongoon.services.DragoonSpells;
 import org.legendofdragoon.modloader.events.EventListener;
 import org.legendofdragoon.modloader.events.Priority;
 import org.legendofdragoon.modloader.registries.Registrar;
@@ -73,6 +77,7 @@ public class Irongoon {
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
+    private final DragoonSpells dragoonSpells = DragoonSpells.getInstance();
     private final SeveredChainsLiveDataAdapter liveData = SeveredChainsLiveDataAdapter.getInstance();
 
     public Irongoon() {
@@ -96,6 +101,7 @@ public class Irongoon {
         refreshState();
         additions.initializeCampaign(game.gameState);
         randomizer.setLevelOneParty(game.gameState);
+        this.initializeDragoonSpells(game.gameState);
         randomizer.resetDragoonElements();
 
     }
@@ -114,6 +120,25 @@ public class Irongoon {
         refreshState();
         additions.initializeCampaign(game.gameState);
         randomizer.reapplyAllCharacterStats(game.gameState);
+        this.initializeDragoonSpells(game.gameState);
+    }
+
+    private void initializeDragoonSpells(final GameState52c gameState) {
+        this.dragoonSpells.gatherProfiles();
+        for(final CharacterData2c character : gameState.charData_32c) {
+            randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
+        }
+        this.dragoonSpells.initialize(gameState);
+    }
+
+    @EventListener
+    public void spellStats(final SpellStatsEvent event) {
+        event.spell = this.dragoonSpells.resolve(event.character, event.spellId, event.baseSpell);
+    }
+
+    @EventListener
+    public void resolveSpellDescription(final ResolveSpellDescriptionEvent event) {
+        event.description = this.dragoonSpells.describe(event.character, event.spellId, event.spell, event.baseDescription);
     }
 
     private void refreshState() {
@@ -186,7 +211,10 @@ public class Irongoon {
       return;
     }
 
-    if(event.bent != null) randomizer.synchronizeDragoonElementState(event.bent);
+        if(event.bent != null) {
+            randomizer.synchronizeDragoonElementState(event.bent);
+            this.dragoonSpells.synchronize(event.bent);
+        }
     event.element = randomizer.doCharacterElement(characterId, event.baseElement);
   }
 
@@ -229,17 +257,20 @@ public class Irongoon {
     @EventListener
   public void battleStarted(final BattleStartedEvent event) {
     randomizer.beginDragoonElementBattle();
+    this.dragoonSpells.beginBattle();
   }
 
   @EventListener
   public void battleEnded(final BattleEndedEvent event) {
     randomizer.endDragoonElementBattle();
+    this.dragoonSpells.endBattle();
   }
 
   @EventListener
   public void battleEntityTurn(final BattleEntityTurnEvent<?> event) {
     if(event.bent instanceof final PlayerBattleEntity player) {
       randomizer.synchronizeDragoonElementState(player);
+      this.dragoonSpells.synchronize(player);
     }
   }
 
