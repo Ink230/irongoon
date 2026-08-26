@@ -49,7 +49,8 @@ public class Randomizer {
   private final CharacterSpeedRandomizer characterSpeedRandomizer = CharacterSpeedRandomizer.getInstance();
   private final DragoonStatsRandomizer dragoonStatsRandomizer = DragoonStatsRandomizer.getInstance();
   private final CharacterElementRandomizer characterElementRandomizer = CharacterElementRandomizer.getInstance();
-  private final DragoonElementRandomizer dragoonElementRandomizer = DragoonElementRandomizer.getInstance();
+    private final DragoonElementRandomizer dragoonElementRandomizer = DragoonElementRandomizer.getInstance();
+    private final DragoonSpellUnlockRandomizer dragoonSpellUnlockRandomizer = DragoonSpellUnlockRandomizer.getInstance();
     private final MonsterStatsRandomizer monsterStatsRandomizer = MonsterStatsRandomizer.getInstance();
     private final MonsterHPRandomizer monsterHPRandomizer = MonsterHPRandomizer.getInstance();
     private final MonsterSpeedRandomizer monsterSpeedRandomizer = MonsterSpeedRandomizer.getInstance();
@@ -158,9 +159,16 @@ public class Randomizer {
     return element == null ? baseElement : element.get();
   }
 
-  public void resetDragoonElements() {
-    this.dragoonElementRandomizer.reset();
-  }
+    public void resetDragoonElements() {
+        this.dragoonElementRandomizer.reset();
+    }
+
+    public void doDragoonSpellUnlocks(final CharacterData2c character, final java.util.function.Predicate<org.legendofdragoon.modloader.registries.RegistryId> eligible, final java.util.function.Predicate<org.legendofdragoon.modloader.registries.RegistryId> usableFirst) {
+        switch(this.config.dragoonSpellUnlocks) {
+            case STOCK -> { }
+            case RANDOMIZE_SEQUENCE -> this.dragoonSpellUnlockRandomizer.randomize(character, eligible, usableFirst);
+        }
+    }
 
   public void beginDragoonElementBattle() {
     this.dragoonElementRandomizer.beginBattle();
