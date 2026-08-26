@@ -15,6 +15,8 @@ import legend.game.modding.events.battle.BattleEndedEvent;
 import legend.game.modding.events.battle.BattleMusicEvent;
 import legend.game.modding.events.battle.BattleStartedEvent;
 import legend.game.modding.events.battle.MonsterStatsEvent;
+import legend.game.modding.events.battle.ResolvePhysicalAttackElementsEvent;
+import legend.game.modding.events.battle.ResolvePhysicalAttackStatusEvent;
 import legend.game.modding.events.battle.ResolveSpellDescriptionEvent;
 import legend.game.modding.events.battle.SpellStatsEvent;
 import legend.game.modding.events.characters.AdditionUnlockEvent;
@@ -23,6 +25,8 @@ import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
 import legend.game.modding.events.characters.PreCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PreCharacterLevelUpEvent;
 import legend.game.modding.events.characters.ResolveCharacterElementEvent;
+import legend.game.modding.events.characters.ResolveAdditionEvent;
+import legend.game.modding.events.characters.ResolveCharacterAdditionSaveEvent;
 import legend.game.modding.events.gamestate.EncounterEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.gamestate.PartyFlagsChangeEvent;
@@ -95,52 +99,51 @@ public class Irongoon {
         }
 
         refreshState();
-    randomizer.setLevelOneParty(game.gameState);
-    this.initializeDragoonSpells(game.gameState);
-    randomizer.resetDragoonElements();
+        additions.initializeCampaign(game.gameState);
+        randomizer.setLevelOneParty(game.gameState);
+        this.initializeDragoonSpells(game.gameState);
+        randomizer.resetDragoonElements();
 
-        for (final CharacterData2c character : game.gameState.charData_32c) {
-            additions.resetLevelOneAdditions(character);
-        }
     }
 
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
         config.regenerateConfig();
 
-    if (config.useRandomSeedOnNewCampaign) {
-      config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
-      config.seed = Long.parseLong(config.publicSeed, 16);
+        if (config.useRandomSeedOnNewCampaign) {
+            config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
+            config.seed = Long.parseLong(config.publicSeed, 16);
+        }
+
+        randomizer.resetCharacterElements();
+        randomizer.resetDragoonElements();
+        refreshState();
+        additions.initializeCampaign(game.gameState);
+        randomizer.reapplyAllCharacterStats(game.gameState);
+        this.initializeDragoonSpells(game.gameState);
     }
 
-    randomizer.resetCharacterElements();
-    randomizer.resetDragoonElements();
-    refreshState();
-    randomizer.reapplyAllCharacterStats(game.gameState);
-    this.initializeDragoonSpells(game.gameState);
-  }
-
-  private void initializeDragoonSpells(final GameState52c gameState) {
-    this.dragoonSpells.gatherProfiles();
-    for(final CharacterData2c character : gameState.charData_32c) {
-      randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
-    }
+    private void initializeDragoonSpells(final GameState52c gameState) {
+        this.dragoonSpells.gatherProfiles();
+        for(final CharacterData2c character : gameState.charData_32c) {
+            randomizer.doDragoonSpellUnlocks(character, this.dragoonSpells::isProfiled, this.dragoonSpells::isUsableAsFirstSpell);
+        }
         this.dragoonSpells.initialize(gameState);
-  }
+    }
 
-  @EventListener
-  public void spellStats(final SpellStatsEvent event) {
-    event.spell = this.dragoonSpells.resolve(event.character, event.spellId, event.baseSpell);
-  }
+    @EventListener
+    public void spellStats(final SpellStatsEvent event) {
+        event.spell = this.dragoonSpells.resolve(event.character, event.spellId, event.baseSpell);
+    }
 
-  @EventListener
-  public void resolveSpellDescription(final ResolveSpellDescriptionEvent event) {
-    event.description = this.dragoonSpells.describe(event.character, event.spellId, event.spell, event.baseDescription);
-  }
+    @EventListener
+    public void resolveSpellDescription(final ResolveSpellDescriptionEvent event) {
+        event.description = this.dragoonSpells.describe(event.character, event.spellId, event.spell, event.baseDescription);
+    }
 
-  private void refreshState() {
+    private void refreshState() {
         dataTables.initialize();
-    additions.initialize();
+        additions.initialize();
     }
 
     @EventListener
@@ -321,11 +324,40 @@ public class Irongoon {
 
     @EventListener
     public void additionUnlock(final AdditionUnlockEvent addition) {
+        if(this.additions.usesRandomizedUnlock(addition.charData, addition.addition.getRegistryId())) return;
+
         var additionIdentifier = addition.addition.getRegistryId().entryId();
         var additionUnlockLevel = additions.getUnlockLevelByName(additionIdentifier);
         if(addition.charData.level_12 < additionUnlockLevel) {
             addition.cancel();
         }
+    }
+
+    @EventListener
+    public void resolveAddition(final ResolveAdditionEvent event) {
+        event.addition = this.additions.resolve(event.character, event.additionId, event.baseAddition);
+    }
+
+    @EventListener
+    public void resolveCharacterAdditionSave(final ResolveCharacterAdditionSaveEvent event) {
+        final Additions.CharacterAdditionSaveState state = this.additions.getCampaignAdditionSaveState(event.character);
+        if(state != null) event.resolve(state.selectedAddition(), state.additions());
+    }
+
+    @EventListener
+    public void resolvePhysicalAttackElements(final ResolvePhysicalAttackElementsEvent event) {
+        if(event.attacker.selectedAddition_58 == null) return;
+        final Element additionElement = this.additions.resolveElement(event.attacker.selectedAddition_58);
+        if(additionElement != null) event.elements.add(additionElement);
+    }
+
+    @EventListener
+    public void resolvePhysicalAttackStatus(final ResolvePhysicalAttackStatusEvent event) {
+        if(!event.additionCompletedSuccessfully || event.additionId == null || event.baseStatusMask != 0) return;
+        final var assignment = this.additions.resolveStatus(event.additionId);
+        if(assignment == null) return;
+        event.statusMask = assignment.statusMask();
+        event.chance = assignment.chance();
     }
 
     @EventListener
