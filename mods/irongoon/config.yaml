@@ -8,14 +8,14 @@ additionUnlockLevelUpperBound: 30
 additionBaseStats: RANDOMIZE_BOUNDS
 additionRandomizeDamage: TRUE
 additionDamageLowerPercentBound: 50
-additionDamageUpperPercentBound: 250
+additionDamageUpperPercentBound: 150
 additionRandomizeSp: TRUE
 additionSpLowerPercentBound: 50
 additionSpUpperPercentBound: 250
 additionLevelScaling: RANDOMIZE_BOUNDS
 additionRandomizeDamageScaling: TRUE
 additionDamageScalingLowerPercentBound: 50
-additionDamageScalingUpperPercentBound: 250
+additionDamageScalingUpperPercentBound: 150
 additionRandomizeSpScaling: TRUE
 additionSpScalingLowerPercentBound: 50
 additionSpScalingUpperPercentBound: 250
