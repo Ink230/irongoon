@@ -38,7 +38,7 @@ public class DragoonStatsRandomizer {
             divineTree.add(growDivineFruit(distribution, totalStatsOfDragoonByLevel, divineTree.get(divineTree.size() - 1)));
         }
 
-        return divineTree.get(divineTree.size() - 1);
+        return this.withStockMp(divineTree.get(divineTree.size() - 1), dragoonId, dLevel);
     }
 
     public DivineFruit randomizeWithBounds(int dragoonId, int dLevel) {
@@ -63,7 +63,7 @@ public class DragoonStatsRandomizer {
             divineTree.add(growDivineFruit(distribution, totalStats, divineTree.get(divineTree.size() - 1)));
         }
 
-        return divineTree.get(divineTree.size() - 1);
+        return this.withStockMp(divineTree.get(divineTree.size() - 1), dragoonId, dLevel);
     }
 
     public DivineFruit randomizeAverage(int dragoonId, int dLevel) {
@@ -78,7 +78,12 @@ public class DragoonStatsRandomizer {
             divineTree.add(growDivineFruit(distribution, totalStatsPerDragoonByLevel, divineTree.get(divineTree.size() - 1)));
         }
 
-        return divineTree.get(divineTree.size() - 1);
+        return this.withStockMp(divineTree.get(divineTree.size() - 1), dragoonId, dLevel);
+    }
+
+    private DivineFruit withStockMp(final DivineFruit stats, final int dragoonId, final int dLevel) {
+        stats.maxMP = this.stock(dragoonId, dLevel).maxMP;
+        return stats;
     }
 
     public DivineFruit stock(int dragoonId, int level) {
