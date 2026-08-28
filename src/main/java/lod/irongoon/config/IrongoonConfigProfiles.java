@@ -31,6 +31,10 @@ public final class IrongoonConfigProfiles {
         return INSTANCE;
     }
 
+    public Path configsDirectory() {
+        return this.configsDirectory;
+    }
+
     /** Creates an isolated repository for validation and non-runtime tooling. */
     public static IrongoonConfigProfiles forDirectory(final Path modDirectory) {
         return new IrongoonConfigProfiles(modDirectory);
