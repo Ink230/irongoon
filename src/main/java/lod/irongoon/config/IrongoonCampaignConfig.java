@@ -93,6 +93,13 @@ public final class IrongoonCampaignConfig {
 
     public void validate(final IrongoonConfigSnapshot snapshot) {
         IrongoonConfigCodec.validateCharacterReferences(snapshot, Legacy.CHAR_IDS.length);
+
+        if(!registriesAvailable()) return;
+
+        validateRegistryReferences(snapshot);
+    }
+
+    private static void validateRegistryReferences(final IrongoonConfigSnapshot snapshot) {
         IrongoonConfigCodec.validateDeferredRegistryReferences(
             snapshot,
             IrongoonCampaignConfig::hasElement,
@@ -115,7 +122,8 @@ public final class IrongoonCampaignConfig {
 
     private void applyPayload(final String value) {
         final IrongoonConfigSnapshot snapshot = IrongoonConfigPayload.decode(value).snapshot();
-        this.validate(snapshot);
+        IrongoonConfigCodec.validateCharacterReferences(snapshot, Legacy.CHAR_IDS.length);
+        validateRegistryReferences(snapshot);
         this.config.apply(snapshot);
     }
 
@@ -133,6 +141,12 @@ public final class IrongoonCampaignConfig {
 
     private static boolean hasEquipment(final String id) {
         return hasRegistryEntry(id, GameEngine.REGISTRIES.equipment::hasEntry);
+    }
+
+    private static boolean registriesAvailable() {
+        return GameEngine.REGISTRIES.elements.size() > 0
+            && GameEngine.REGISTRIES.items.size() > 0
+            && GameEngine.REGISTRIES.equipment.size() > 0;
     }
 
     private static boolean hasRegistryEntry(final String id, final Predicate<RegistryId> exists) {
