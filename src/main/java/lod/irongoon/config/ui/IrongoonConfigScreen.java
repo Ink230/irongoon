@@ -27,6 +27,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     private Label dirtyFeedback;
     private Label stagedFeedback;
     private Label validationFeedback;
+    private Label warningFeedback;
     private Label operationFeedback;
 
     public IrongoonConfigScreen(final IrongoonConfigEditorSession session) {
@@ -121,6 +122,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
         this.dirtyFeedback = this.addRow(RawText.BLANK, null);
         this.stagedFeedback = this.addRow(RawText.BLANK, null);
         this.validationFeedback = this.addRow(RawText.BLANK, null);
+        this.warningFeedback = this.addRow(RawText.BLANK, null);
         this.operationFeedback = this.addRow(RawText.BLANK, null);
         this.updateFeedback();
     }
@@ -135,6 +137,9 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
         this.validationFeedback.setText(this.session.validationError() == null
             ? RawText.BLANK
             : new RawText(I18n.translate("irongoon.ui.config.root.validation_error") + ": " + this.session.validationError()));
+        this.warningFeedback.setText(this.session.profileWarnings().isEmpty()
+            ? RawText.BLANK
+            : new RawText(I18n.translate("irongoon.ui.config.root.warning") + ": " + String.join(" | ", this.session.profileWarnings())));
         this.operationFeedback.setText(this.session.operationError() == null
             ? RawText.BLANK
             : new RawText(I18n.translate("irongoon.ui.config.root.operation_error") + ": " + this.session.operationError()));

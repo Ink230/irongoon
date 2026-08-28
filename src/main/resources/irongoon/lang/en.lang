@@ -35,6 +35,7 @@ irongoon.ui.config.root.dirty=Unsaved profile changes
 irongoon.ui.config.root.clean=No unsaved changes
 irongoon.ui.config.root.staged=Settings staged for reload
 irongoon.ui.config.root.validation_error=Validation error
+irongoon.ui.config.root.warning=Profile warning
 irongoon.ui.config.root.save_existing=Save Existing
 irongoon.ui.config.root.save_as_new=Save As New
 irongoon.ui.config.root.rename=Rename

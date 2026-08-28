@@ -31,6 +31,7 @@ public final class IrongoonConfigEditorSession {
     private String draftSeed;
     private String validationError;
     private String operationError;
+    private List<String> profileWarnings = List.of();
     private boolean stagedForReload;
 
     public IrongoonConfigEditorSession(
@@ -113,6 +114,10 @@ public final class IrongoonConfigEditorSession {
         return this.operationError;
     }
 
+    public List<String> profileWarnings() {
+        return this.profileWarnings;
+    }
+
     public boolean stagedForReload() {
         return this.stagedForReload;
     }
@@ -161,6 +166,7 @@ public final class IrongoonConfigEditorSession {
                 .orElseThrow(() -> new IllegalArgumentException("Irongoon profile is unavailable: " + filename));
             final IrongoonConfigSnapshot snapshot = this.profiles.load(profile);
             this.stage(profile, snapshot);
+            this.profileWarnings = snapshot.warnings();
             return true;
         } catch(final RuntimeException exception) {
             this.operationError = this.message(exception);
@@ -180,6 +186,7 @@ public final class IrongoonConfigEditorSession {
             this.campaignConfig.validate(this.draftSnapshot);
             final IrongoonConfigProfile saved = this.profiles.saveExisting(this.selectedProfile, this.draftSnapshot);
             this.stage(saved, this.draftSnapshot);
+            this.profileWarnings = List.of();
             return true;
         } catch(final RuntimeException exception) {
             this.operationError = this.message(exception);
@@ -196,6 +203,7 @@ public final class IrongoonConfigEditorSession {
                 ? this.profiles.saveAsGenerated(this.draftSnapshot)
                 : this.profiles.saveAs(name, this.draftSnapshot);
             this.stage(saved, this.draftSnapshot);
+            this.profileWarnings = List.of();
             return true;
         } catch(final RuntimeException exception) {
             this.operationError = this.message(exception);
