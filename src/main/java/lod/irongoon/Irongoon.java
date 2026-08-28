@@ -27,7 +27,9 @@ import legend.game.modding.events.characters.PreCharacterLevelUpEvent;
 import legend.game.modding.events.characters.ResolveCharacterElementEvent;
 import legend.game.modding.events.characters.ResolveAdditionEvent;
 import legend.game.modding.events.characters.ResolveCharacterAdditionSaveEvent;
+import legend.game.modding.coremod.CoreMod;
 import legend.game.modding.events.gamestate.EncounterEvent;
+import legend.game.modding.events.config.NewCampaignConfigEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.gamestate.PartyFlagsChangeEvent;
 import legend.game.modding.events.gamestate.PrimaryPartyChangeEvent;
@@ -39,7 +41,9 @@ import legend.game.modding.events.submap.SubmapWarpEvent;
 import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.types.GameState52c;
 import legend.game.saves.*;
+import lod.irongoon.config.IrongoonCampaignConfig;
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.config.IrongoonSnapshotConfigEntry;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
 import lod.irongoon.services.Additions;
@@ -60,6 +64,8 @@ import lod.irongoon.services.data.SeveredChainsLiveDataAdapter;
 
 import java.util.List;
 import java.util.stream.StreamSupport;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static legend.game.Scus94491BpeSegment_8005.submapCut_80052c30;
 import static legend.game.Scus94491BpeSegment_8006.battleState_8006e398;
@@ -74,14 +80,18 @@ public class Irongoon {
 
     private static final IrongoonConfig config = IrongoonConfig.getInstance();
     private static final Randomizer randomizer = Randomizer.getInstance();
+    private static final Logger LOGGER = LogManager.getFormatterLogger(Irongoon.class);
     private static final Registrar<ConfigEntry<?>, ConfigRegistryEvent> CONFIG_REGISTRAR = new Registrar<>(GameEngine.REGISTRIES.config, MOD_ID);
     private static final RegistryDelegate<SeedConfigEntry> IRONGOON_CAMPAIGN_SEED = CONFIG_REGISTRAR.register("irongoon_campaign_seed", () -> new SeedConfigEntry(randomizer.retrieveNewCampaignSeed()));
+    private static final RegistryDelegate<IrongoonSnapshotConfigEntry> IRONGOON_CONFIG_SNAPSHOT = CONFIG_REGISTRAR.register("irongoon_config_snapshot", IrongoonSnapshotConfigEntry::new);
+    private static final RegistryDelegate<StringConfigEntry> IRONGOON_LAST_SELECTED_PROFILE = CONFIG_REGISTRAR.register("irongoon_last_selected_profile", () -> new StringConfigEntry("", 2, ConfigStorageLocation.GLOBAL, ConfigCategory.OTHER));
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
     private final DragoonSpells dragoonSpells = DragoonSpells.getInstance();
     private final DragoonUnlocks dragoonUnlocks = DragoonUnlocks.getInstance();
     private final SeveredChainsLiveDataAdapter liveData = SeveredChainsLiveDataAdapter.getInstance();
+    private final IrongoonCampaignConfig campaignConfig = IrongoonCampaignConfig.getInstance();
 
     public Irongoon() {
         GameEngine.EVENTS.register(this);
@@ -92,12 +102,27 @@ public class Irongoon {
         CONFIG_REGISTRAR.registryEvent(event);
     }
 
+    @EventListener
+    public void newCampaignConfig(final NewCampaignConfigEvent event) {
+        this.campaignConfig.stageNewCampaign(
+            event.configCollection,
+            IRONGOON_CONFIG_SNAPSHOT.get(),
+            IRONGOON_LAST_SELECTED_PROFILE.get(),
+            event.rememberDefaults
+        );
+    }
+
     @EventListener(priority = Priority.LOW)
     public void newGame(final NewGameEvent game) {
-        config.regenerateConfig();
+        this.campaignConfig.applyNewCampaign(
+            GameEngine.CONFIG,
+            IRONGOON_CONFIG_SNAPSHOT.get(),
+            IRONGOON_LAST_SELECTED_PROFILE.get(),
+            GameEngine.CONFIG.getConfig(CoreMod.REMEMBER_CAMPAIGN_SETTINGS_CONFIG.get())
+        );
 
         if (config.useRandomSeedOnNewCampaign) {
-            config.publicSeed = config.campaignSeed;
+            config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());
             config.seed = Long.parseLong(config.publicSeed, 16);
         }
 
@@ -112,7 +137,16 @@ public class Irongoon {
 
     @EventListener
     public void gameLoaded(final GameLoadedEvent game) {
-        config.regenerateConfig();
+        final IrongoonCampaignConfig.SelectionResult selection = this.campaignConfig.applyLoadedCampaign(
+            GameEngine.CONFIG,
+            IRONGOON_CONFIG_SNAPSHOT.get(),
+            IRONGOON_LAST_SELECTED_PROFILE.get(),
+            GameEngine.CONFIG.getConfig(CoreMod.REMEMBER_CAMPAIGN_SETTINGS_CONFIG.get())
+        );
+        if(selection.migrated()) {
+            ConfigStorage.saveConfig(GameEngine.CONFIG, ConfigStorageLocation.CAMPAIGN, game.gameState.campaign.path.resolve("campaign_config.dcnf"));
+            LOGGER.info("Baked Irongoon campaign configuration migrated from %s", selection.sourceProfileId());
+        }
 
         if (config.useRandomSeedOnNewCampaign) {
             config.publicSeed = GameEngine.CONFIG.getConfig(IRONGOON_CAMPAIGN_SEED.get());

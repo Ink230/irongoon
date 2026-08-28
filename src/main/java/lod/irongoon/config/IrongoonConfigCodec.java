@@ -49,6 +49,16 @@ public final class IrongoonConfigCodec {
         }
     }
 
+    /** Parses a UTF-8 campaign snapshot payload after its envelope has been decoded. */
+    public static IrongoonConfigSnapshot read(final String source, final String yaml) {
+        final Object document = new Yaml().load(yaml);
+        if(document == null) return fromValues(source, Map.of());
+        if(!(document instanceof Map<?, ?> raw)) {
+            throw new IllegalStateException("Irongoon configuration must be a YAML mapping: " + source);
+        }
+        return fromValues(source, raw);
+    }
+
     public static IrongoonConfigSnapshot fromValues(final String source, final Map<?, ?> raw) {
         final Map<String, Object> values = new LinkedHashMap<>();
         final Set<String> explicitKeys = new HashSet<>();
@@ -124,11 +134,28 @@ public final class IrongoonConfigCodec {
         Objects.requireNonNull(itemExists, "itemExists");
         Objects.requireNonNull(equipmentExists, "equipmentExists");
 
-        validateRegistryList(snapshot, "characterElementOverride", elementExists, "element");
-        validateRegistryList(snapshot, "dragoonElementOverride", elementExists, "element");
+        validateRegistryList(snapshot, "characterElementOverride", id -> isElementAlias(id) || elementExists.test(id), "element");
+        validateRegistryList(snapshot, "dragoonElementOverride", id -> isElementAlias(id) || elementExists.test(id), "element");
         validateRegistryList(snapshot, "shopContentsItemPool", itemExists, "item");
         validateRegistryList(snapshot, "shopContentsEquipmentPool", equipmentExists, "equipment");
         validateRegistryList(snapshot, "shopContentsRecalled", id -> itemExists.test(id) || equipmentExists.test(id), "item or equipment");
+    }
+
+    /** Validates positional and numeric character references once the supported roster size is known. */
+    public static void validateCharacterReferences(final IrongoonConfigSnapshot snapshot, final int characterCount) {
+        if(characterCount <= 0) throw new IllegalArgumentException("Irongoon character count must be positive");
+
+        validateCharacterList(snapshot, "battlePartyOverride", characterCount, true);
+        validateCharacterList(snapshot, "battlePartyPool", characterCount, false);
+        validatePositionalList(snapshot, "characterElementOverride", characterCount);
+        validatePositionalList(snapshot, "dragoonElementOverride", characterCount);
+    }
+
+    private static boolean isElementAlias(final String id) {
+        return switch(id.trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "skip", "none", "noelement", "dark", "water", "fire", "wind", "earth", "light", "thunder", "divine" -> true;
+            default -> false;
+        };
     }
 
     private static String displaySection(final IrongoonConfigSchema.Section section) {
@@ -182,6 +209,22 @@ public final class IrongoonConfigCodec {
         }
     }
 
+    private static void validateCharacterList(final IrongoonConfigSnapshot snapshot, final String key, final int characterCount, final boolean allowSkip) {
+        final List<?> values = (List<?>) snapshot.values().get(key);
+        for(final Object value : values) {
+            if(!(value instanceof Integer characterId) || characterId >= characterCount || characterId < (allowSkip ? -1 : 0)) {
+                throw new IllegalStateException(snapshot.source() + ": " + key + " contains invalid character ID " + value);
+            }
+        }
+    }
+
+    private static void validatePositionalList(final IrongoonConfigSnapshot snapshot, final String key, final int characterCount) {
+        final List<?> values = (List<?>) snapshot.values().get(key);
+        if(values.size() > characterCount) {
+            throw new IllegalStateException(snapshot.source() + ": " + key + " contains " + values.size() + " entries for a " + characterCount + " character roster");
+        }
+    }
+
     private static int integer(final Object value, final String source, final String key) {
         if(!(value instanceof Number number)) throw invalid(source, key, "a 32-bit integer");
 
@@ -219,6 +262,55 @@ public final class IrongoonConfigCodec {
             if(size < 1 || size > 3) throw new IllegalStateException(source + ": battlePartySize must be between 1 and 3");
         }
         if(values.containsKey("battleStageList")) for(final int stage : (List<Integer>) values.get("battleStageList")) if(stage < 0 || stage >= 95) throw new IllegalStateException(source + ": battleStageList entries must be between 0 and 94");
+
+        validatePartyLists(values, source);
+        validateAllowedModes(values, source);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void validatePartyLists(final Map<String, Object> values, final String source) {
+        final int partySize = (Integer) values.get("battlePartySize");
+        final List<Integer> overrides = (List<Integer>) values.get("battlePartyOverride");
+        final List<Integer> pool = (List<Integer>) values.get("battlePartyPool");
+        if(overrides.size() > partySize) throw new IllegalStateException(source + ": battlePartyOverride cannot contain more entries than battlePartySize");
+        if(overrides.stream().anyMatch(characterId -> characterId < -1)) throw new IllegalStateException(source + ": battlePartyOverride character IDs must be -1 or greater");
+        if(pool.stream().anyMatch(characterId -> characterId < 0)) throw new IllegalStateException(source + ": battlePartyPool character IDs must be non-negative");
+
+        if(!(Boolean) values.get("battlePartyDuplicates")) {
+            final Set<Integer> explicitOverrides = new HashSet<>();
+            for(final int characterId : overrides) {
+                if(characterId >= 0 && !explicitOverrides.add(characterId)) throw new IllegalStateException(source + ": battlePartyOverride contains duplicate character " + characterId);
+            }
+            if(new HashSet<>(pool).size() != pool.size()) throw new IllegalStateException(source + ": battlePartyPool contains duplicate characters");
+        }
+    }
+
+    private static void validateAllowedModes(final Map<String, Object> values, final String source) {
+        if(AdditionStatuses.RANDOMIZE.name().equals(values.get("additionStatuses")) && !anyEnabled(values,
+            "additionStatusAllowPetrify", "additionStatusAllowBewitch", "additionStatusAllowConfuse", "additionStatusAllowFear",
+            "additionStatusAllowStun", "additionStatusAllowWeaponBlock", "additionStatusAllowDispirit", "additionStatusAllowPoison"
+        )) {
+            throw new IllegalStateException(source + ": addition status randomization requires at least one additionStatusAllow* entry");
+        }
+
+        final String spellEffects = (String) values.get("dragoonSpellEffects");
+        if(!DragoonSpellEffects.STOCK.name().equals(spellEffects)
+            && !DragoonSpellEffects.RANDOMIZE_RAW.name().equals(spellEffects)
+            && !anyEnabled(values,
+                "dragoonSpellAllowDamage", "dragoonSpellAllowHealHp", "dragoonSpellAllowRestoreMp", "dragoonSpellAllowRestoreSp",
+                "dragoonSpellAllowCleanse", "dragoonSpellAllowDrainHp", "dragoonSpellAllowDrainMp", "dragoonSpellAllowDrainSp",
+                "dragoonSpellAllowStatus", "dragoonSpellAllowBuff", "dragoonSpellAllowDebuff", "dragoonSpellAllowRegenHp",
+                "dragoonSpellAllowRegenMp", "dragoonSpellAllowRegenSp"
+            )) {
+            throw new IllegalStateException(source + ": dragoon spell effect configuration cannot produce a living-target spell");
+        }
+    }
+
+    private static boolean anyEnabled(final Map<String, Object> values, final String... keys) {
+        for(final String key : keys) {
+            if((Boolean) values.get(key)) return true;
+        }
+        return false;
     }
 
     private static void validateRange(final Map<String, Object> values, final String source, final String lowerKey, final String upperKey, final int minimum, final int maximum) {

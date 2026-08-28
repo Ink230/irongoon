@@ -86,6 +86,20 @@ public final class IrongoonConfigProfiles {
         return new Selection(blueprint, this.load(blueprint), warnings);
     }
 
+    /**
+     * Resolves an unversioned campaign before its first baked snapshot. Its legacy
+     * source remains authoritative even when new-format profiles have appeared.
+     */
+    public synchronized Selection selectForMigration(final String rememberedFilename, final boolean rememberEnabled) {
+        this.rescan();
+        if(Files.isRegularFile(this.legacyPath)) {
+            final IrongoonConfigProfile legacy = IrongoonConfigProfile.legacy(this.legacyPath);
+            final IrongoonConfigSnapshot snapshot = this.load(legacy);
+            return new Selection(legacy, snapshot, snapshot.warnings());
+        }
+        return this.select(rememberedFilename, rememberEnabled);
+    }
+
     /** Explicit loads fail without changing selection or a source file. */
     public IrongoonConfigSnapshot load(final IrongoonConfigProfile profile) {
         return switch(profile.kind()) {

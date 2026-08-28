@@ -2,7 +2,6 @@ package lod.irongoon.config;
 
 import lod.irongoon.data.*;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -149,13 +148,13 @@ public class IrongoonConfig {
     public boolean battlePartyDuplicates;
 
     private IrongoonConfig() {
-        this.regenerateConfig();
+        this.apply(IrongoonConfigCodec.fromValues("Blueprint", IrongoonConfigSchema.blueprintValues()));
     }
 
     public final int battleStageSize = 95;
     
     public void regenerateConfig() {
-        this.apply(IrongoonConfigCodec.readLegacy(new File(this.externalConfigLoadPath)));
+        this.apply(IrongoonConfigCodec.fromValues("Blueprint", IrongoonConfigSchema.blueprintValues()));
     }
 
     /**
