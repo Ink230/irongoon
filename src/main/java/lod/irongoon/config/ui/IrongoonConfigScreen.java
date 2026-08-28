@@ -7,6 +7,7 @@ import legend.core.lang.RawText;
 import legend.game.i18n.I18n;
 import legend.game.inventory.screens.InputBoxScreen;
 import legend.game.inventory.screens.MessageBoxScreen;
+import legend.game.inventory.screens.MenuStack;
 import legend.game.inventory.screens.VerticalLayoutScreen;
 import legend.game.inventory.screens.controls.Background;
 import legend.game.inventory.screens.controls.Button;
@@ -230,9 +231,10 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     }
 
     private void refresh() {
+        final MenuStack stack = this.getStack();
         this.deferAction(() -> {
-            this.getStack().popScreen();
-            this.getStack().pushScreen(new IrongoonConfigScreen(this.session));
+            stack.popScreen();
+            stack.pushScreen(new IrongoonConfigScreen(this.session));
         });
     }
 
