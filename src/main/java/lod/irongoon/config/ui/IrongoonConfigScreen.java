@@ -8,6 +8,7 @@ import legend.game.i18n.I18n;
 import legend.game.inventory.screens.InputBoxScreen;
 import legend.game.inventory.screens.MessageBoxScreen;
 import legend.game.inventory.screens.VerticalLayoutScreen;
+import legend.game.inventory.screens.controls.Background;
 import legend.game.inventory.screens.controls.Button;
 import legend.game.inventory.screens.controls.Checkbox;
 import legend.game.inventory.screens.controls.Dropdown;
@@ -31,6 +32,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     private Label operationFeedback;
 
     public IrongoonConfigScreen(final IrongoonConfigEditorSession session) {
+        this.addControl(new Background());
         this.session = session;
 
         final Textbox seed = new Textbox();

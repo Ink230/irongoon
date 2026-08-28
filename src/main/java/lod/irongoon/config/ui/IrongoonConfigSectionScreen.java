@@ -11,6 +11,7 @@ import legend.game.i18n.I18n;
 import legend.game.inventory.screens.Control;
 import legend.game.inventory.screens.TooltipScreen;
 import legend.game.inventory.screens.VerticalLayoutScreen;
+import legend.game.inventory.screens.controls.Background;
 import legend.game.inventory.screens.controls.Button;
 import legend.game.inventory.screens.controls.Checkbox;
 import legend.game.inventory.screens.controls.Dropdown;
@@ -33,6 +34,7 @@ public final class IrongoonConfigSectionScreen extends VerticalLayoutScreen {
     private boolean synchronizingSpinners;
 
     public IrongoonConfigSectionScreen(final IrongoonConfigEditorSession session, final Section section) {
+        this.addControl(new Background());
         this.session = session;
 
         for(final Setting setting : IrongoonConfigSchema.settings()) {

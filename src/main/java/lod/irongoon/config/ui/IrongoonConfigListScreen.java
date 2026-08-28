@@ -6,6 +6,7 @@ import legend.core.lang.I18nText;
 import legend.core.lang.RawText;
 import legend.game.i18n.I18n;
 import legend.game.inventory.screens.VerticalLayoutScreen;
+import legend.game.inventory.screens.controls.Background;
 import legend.game.inventory.screens.controls.Checkbox;
 import legend.game.inventory.screens.controls.Dropdown;
 import legend.lodmod.Legacy;
@@ -27,6 +28,8 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
     private static final int RANDOM_CHARACTER = -1;
 
     public IrongoonConfigListScreen(final IrongoonConfigEditorSession session, final Setting setting) {
+        this.addControl(new Background());
+
         switch(setting.editorCategory()) {
             case BATTLE_STAGE -> this.addBattleStages(session, setting);
             case BATTLE_PARTY_CHARACTER -> this.addBattleParty(session, setting);
