@@ -37,6 +37,7 @@ additionStatusAllowDispirit: TRUE
 additionStatusAllowPoison: TRUE
 # Characters
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
+bodyTotalStatsBounds: STOCK
 bodyTotalStatsDistributionPerLevel: RANDOM
 hpStatPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 hpStatUpperPercentBound: 150
@@ -57,6 +58,7 @@ battlePartyDuplicates: TRUE
 # Dragoons
 enableAllDragoons: PERMANENTLY # only works on new campaign start
 dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
+dragoonStatsBounds: STOCK
 dragoonTotalStatsDistributionPerLevel: RANDOM
 dragoonElements: RANDOM_CAMPAIGN
 dragoonNoElement: FALSE
