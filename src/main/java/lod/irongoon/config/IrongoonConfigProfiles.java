@@ -81,7 +81,7 @@ public final class IrongoonConfigProfiles {
                 final List<String> resultWarnings = new ArrayList<>(warnings);
                 resultWarnings.addAll(snapshot.warnings());
                 return new Selection(candidate, snapshot, resultWarnings);
-            } catch(final IllegalStateException exception) {
+            } catch(final RuntimeException exception) {
                 warnings.add("Skipped invalid Irongoon profile " + candidate.filename() + ": " + exception.getMessage());
             }
         }
