@@ -1,5 +1,7 @@
 package lod.irongoon.config;
 
+import lod.irongoon.data.*;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -175,7 +177,30 @@ escapeChanceLowerBound: 1
         NEW_CAMPAIGN_ONLY, REBUILT_ON_LOAD, NEXT_OWNING_EVENT, INACTIVE
     }
 
-    public record Setting(String key, Section section, ControlKind control, Lifecycle lifecycle, Object blueprintValue) {}
+    public enum ListItemKind {
+        NONE, INTEGER, STRING
+    }
+
+    public enum EditorCategory {
+        NONE, HEXADECIMAL_SEED, ENUM, BATTLE_PARTY_CHARACTER, BATTLE_STAGE, CHARACTER_ELEMENT, DRAGOON_ELEMENT, SHOP_ITEM, SHOP_EQUIPMENT, SHOP_RECALLED
+    }
+
+    public record Setting(
+        String key,
+        List<String> aliases,
+        Section section,
+        ControlKind control,
+        Lifecycle lifecycle,
+        Object blueprintValue,
+        Class<? extends Enum<?>> enumType,
+        List<String> choices,
+        Integer minimum,
+        Integer maximum,
+        String pairedKey,
+        ListItemKind listItemKind,
+        EditorCategory editorCategory,
+        String help
+    ) {}
     public static final List<String> KEYS = List.of(("""
         publicSeed,useRandomSeedOnNewCampaign,csvDataOverrides,
         additionUnlocks,additionUnlockLevelLowerBound,additionUnlockLevelUpperBound,additionBaseStats,additionRandomizeDamage,additionDamageLowerPercentBound,additionDamageUpperPercentBound,additionRandomizeSp,additionSpLowerPercentBound,additionSpUpperPercentBound,additionLevelScaling,additionRandomizeDamageScaling,additionDamageScalingLowerPercentBound,additionDamageScalingUpperPercentBound,additionRandomizeSpScaling,additionSpScalingLowerPercentBound,additionSpScalingUpperPercentBound,additionHitTiming,additionHitTimingLowerPercentBound,additionHitTimingUpperPercentBound,additionElements,additionNoElement,additionStatuses,additionStatusChanceLowerBound,additionStatusChanceUpperBound,additionStatusAllowPetrify,additionStatusAllowBewitch,additionStatusAllowConfuse,additionStatusAllowFear,additionStatusAllowStun,additionStatusAllowWeaponBlock,additionStatusAllowDispirit,additionStatusAllowPoison,
@@ -195,10 +220,12 @@ escapeChanceLowerBound: 1
     public static final Set<String> STRING_LIST_KEYS = Set.of("characterElementOverride", "dragoonElementOverride", "shopContentsItemPool", "shopContentsEquipmentPool", "shopContentsRecalled");
     public static final Set<String> LEGACY_KEYS = Set.of("hpStatMonster", "speedStatMonster", "dragoonSpellRandomizeMpCost");
     private static final Map<String, Object> BLUEPRINT_VALUES = loadBlueprint();
+    private static final Map<String, Setting> SETTINGS = buildSettings();
 
     static {
         if(KEYS.size() != 125 || KEY_SET.size() != 125) throw new IllegalStateException("Irongoon config schema must contain exactly 125 unique keys");
         if(BLUEPRINT_VALUES.size() != 125 || !BLUEPRINT_VALUES.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config blueprint must contain every canonical setting exactly once");
+        if(SETTINGS.size() != 125 || !SETTINGS.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config metadata must contain every canonical setting exactly once");
     }
 
     private IrongoonConfigSchema() {}
@@ -217,8 +244,13 @@ escapeChanceLowerBound: 1
     }
 
     public static Setting setting(final String key) {
-        if(!KEY_SET.contains(key)) throw new IllegalArgumentException("Unknown Irongoon setting " + key);
-        return new Setting(key, section(key), control(key), lifecycle(key), BLUEPRINT_VALUES.get(key));
+        final String canonical = canonicalKey(key);
+        if(!KEY_SET.contains(canonical)) throw new IllegalArgumentException("Unknown Irongoon setting " + key);
+        return SETTINGS.get(canonical);
+    }
+
+    public static List<Setting> settings() {
+        return KEYS.stream().map(SETTINGS::get).toList();
     }
 
     public static Map<String, Object> blueprintValues() {
@@ -252,8 +284,124 @@ escapeChanceLowerBound: 1
     private static Lifecycle lifecycle(final String key) {
         if(key.equals("enableAllCharacters") || key.equals("enableAllDragoons")) return Lifecycle.NEW_CAMPAIGN_ONLY;
         if(key.startsWith("escapeChance")) return Lifecycle.INACTIVE;
-        if(key.startsWith("monster") || key.startsWith("shop") || key.startsWith("item") || key.startsWith("battle")) return Lifecycle.NEXT_OWNING_EVENT;
+        if(section(key) == Section.MONSTER_STATS_AND_ELEMENTS || key.startsWith("shop") || key.startsWith("item") || key.startsWith("battle")) return Lifecycle.NEXT_OWNING_EVENT;
         return Lifecycle.REBUILT_ON_LOAD;
+    }
+
+    private static Map<String, Setting> buildSettings() {
+        final Map<String, Setting> settings = new LinkedHashMap<>();
+        for(final String key : KEYS) {
+            final Class<? extends Enum<?>> enumType = enumType(key);
+            settings.put(key, new Setting(
+                key,
+                aliases(key),
+                section(key),
+                control(key),
+                lifecycle(key),
+                BLUEPRINT_VALUES.get(key),
+                enumType,
+                enumType == null ? List.of() : Arrays.stream(enumType.getEnumConstants()).map(Enum::name).toList(),
+                minimum(key),
+                maximum(key),
+                pairedKey(key),
+                listItemKind(key),
+                editorCategory(key),
+                help(key)
+            ));
+        }
+        return Map.copyOf(settings);
+    }
+
+    private static List<String> aliases(final String key) {
+        return LEGACY_KEYS.stream().filter(alias -> canonicalKey(alias).equals(key)).sorted().toList();
+    }
+
+    private static Class<? extends Enum<?>> enumType(final String key) {
+        return switch(key) {
+            case "additionUnlocks" -> AdditionUnlocks.class;
+            case "additionBaseStats", "additionLevelScaling" -> AdditionValueMode.class;
+            case "additionHitTiming" -> AdditionHitTiming.class;
+            case "additionElements" -> AdditionElements.class;
+            case "additionStatuses" -> AdditionStatuses.class;
+            case "bodyTotalStatsPerLevel", "dragoonTotalStatsPerLevel" -> TotalStatsPerLevel.class;
+            case "bodyTotalStatsBounds", "dragoonStatsBounds" -> TotalStatsBounds.class;
+            case "bodyTotalStatsDistributionPerLevel", "dragoonTotalStatsDistributionPerLevel" -> TotalStatsDistributionPerLevel.class;
+            case "hpStatPerLevel" -> HPStatPerLevel.class;
+            case "speedStatPerLevel" -> SpeedStatPerLevel.class;
+            case "characterElements" -> CharacterElements.class;
+            case "enableAllCharacters" -> EnableAllCharacters.class;
+            case "battleParty" -> BattleParty.class;
+            case "enableAllDragoons" -> EnableAllDragoons.class;
+            case "dragoonElements" -> DragoonElements.class;
+            case "dragoonSpellUnlocks" -> DragoonSpellUnlocks.class;
+            case "dragoonSpellRandomizationPool" -> DragoonSpellRandomizationPool.class;
+            case "dragoonSpellStats" -> DragoonSpellStats.class;
+            case "dragoonSpellMpCosts" -> DragoonSpellMpCosts.class;
+            case "dragoonSpellElements" -> DragoonSpellElements.class;
+            case "dragoonSpellEffects" -> DragoonSpellEffects.class;
+            case "monsterTotalStatsPerLevel" -> TotalStatsMonsters.class;
+            case "hpStatMonsters" -> HPStatMonsters.class;
+            case "speedStatMonsters" -> SpeedStatMonsters.class;
+            case "statsVarianceMonsters" -> StatsVarianceMonsters.class;
+            case "monsterElements" -> ElementsMonsters.class;
+            case "noElementMonsters" -> NoElementMonsters.class;
+            case "shopAvailability" -> ShopAvailability.class;
+            case "shopQuantity" -> ShopQuantity.class;
+            case "shopQuantityLogic" -> ShopQuantityLogic.class;
+            case "shopContents" -> ShopContents.class;
+            case "shopDuplicates" -> ShopDuplicates.class;
+            case "battleStage" -> BattleStage.class;
+            case "battleMusic" -> BattleMusic.class;
+            case "escapeChance" -> EscapeChance.class;
+            default -> null;
+        };
+    }
+
+    private static Integer minimum(final String key) {
+        if(!INTEGER_KEYS.contains(key)) return null;
+        if(key.startsWith("additionUnlockLevel")) return 2;
+        if(key.equals("battlePartySize")) return 1;
+        return 0;
+    }
+
+    private static Integer maximum(final String key) {
+        if(!INTEGER_KEYS.contains(key)) return null;
+        if(key.startsWith("additionUnlockLevel")) return 60;
+        if(key.equals("battlePartySize")) return 3;
+        if(key.contains("Accuracy") || key.contains("StatusChance") || key.startsWith("escapeChance")) return 100;
+        if(key.startsWith("hpStat") || key.startsWith("speedStat") || key.startsWith("totalStatsMonsters")) return Integer.MAX_VALUE - 20;
+        if(key.endsWith("DefenseFloor")) return Integer.MAX_VALUE;
+        return Integer.MAX_VALUE - 1;
+    }
+
+    private static String pairedKey(final String key) {
+        final String candidate = key.contains("Lower") ? key.replace("Lower", "Upper") : key.contains("Upper") ? key.replace("Upper", "Lower") : null;
+        return candidate != null && KEY_SET.contains(candidate) ? candidate : null;
+    }
+
+    private static ListItemKind listItemKind(final String key) {
+        if(INTEGER_LIST_KEYS.contains(key)) return ListItemKind.INTEGER;
+        if(STRING_LIST_KEYS.contains(key)) return ListItemKind.STRING;
+        return ListItemKind.NONE;
+    }
+
+    private static EditorCategory editorCategory(final String key) {
+        return switch(key) {
+            case "publicSeed" -> EditorCategory.HEXADECIMAL_SEED;
+            case "battlePartyOverride", "battlePartyPool" -> EditorCategory.BATTLE_PARTY_CHARACTER;
+            case "battleStageList" -> EditorCategory.BATTLE_STAGE;
+            case "characterElementOverride" -> EditorCategory.CHARACTER_ELEMENT;
+            case "dragoonElementOverride" -> EditorCategory.DRAGOON_ELEMENT;
+            case "shopContentsItemPool" -> EditorCategory.SHOP_ITEM;
+            case "shopContentsEquipmentPool" -> EditorCategory.SHOP_EQUIPMENT;
+            case "shopContentsRecalled" -> EditorCategory.SHOP_RECALLED;
+            default -> enumType(key) == null ? EditorCategory.NONE : EditorCategory.ENUM;
+        };
+    }
+
+    private static String help(final String key) {
+        final String label = key.replaceAll("([a-z])([A-Z])", "$1 $2");
+        return Character.toUpperCase(label.charAt(0)) + label.substring(1) + ". " + lifecycle(key).name().replace('_', ' ').toLowerCase(java.util.Locale.ROOT) + ".";
     }
 
     @SuppressWarnings("unchecked")

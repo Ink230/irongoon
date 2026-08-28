@@ -5,14 +5,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.DumperOptions;
 
@@ -23,10 +26,10 @@ public final class IrongoonConfigCodec {
     private IrongoonConfigCodec() {}
 
     public static IrongoonConfigSnapshot readLegacy(final File file) {
-        if(!file.isFile()) return new IrongoonConfigSnapshot(file.getPath(), Map.of(), List.of("Legacy config.yaml was not found; runtime defaults are active"));
+        if(!file.isFile()) return fromValues(file.getPath(), Map.of());
         try (InputStream input = new FileInputStream(file)) {
             final Object document = new Yaml().load(input);
-            if(document == null) return new IrongoonConfigSnapshot(file.getPath(), Map.of(), List.of());
+            if(document == null) return fromValues(file.getPath(), Map.of());
             if(!(document instanceof Map<?, ?> raw)) throw new IllegalStateException("Irongoon configuration must be a YAML mapping: " + file);
             return fromValues(file.getPath(), raw);
         } catch (final IOException exception) {
@@ -90,7 +93,10 @@ public final class IrongoonConfigCodec {
         for(final var entry : sections.entrySet()) {
             if(!yaml.isEmpty()) yaml.append('\n');
             yaml.append("# ").append(displaySection(entry.getKey())).append('\n');
-            yaml.append(dumper.dump(entry.getValue()));
+            for(final var setting : entry.getValue().entrySet()) {
+                yaml.append("# ").append(IrongoonConfigSchema.setting(setting.getKey()).help()).append('\n');
+                yaml.append(dumper.dump(Map.of(setting.getKey(), setting.getValue())));
+            }
         }
         return yaml.toString();
     }
@@ -103,6 +109,28 @@ public final class IrongoonConfigCodec {
         return new Yaml().dump(normalized);
     }
 
+    /**
+     * Validates registry-backed values once the Severed Chains registries are available.
+     * The parser intentionally cannot perform this validation before the game starts.
+     */
+    public static void validateDeferredRegistryReferences(
+        final IrongoonConfigSnapshot snapshot,
+        final Predicate<String> elementExists,
+        final Predicate<String> itemExists,
+        final Predicate<String> equipmentExists
+    ) {
+        Objects.requireNonNull(snapshot, "snapshot");
+        Objects.requireNonNull(elementExists, "elementExists");
+        Objects.requireNonNull(itemExists, "itemExists");
+        Objects.requireNonNull(equipmentExists, "equipmentExists");
+
+        validateRegistryList(snapshot, "characterElementOverride", elementExists, "element");
+        validateRegistryList(snapshot, "dragoonElementOverride", elementExists, "element");
+        validateRegistryList(snapshot, "shopContentsItemPool", itemExists, "item");
+        validateRegistryList(snapshot, "shopContentsEquipmentPool", equipmentExists, "equipment");
+        validateRegistryList(snapshot, "shopContentsRecalled", id -> itemExists.test(id) || equipmentExists.test(id), "item or equipment");
+    }
+
     private static String displaySection(final IrongoonConfigSchema.Section section) {
         final String name = section.name().replace('_', ' ').toLowerCase(java.util.Locale.ROOT);
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
@@ -113,10 +141,7 @@ public final class IrongoonConfigCodec {
             if(!(value instanceof Boolean)) throw invalid(source, key, "a boolean");
             return value;
         }
-        if(IrongoonConfigSchema.INTEGER_KEYS.contains(key)) {
-            if(!(value instanceof Number number) || number.longValue() < Integer.MIN_VALUE || number.longValue() > Integer.MAX_VALUE) throw invalid(source, key, "a 32-bit integer");
-            return number.intValue();
-        }
+        if(IrongoonConfigSchema.INTEGER_KEYS.contains(key)) return integer(value, source, key);
         if(IrongoonConfigSchema.INTEGER_LIST_KEYS.contains(key)) return integerList(value, source, key);
         if(IrongoonConfigSchema.STRING_LIST_KEYS.contains(key)) return stringList(value, source, key);
         if("publicSeed".equals(key)) {
@@ -132,10 +157,7 @@ public final class IrongoonConfigCodec {
     private static List<Integer> integerList(final Object value, final String source, final String key) {
         if(!(value instanceof List<?> list)) throw invalid(source, key, "a list of integers");
         final List<Integer> result = new ArrayList<>();
-        for(final Object item : list) {
-            if(!(item instanceof Number number) || number.longValue() < Integer.MIN_VALUE || number.longValue() > Integer.MAX_VALUE) throw invalid(source, key, "a list of 32-bit integers");
-            result.add(number.intValue());
-        }
+        for(final Object item : list) result.add(integer(item, source, key));
         return List.copyOf(result);
     }
 
@@ -143,10 +165,31 @@ public final class IrongoonConfigCodec {
         if(!(value instanceof List<?> list)) throw invalid(source, key, "a list of strings");
         final List<String> result = new ArrayList<>();
         for(final Object item : list) {
-            if(!(item instanceof String text)) throw invalid(source, key, "a list of strings");
+            if(!(item instanceof String text) || text.isBlank()) throw invalid(source, key, "a list of non-blank strings");
             result.add(text);
         }
         return List.copyOf(result);
+    }
+
+    private static void validateRegistryList(final IrongoonConfigSnapshot snapshot, final String key, final Predicate<String> exists, final String registryType) {
+        final Object value = snapshot.values().get(key);
+        if(!(value instanceof List<?> values)) throw new IllegalStateException(snapshot.source() + ": " + key + " must be a list before deferred registry validation");
+
+        for(final Object entry : values) {
+            if(!(entry instanceof String id) || id.isBlank() || !exists.test(id)) {
+                throw new IllegalStateException(snapshot.source() + ": " + key + " contains an unknown " + registryType + " registry id " + entry);
+            }
+        }
+    }
+
+    private static int integer(final Object value, final String source, final String key) {
+        if(!(value instanceof Number number)) throw invalid(source, key, "a 32-bit integer");
+
+        try {
+            return new BigDecimal(number.toString()).intValueExact();
+        } catch(final NumberFormatException | ArithmeticException exception) {
+            throw invalid(source, key, "a lossless 32-bit integer");
+        }
     }
 
     private static void validate(final Map<String, Object> values, final String source) {

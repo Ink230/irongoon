@@ -98,7 +98,9 @@ public final class DragoonSpellStatsRandomizer {
     }
 
     private int percentBound(final int source, final Random random) {
-        return Math.max(0, source * this.between(this.config.dragoonSpellPowerLowerPercentBound, this.config.dragoonSpellPowerUpperPercentBound, random) / 100);
+        final long percent = this.between(this.config.dragoonSpellPowerLowerPercentBound, this.config.dragoonSpellPowerUpperPercentBound, random);
+        final long scaledPower = (long)source * percent / 100L;
+        return (int)Math.min(Integer.MAX_VALUE, Math.max(0L, scaledPower));
     }
 
     private int between(final int lower, final int upper, final Random random) {
