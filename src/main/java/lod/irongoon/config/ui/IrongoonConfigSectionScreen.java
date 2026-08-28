@@ -158,9 +158,45 @@ public final class IrongoonConfigSectionScreen extends VerticalLayoutScreen {
         if(setting == null) return;
 
         this.getStack().pushScreen(new TooltipScreen(
-            new I18nText("irongoon.config." + setting.key() + ".help"),
+            this.help(setting),
             row.calculateTotalX() + row.getWidth() / 2,
             row.calculateTotalY() + row.getHeight() / 2
         ));
+    }
+
+    private TextComponent help(final Setting setting) {
+        final StringBuilder text = new StringBuilder(I18n.translate("irongoon.config." + setting.key() + ".help"));
+
+        if(!setting.choices().isEmpty()) {
+            text.append("\n\n").append(I18n.translate("irongoon.ui.config.help.valid_options"));
+
+            for(final String option : setting.choices()) {
+                text.append('\n')
+                    .append(I18n.translate("irongoon.config." + setting.key() + '.' + option))
+                    .append("\n  ")
+                    .append(I18n.translate("irongoon.ui.config.option." + option + ".help"));
+            }
+        } else {
+            switch(setting.control()) {
+                case CHECKBOX -> text.append("\n\n").append(I18n.translate("irongoon.ui.config.help.checkbox"));
+                case NUMBER_SPINNER -> {
+                    text.append("\n\n")
+                        .append(I18n.translate("irongoon.ui.config.help.range"))
+                        .append(' ')
+                        .append(setting.minimum())
+                        .append(" - ")
+                        .append(setting.maximum());
+
+                    if(setting.pairedKey() != null) {
+                        text.append('\n').append(I18n.translate("irongoon.ui.config.help.paired_range"));
+                    }
+                }
+                case INTEGER_LIST, STRING_LIST -> text.append("\n\n").append(I18n.translate("irongoon.ui.config.help.list"));
+                case TEXTBOX -> text.append("\n\n").append(I18n.translate("irongoon.ui.config.help.textbox"));
+                default -> { }
+            }
+        }
+
+        return new RawText(text.toString());
     }
 }
