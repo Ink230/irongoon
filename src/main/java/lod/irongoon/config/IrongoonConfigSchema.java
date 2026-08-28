@@ -1,6 +1,7 @@
 package lod.irongoon.config;
 
 import lod.irongoon.data.*;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -185,6 +186,16 @@ escapeChanceLowerBound: 1
         NONE, HEXADECIMAL_SEED, ENUM, BATTLE_PARTY_CHARACTER, BATTLE_STAGE, CHARACTER_ELEMENT, DRAGOON_ELEMENT, SHOP_ITEM, SHOP_EQUIPMENT, SHOP_RECALLED
     }
 
+    @FunctionalInterface
+    public interface RuntimeGetter {
+        Object get(IrongoonConfig config);
+    }
+
+    @FunctionalInterface
+    public interface RuntimeSetter {
+        void set(IrongoonConfig config, Object normalizedValue);
+    }
+
     public record Setting(
         String key,
         List<String> aliases,
@@ -199,7 +210,9 @@ escapeChanceLowerBound: 1
         String pairedKey,
         ListItemKind listItemKind,
         EditorCategory editorCategory,
-        String help
+        String help,
+        RuntimeGetter runtimeGetter,
+        RuntimeSetter runtimeSetter
     ) {}
     public static final List<String> KEYS = List.of(("""
         publicSeed,useRandomSeedOnNewCampaign,csvDataOverrides,
@@ -292,6 +305,7 @@ escapeChanceLowerBound: 1
         final Map<String, Setting> settings = new LinkedHashMap<>();
         for(final String key : KEYS) {
             final Class<? extends Enum<?>> enumType = enumType(key);
+            final RuntimeBinding runtimeBinding = runtimeBinding(key, enumType);
             settings.put(key, new Setting(
                 key,
                 aliases(key),
@@ -306,10 +320,79 @@ escapeChanceLowerBound: 1
                 pairedKey(key),
                 listItemKind(key),
                 editorCategory(key),
-                help(key)
+                help(key),
+                runtimeBinding::get,
+                runtimeBinding::set
             ));
         }
         return Map.copyOf(settings);
+    }
+
+    private static RuntimeBinding runtimeBinding(final String key, final Class<? extends Enum<?>> enumType) {
+        try {
+            final Field field = IrongoonConfig.class.getField(key);
+            final Class<?> expectedType;
+            if(enumType != null) {
+                expectedType = enumType;
+            } else if(BOOLEAN_KEYS.contains(key)) {
+                expectedType = boolean.class;
+            } else if(INTEGER_KEYS.contains(key)) {
+                expectedType = int.class;
+            } else if(INTEGER_LIST_KEYS.contains(key) || STRING_LIST_KEYS.contains(key)) {
+                expectedType = List.class;
+            } else {
+                expectedType = String.class;
+            }
+
+            if(expectedType == List.class ? !List.class.isAssignableFrom(field.getType()) : field.getType() != expectedType) {
+                throw new IllegalStateException(
+                    "Irongoon setting " + key + " expects runtime field type " + expectedType.getTypeName()
+                        + " but found " + field.getType().getTypeName()
+                );
+            }
+
+            final RuntimeBinding binding = new RuntimeBinding(key, field, enumType);
+            binding.toRuntimeValue(BLUEPRINT_VALUES.get(key));
+            return binding;
+        } catch(final NoSuchFieldException exception) {
+            throw new IllegalStateException("Irongoon setting " + key + " has no public IrongoonConfig runtime field", exception);
+        }
+    }
+
+    private record RuntimeBinding(String key, Field field, Class<? extends Enum<?>> enumType) {
+        private Object get(final IrongoonConfig config) {
+            try {
+                final Object value = this.field.get(config);
+                if(value instanceof Enum<?> enumValue) return enumValue.name();
+                if(value instanceof List<?> listValue) return List.copyOf(listValue);
+                return value;
+            } catch(final IllegalAccessException exception) {
+                throw new IllegalStateException("Unable to read Irongoon runtime setting " + this.key, exception);
+            }
+        }
+
+        private void set(final IrongoonConfig config, final Object normalizedValue) {
+            final Object runtimeValue = this.toRuntimeValue(normalizedValue);
+            try {
+                this.field.set(config, runtimeValue);
+            } catch(final IllegalAccessException | IllegalArgumentException exception) {
+                throw new IllegalStateException("Unable to apply Irongoon runtime setting " + this.key, exception);
+            }
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        private Object toRuntimeValue(final Object normalizedValue) {
+            try {
+                if(this.enumType != null) return Enum.valueOf((Class) this.enumType, (String) normalizedValue);
+                if(normalizedValue instanceof List<?> listValue) return List.copyOf(listValue);
+                return normalizedValue;
+            } catch(final ClassCastException | IllegalArgumentException exception) {
+                throw new IllegalStateException(
+                    "Irongoon setting " + this.key + " has incompatible normalized runtime value " + normalizedValue,
+                    exception
+                );
+            }
+        }
     }
 
     private static List<String> aliases(final String key) {

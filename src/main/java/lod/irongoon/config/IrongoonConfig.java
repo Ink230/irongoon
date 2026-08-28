@@ -158,147 +158,24 @@ public class IrongoonConfig {
     }
 
     /**
-     * Applies a snapshot only after the codec has parsed and validated every supplied value.
-     * This remains the temporary compatibility seam while campaign-backed snapshots are added.
+     * Revalidates and canonicalizes the complete snapshot before mutating runtime configuration.
      */
     public void apply(final IrongoonConfigSnapshot snapshot) {
-        final Map<String, Object> yamlConfig = snapshot.values();
+        final IrongoonConfigSnapshot validated = IrongoonConfigCodec.fromValues(snapshot.source(), snapshot.values());
+        for(final IrongoonConfigSchema.Setting setting : IrongoonConfigSchema.settings()) {
+            setting.runtimeSetter().set(this, validated.values().get(setting.key()));
+        }
 
-        this.publicSeed = (String) required(yamlConfig, "publicSeed");
         this.seed = Long.parseLong(this.publicSeed, 16);
-        this.useRandomSeedOnNewCampaign = (boolean) required(yamlConfig, "useRandomSeedOnNewCampaign");
-        this.csvDataOverrides = (boolean) required(yamlConfig, "csvDataOverrides");
-        this.additionUnlocks = AdditionUnlocks.valueOf((String) required(yamlConfig, "additionUnlocks"));
-        this.additionUnlockLevelLowerBound = (int) required(yamlConfig, "additionUnlockLevelLowerBound");
-        this.additionUnlockLevelUpperBound = (int) required(yamlConfig, "additionUnlockLevelUpperBound");
-        this.additionBaseStats = AdditionValueMode.valueOf((String) required(yamlConfig, "additionBaseStats"));
-        this.additionRandomizeDamage = (boolean) required(yamlConfig, "additionRandomizeDamage");
-        this.additionDamageLowerPercentBound = (int) required(yamlConfig, "additionDamageLowerPercentBound");
-        this.additionDamageUpperPercentBound = (int) required(yamlConfig, "additionDamageUpperPercentBound");
-        this.additionRandomizeSp = (boolean) required(yamlConfig, "additionRandomizeSp");
-        this.additionSpLowerPercentBound = (int) required(yamlConfig, "additionSpLowerPercentBound");
-        this.additionSpUpperPercentBound = (int) required(yamlConfig, "additionSpUpperPercentBound");
-        this.additionLevelScaling = AdditionValueMode.valueOf((String) required(yamlConfig, "additionLevelScaling"));
-        this.additionRandomizeDamageScaling = (boolean) required(yamlConfig, "additionRandomizeDamageScaling");
-        this.additionDamageScalingLowerPercentBound = (int) required(yamlConfig, "additionDamageScalingLowerPercentBound");
-        this.additionDamageScalingUpperPercentBound = (int) required(yamlConfig, "additionDamageScalingUpperPercentBound");
-        this.additionRandomizeSpScaling = (boolean) required(yamlConfig, "additionRandomizeSpScaling");
-        this.additionSpScalingLowerPercentBound = (int) required(yamlConfig, "additionSpScalingLowerPercentBound");
-        this.additionSpScalingUpperPercentBound = (int) required(yamlConfig, "additionSpScalingUpperPercentBound");
-        this.additionHitTiming = AdditionHitTiming.valueOf((String) required(yamlConfig, "additionHitTiming"));
-        this.additionHitTimingLowerPercentBound = (int) required(yamlConfig, "additionHitTimingLowerPercentBound");
-        this.additionHitTimingUpperPercentBound = (int) required(yamlConfig, "additionHitTimingUpperPercentBound");
-        this.additionElements = AdditionElements.valueOf((String) required(yamlConfig, "additionElements"));
-        this.additionNoElement = (boolean) required(yamlConfig, "additionNoElement");
-        this.additionStatuses = AdditionStatuses.valueOf((String) required(yamlConfig, "additionStatuses"));
-        this.additionStatusChanceLowerBound = (int) required(yamlConfig, "additionStatusChanceLowerBound");
-        this.additionStatusChanceUpperBound = (int) required(yamlConfig, "additionStatusChanceUpperBound");
-        this.additionStatusAllowPetrify = (boolean) required(yamlConfig, "additionStatusAllowPetrify");
-        this.additionStatusAllowBewitch = (boolean) required(yamlConfig, "additionStatusAllowBewitch");
-        this.additionStatusAllowConfuse = (boolean) required(yamlConfig, "additionStatusAllowConfuse");
-        this.additionStatusAllowFear = (boolean) required(yamlConfig, "additionStatusAllowFear");
-        this.additionStatusAllowStun = (boolean) required(yamlConfig, "additionStatusAllowStun");
-        this.additionStatusAllowWeaponBlock = (boolean) required(yamlConfig, "additionStatusAllowWeaponBlock");
-        this.additionStatusAllowDispirit = (boolean) required(yamlConfig, "additionStatusAllowDispirit");
-        this.additionStatusAllowPoison = (boolean) required(yamlConfig, "additionStatusAllowPoison");
-        this.bodyTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) required(yamlConfig, "bodyTotalStatsPerLevel"));
-        this.dragoonTotalStatsPerLevel = TotalStatsPerLevel.valueOf((String) required(yamlConfig, "dragoonTotalStatsPerLevel"));
-        this.monsterTotalStatsPerLevel = TotalStatsMonsters.valueOf((String) required(yamlConfig, "monsterTotalStatsPerLevel"));
-        this.monsterDefenseFloor = (int) required(yamlConfig, "monsterDefenseFloor");
-        this.monsterMagicDefenseFloor = (int) required(yamlConfig, "monsterMagicDefenseFloor");
-        this.speedStatUpperPercentBound = (int) required(yamlConfig, "speedStatUpperPercentBound");
-        this.speedStatLowerPercentBound = (int) required(yamlConfig, "speedStatLowerPercentBound");
-        this.totalStatsMonstersUpperPercentBound = (int) required(yamlConfig, "totalStatsMonstersUpperPercentBound");
-        this.totalStatsMonstersLowerPercentBound = (int) required(yamlConfig, "totalStatsMonstersLowerPercentBound");
-        this.bodyTotalStatsBounds = TotalStatsBounds.valueOf((String) required(yamlConfig, "bodyTotalStatsBounds"));
-        this.dragoonStatsBounds = TotalStatsBounds.valueOf((String) required(yamlConfig, "dragoonStatsBounds"));
-        this.bodyTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.valueOf((String) required(yamlConfig, "bodyTotalStatsDistributionPerLevel"));
-        this.dragoonTotalStatsDistributionPerLevel = TotalStatsDistributionPerLevel.valueOf((String) required(yamlConfig, "dragoonTotalStatsDistributionPerLevel"));
-        this.hpStatPerLevel = HPStatPerLevel.valueOf((String) required(yamlConfig, "hpStatPerLevel"));
-        this.hpStatUpperPercentBound = (int) required(yamlConfig, "hpStatUpperPercentBound");
-        this.hpStatLowerPercentBound = (int) required(yamlConfig, "hpStatLowerPercentBound");
-        this.speedStatPerLevel = SpeedStatPerLevel.valueOf((String) required(yamlConfig, "speedStatPerLevel"));
-        this.hpStatMonsters = HPStatMonsters.valueOf((String) required(yamlConfig, "hpStatMonsters"));
-        this.hpStatMonstersUpperPercentBound = (int) required(yamlConfig, "hpStatMonstersUpperPercentBound");
-        this.hpStatMonstersLowerPercentBound = (int) required(yamlConfig, "hpStatMonstersLowerPercentBound");
-        this.speedStatMonsters = SpeedStatMonsters.valueOf((String) required(yamlConfig, "speedStatMonsters"));
-        this.speedStatMonstersUpperBound = (int) required(yamlConfig, "speedStatMonstersUpperBound");
-        this.speedStatMonstersLowerBound = (int) required(yamlConfig, "speedStatMonstersLowerBound");
-        this.statsVarianceMonsters = StatsVarianceMonsters.valueOf((String) required(yamlConfig, "statsVarianceMonsters"));
-        this.monsterElements = ElementsMonsters.valueOf((String) required(yamlConfig, "monsterElements"));
-        this.noElementMonsters = NoElementMonsters.valueOf((String) required(yamlConfig, "noElementMonsters"));
-        this.battleStage = BattleStage.valueOf((String) required(yamlConfig, "battleStage"));
-        this.battleStageList = (List<Integer>) required(yamlConfig, "battleStageList");
-        this.escapeChance = EscapeChance.valueOf((String) required(yamlConfig, "escapeChance"));
-        this.escapeChanceUpperBound = (int) required(yamlConfig, "escapeChanceUpperBound");
-        this.escapeChanceLowerBound = (int) required(yamlConfig, "escapeChanceLowerBound");
-        this.shopAvailability = ShopAvailability.valueOf((String) required(yamlConfig, "shopAvailability"));
-        this.shopQuantity = ShopQuantity.valueOf((String) required(yamlConfig, "shopQuantity"));
-        this.shopQuantityUpperBound = (int) required(yamlConfig, "shopQuantityUpperBound");
-        this.shopQuantityLowerBound = (int) required(yamlConfig, "shopQuantityLowerBound");
-        this.shopQuantityLogic = ShopQuantityLogic.valueOf((String) required(yamlConfig, "shopQuantityLogic"));
-        this.shopContents = ShopContents.valueOf((String) required(yamlConfig, "shopContents"));
-        this.shopContentsRecalled = (List<String>) required(yamlConfig, "shopContentsRecalled");
-        this.shopContentsItemPool = ((List<String>) required(yamlConfig, "shopContentsItemPool")).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());
-        this.shopContentsEquipmentPool = ((List<String>) required(yamlConfig, "shopContentsEquipmentPool")).stream().filter(entry -> !this.shopContentsRecalled.contains(entry)).collect(Collectors.toList());;
-        this.shopDuplicates = ShopDuplicates.valueOf((String) required(yamlConfig, "shopDuplicates"));
-        this.battleMusic = BattleMusic.valueOf((String) required(yamlConfig, "battleMusic"));
-        this.itemCarryLimit = (int) required(yamlConfig, "itemCarryLimit");
-        this.characterElements = CharacterElements.valueOf((String) required(yamlConfig, "characterElements"));
-        this.characterNoElement = (boolean) required(yamlConfig, "characterNoElement");
-        this.characterElementOverride = (List<String>) required(yamlConfig, "characterElementOverride");
-        this.enableAllDragoons = EnableAllDragoons.valueOf((String) required(yamlConfig, "enableAllDragoons"));
-        this.dragoonElements = DragoonElements.valueOf((String) required(yamlConfig, "dragoonElements"));
-        this.dragoonNoElement = (boolean) required(yamlConfig, "dragoonNoElement");
-        this.dragoonElementOverride = (List<String>) required(yamlConfig, "dragoonElementOverride");
-        this.dragoonSpellUnlocks = DragoonSpellUnlocks.valueOf((String) required(yamlConfig, "dragoonSpellUnlocks"));
-        this.dragoonSpellRandomizationPool = DragoonSpellRandomizationPool.valueOf((String) required(yamlConfig, "dragoonSpellRandomizationPool"));
-        this.dragoonSpellStats = DragoonSpellStats.valueOf((String) required(yamlConfig, "dragoonSpellStats"));
-        this.dragoonSpellRandomizePower = (boolean) required(yamlConfig, "dragoonSpellRandomizePower");
-        this.dragoonSpellPowerLowerPercentBound = (int) required(yamlConfig, "dragoonSpellPowerLowerPercentBound");
-        this.dragoonSpellPowerUpperPercentBound = (int) required(yamlConfig, "dragoonSpellPowerUpperPercentBound");
-        this.dragoonSpellMpCosts = DragoonSpellMpCosts.valueOf((String) required(yamlConfig, "dragoonSpellMpCosts"));
-        this.dragoonSpellMpCostLowerBound = (int) required(yamlConfig, "dragoonSpellMpCostLowerBound");
-        this.dragoonSpellMpCostUpperBound = (int) required(yamlConfig, "dragoonSpellMpCostUpperBound");
-        this.dragoonSpellRandomizeAccuracy = (boolean) required(yamlConfig, "dragoonSpellRandomizeAccuracy");
-        this.dragoonSpellAccuracyLowerBound = (int) required(yamlConfig, "dragoonSpellAccuracyLowerBound");
-        this.dragoonSpellAccuracyUpperBound = (int) required(yamlConfig, "dragoonSpellAccuracyUpperBound");
-        this.dragoonSpellRandomizeStatusChance = (boolean) required(yamlConfig, "dragoonSpellRandomizeStatusChance");
-        this.dragoonSpellStatusChanceLowerBound = (int) required(yamlConfig, "dragoonSpellStatusChanceLowerBound");
-        this.dragoonSpellStatusChanceUpperBound = (int) required(yamlConfig, "dragoonSpellStatusChanceUpperBound");
-        this.dragoonSpellElements = DragoonSpellElements.valueOf((String) required(yamlConfig, "dragoonSpellElements"));
-        this.dragoonSpellNoElement = (boolean) required(yamlConfig, "dragoonSpellNoElement");
-        this.dragoonSpellEffects = DragoonSpellEffects.valueOf((String) required(yamlConfig, "dragoonSpellEffects"));
-        this.dragoonSpellAllowDamage = (boolean) required(yamlConfig, "dragoonSpellAllowDamage");
-        this.dragoonSpellAllowHealHp = (boolean) required(yamlConfig, "dragoonSpellAllowHealHp");
-        this.dragoonSpellAllowRestoreMp = (boolean) required(yamlConfig, "dragoonSpellAllowRestoreMp");
-        this.dragoonSpellAllowRestoreSp = (boolean) required(yamlConfig, "dragoonSpellAllowRestoreSp");
-        this.dragoonSpellAllowRevive = (boolean) required(yamlConfig, "dragoonSpellAllowRevive");
-        this.dragoonSpellAllowCleanse = (boolean) required(yamlConfig, "dragoonSpellAllowCleanse");
-        this.dragoonSpellAllowDrainHp = (boolean) required(yamlConfig, "dragoonSpellAllowDrainHp");
-        this.dragoonSpellAllowDrainMp = (boolean) required(yamlConfig, "dragoonSpellAllowDrainMp");
-        this.dragoonSpellAllowDrainSp = (boolean) required(yamlConfig, "dragoonSpellAllowDrainSp");
-        this.dragoonSpellAllowStatus = (boolean) required(yamlConfig, "dragoonSpellAllowStatus");
-        this.dragoonSpellAllowBuff = (boolean) required(yamlConfig, "dragoonSpellAllowBuff");
-        this.dragoonSpellAllowDebuff = (boolean) required(yamlConfig, "dragoonSpellAllowDebuff");
-        this.dragoonSpellAllowRegenHp = (boolean) required(yamlConfig, "dragoonSpellAllowRegenHp");
-        this.dragoonSpellAllowRegenMp = (boolean) required(yamlConfig, "dragoonSpellAllowRegenMp");
-        this.dragoonSpellAllowRegenSp = (boolean) required(yamlConfig, "dragoonSpellAllowRegenSp");
-        this.validateDragoonSpellConfig();
-        this.enableAllCharacters = EnableAllCharacters.valueOf((String) required(yamlConfig, "enableAllCharacters"));
-        this.battleParty = BattleParty.valueOf((String) required(yamlConfig, "battleParty"));
-        this.battlePartyOverride = (List<Integer>) required(yamlConfig, "battlePartyOverride");
-        this.battlePartySize = (int) required(yamlConfig, "battlePartySize");
-        this.battlePartyPool = (List<Integer>) required(yamlConfig, "battlePartyPool");
-        this.battlePartyDuplicates = (boolean) required(yamlConfig, "battlePartyDuplicates");
+        this.shopContentsItemPool = this.shopContentsItemPool.stream()
+            .filter(entry -> !this.shopContentsRecalled.contains(entry))
+            .collect(Collectors.toList());
+        this.shopContentsEquipmentPool = this.shopContentsEquipmentPool.stream()
+            .filter(entry -> !this.shopContentsRecalled.contains(entry))
+            .collect(Collectors.toList());
         this.normalizeAdditionUnlockLevels();
         this.validateAdditionConfig();
-    }
-
-    private static Object required(final Map<String, Object> yamlConfig, final String key) {
-        final Object value = yamlConfig.get(key);
-        if(value == null) throw new IllegalStateException("Validated Irongoon configuration is missing " + key);
-        return value;
+        this.validateDragoonSpellConfig();
     }
 
     private void normalizeAdditionUnlockLevels() {
