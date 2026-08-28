@@ -83,8 +83,8 @@ public class Irongoon {
     private static final Logger LOGGER = LogManager.getFormatterLogger(Irongoon.class);
     private static final Registrar<ConfigEntry<?>, ConfigRegistryEvent> CONFIG_REGISTRAR = new Registrar<>(GameEngine.REGISTRIES.config, MOD_ID);
     private static final RegistryDelegate<SeedConfigEntry> IRONGOON_CAMPAIGN_SEED = CONFIG_REGISTRAR.register("irongoon_campaign_seed", () -> new SeedConfigEntry(randomizer.retrieveNewCampaignSeed()));
-    private static final RegistryDelegate<IrongoonSnapshotConfigEntry> IRONGOON_CONFIG_SNAPSHOT = CONFIG_REGISTRAR.register("irongoon_config_snapshot", IrongoonSnapshotConfigEntry::new);
     private static final RegistryDelegate<StringConfigEntry> IRONGOON_LAST_SELECTED_PROFILE = CONFIG_REGISTRAR.register("irongoon_last_selected_profile", () -> new StringConfigEntry("", 2, ConfigStorageLocation.GLOBAL, ConfigCategory.OTHER));
+    private static final RegistryDelegate<IrongoonSnapshotConfigEntry> IRONGOON_CONFIG_SNAPSHOT = CONFIG_REGISTRAR.register("irongoon_config_snapshot", () -> new IrongoonSnapshotConfigEntry(IRONGOON_CAMPAIGN_SEED.get(), IRONGOON_LAST_SELECTED_PROFILE.get()));
 
     private final DataTables dataTables = DataTables.getInstance();
     private final Additions additions = Additions.getInstance();
