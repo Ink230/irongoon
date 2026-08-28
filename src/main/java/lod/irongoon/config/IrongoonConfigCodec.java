@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.DumperOptions;
 
 /** YAML boundary: parse, normalize and validate everything before runtime state is touched. */
 public final class IrongoonConfigCodec {
@@ -28,6 +31,18 @@ public final class IrongoonConfigCodec {
             return fromValues(file.getPath(), raw);
         } catch (final IOException exception) {
             throw new IllegalStateException("Unable to read Irongoon configuration " + file, exception);
+        }
+    }
+
+    /** Parses one profile without touching the process-wide runtime configuration. */
+    public static IrongoonConfigSnapshot read(final Path path) {
+        try (InputStream input = Files.newInputStream(path)) {
+            final Object document = new Yaml().load(input);
+            if(document == null) return fromValues(path.toString(), Map.of());
+            if(!(document instanceof Map<?, ?> raw)) throw new IllegalStateException("Irongoon configuration must be a YAML mapping: " + path);
+            return fromValues(path.toString(), raw);
+        } catch(final IOException exception) {
+            throw new IllegalStateException("Unable to read Irongoon configuration " + path, exception);
         }
     }
 
@@ -59,13 +74,38 @@ public final class IrongoonConfigCodec {
         return randomize ? "RANDOM_CAMPAIGN_CHARACTER" : "STOCK";
     }
 
-    /** Serializes only canonical keys in the schema's stable blueprint order. */
+    /** Serializes canonical keys grouped by their stable schema sections. */
+    public static String serializeCanonical(final IrongoonConfigSnapshot snapshot) {
+        final IrongoonConfigSnapshot validated = fromValues(snapshot.source(), snapshot.values());
+        final Map<IrongoonConfigSchema.Section, Map<String, Object>> sections = new LinkedHashMap<>();
+        for(final String key : IrongoonConfigSchema.KEYS) {
+            final IrongoonConfigSchema.Section section = IrongoonConfigSchema.setting(key).section();
+            sections.computeIfAbsent(section, ignored -> new LinkedHashMap<>()).put(key, validated.values().get(key));
+        }
+
+        final StringBuilder yaml = new StringBuilder();
+        final DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        final Yaml dumper = new Yaml(options);
+        for(final var entry : sections.entrySet()) {
+            if(!yaml.isEmpty()) yaml.append('\n');
+            yaml.append("# ").append(displaySection(entry.getKey())).append('\n');
+            yaml.append(dumper.dump(entry.getValue()));
+        }
+        return yaml.toString();
+    }
+
     public static String serialize(final IrongoonConfigSnapshot snapshot) {
         final Map<String, Object> normalized = new LinkedHashMap<>();
         for(final String key : IrongoonConfigSchema.KEYS) {
             if(snapshot.values().containsKey(key)) normalized.put(key, snapshot.values().get(key));
         }
         return new Yaml().dump(normalized);
+    }
+
+    private static String displaySection(final IrongoonConfigSchema.Section section) {
+        final String name = section.name().replace('_', ' ').toLowerCase(java.util.Locale.ROOT);
+        return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 
     private static Object normalize(final String key, final Object value, final String source) {
