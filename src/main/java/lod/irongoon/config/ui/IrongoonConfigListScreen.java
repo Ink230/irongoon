@@ -34,9 +34,9 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
             case BATTLE_STAGE -> this.addBattleStages(session, setting);
             case BATTLE_PARTY_CHARACTER -> this.addBattleParty(session, setting);
             case CHARACTER_ELEMENT, DRAGOON_ELEMENT -> this.addElementOverrides(session, setting);
-            case SHOP_ITEM -> this.addRegistryCheckboxes(session, setting, this.itemChoices());
-            case SHOP_EQUIPMENT -> this.addRegistryCheckboxes(session, setting, this.equipmentChoices());
-            case SHOP_RECALLED -> this.addRegistryCheckboxes(session, setting, this.recalledChoices());
+            case SHOP_ITEM -> this.addRegistryCheckboxes(session, setting, this.itemChoices(this.strings(session, setting)));
+            case SHOP_EQUIPMENT -> this.addRegistryCheckboxes(session, setting, this.equipmentChoices(this.strings(session, setting)));
+            case SHOP_RECALLED -> this.addRegistryCheckboxes(session, setting, this.recalledChoices(this.strings(session, setting)));
             default -> throw new IllegalArgumentException("Unsupported Irongoon list editor " + setting.key());
         }
 
@@ -86,10 +86,10 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
     }
 
     private void addElementOverrides(final IrongoonConfigEditorSession session, final Setting setting) {
-        final List<Choice> choices = this.elementChoices();
+        final List<String> selected = this.strings(session, setting);
+        final List<Choice> choices = this.elementChoices(selected);
         for(int characterIndex = 0; characterIndex < Legacy.CHAR_IDS.length; characterIndex++) {
             final int selectedCharacter = characterIndex;
-            final List<String> selected = this.strings(session, setting);
             final String current = characterIndex < selected.size() ? this.resolveElementId(selected.get(characterIndex), choices) : SKIP;
             final Dropdown<String> dropdown = new Dropdown<>((index, id) -> this.choiceLabel(choices, id));
             for(final Choice choice : choices) dropdown.addOption(choice.id());
@@ -165,33 +165,56 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
         return characterIndex == RANDOM_CHARACTER ? new I18nText("irongoon.ui.config.random_or_skip").get() : this.characterName(characterIndex).get();
     }
 
-    private List<Choice> elementChoices() {
+    private List<Choice> elementChoices(final List<String> configured) {
         final List<Choice> choices = new ArrayList<>();
         choices.add(new Choice(SKIP, new I18nText("irongoon.ui.config.skip").get()));
         for(final RegistryId id : GameEngine.REGISTRIES.elements) {
             choices.add(new Choice(id.toString(), I18n.translate(GameEngine.REGISTRIES.elements.getEntry(id))));
         }
+        for(final String id : configured) {
+            if(!this.hasElementChoice(choices, id)) this.addUnavailableChoice(choices, id);
+        }
         return this.sortRegistryChoices(choices);
     }
 
-    private List<Choice> itemChoices() {
-        return this.registryChoices(GameEngine.REGISTRIES.items::getEntry, GameEngine.REGISTRIES.items);
+    private List<Choice> itemChoices(final List<String> configured) {
+        return this.registryChoices(GameEngine.REGISTRIES.items::getEntry, GameEngine.REGISTRIES.items, configured);
     }
 
-    private List<Choice> equipmentChoices() {
-        return this.registryChoices(GameEngine.REGISTRIES.equipment::getEntry, GameEngine.REGISTRIES.equipment);
+    private List<Choice> equipmentChoices(final List<String> configured) {
+        return this.registryChoices(GameEngine.REGISTRIES.equipment::getEntry, GameEngine.REGISTRIES.equipment, configured);
     }
 
-    private List<Choice> recalledChoices() {
-        final List<Choice> choices = new ArrayList<>(this.itemChoices());
-        choices.addAll(this.equipmentChoices());
+    private List<Choice> recalledChoices(final List<String> configured) {
+        final List<Choice> choices = new ArrayList<>(this.itemChoices(List.of()));
+        choices.addAll(this.equipmentChoices(List.of()));
+        for(final String id : configured) {
+            if(choices.stream().noneMatch(choice -> choice.id().equals(id))) this.addUnavailableChoice(choices, id);
+        }
         return this.sortRegistryChoices(choices);
     }
 
-    private List<Choice> registryChoices(final Function<RegistryId, ?> entry, final Iterable<RegistryId> ids) {
+    private List<Choice> registryChoices(final Function<RegistryId, ?> entry, final Iterable<RegistryId> ids, final List<String> configured) {
         final List<Choice> choices = new ArrayList<>();
         for(final RegistryId id : ids) choices.add(new Choice(id.toString(), I18n.translate((org.legendofdragoon.modloader.registries.RegistryDelegate<?>)entry.apply(id))));
+        for(final String id : configured) {
+            if(choices.stream().noneMatch(choice -> choice.id().equals(id))) this.addUnavailableChoice(choices, id);
+        }
         return this.sortRegistryChoices(choices);
+    }
+
+    private void addUnavailableChoice(final List<Choice> choices, final String id) {
+        choices.add(new Choice(id, I18n.translate("irongoon.ui.config.unavailable", id)));
+    }
+
+    private boolean hasElementChoice(final List<Choice> choices, final String configured) {
+        if(choices.stream().anyMatch(choice -> choice.id().equals(configured))) return true;
+
+        final String alias = configured.trim().toLowerCase(Locale.ROOT);
+        return choices.stream()
+            .map(Choice::id)
+            .filter(id -> id.contains(":"))
+            .anyMatch(id -> id.substring(id.indexOf(':') + 1).equalsIgnoreCase(alias));
     }
 
     private List<Choice> sortRegistryChoices(final List<Choice> choices) {
@@ -202,7 +225,12 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
     private String resolveElementId(final String configured, final List<Choice> choices) {
         if(choices.stream().anyMatch(choice -> choice.id().equals(configured))) return configured;
         final String alias = configured.trim().toLowerCase(Locale.ROOT);
-        return choices.stream().map(Choice::id).filter(id -> id.substring(id.indexOf(':') + 1).equalsIgnoreCase(alias)).findFirst().orElse(SKIP);
+        return choices.stream()
+            .map(Choice::id)
+            .filter(id -> id.contains(":"))
+            .filter(id -> id.substring(id.indexOf(':') + 1).equalsIgnoreCase(alias))
+            .findFirst()
+            .orElse(configured);
     }
 
     private String choiceLabel(final List<Choice> choices, final String id) {

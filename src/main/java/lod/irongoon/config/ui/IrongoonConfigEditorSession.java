@@ -138,7 +138,7 @@ public final class IrongoonConfigEditorSession {
 
         try {
             this.draftSnapshot = IrongoonConfigCodec.fromValues("editor draft", values);
-            this.validationError = null;
+            this.validateDraft();
             this.operationError = null;
             return true;
         } catch(final IllegalStateException exception) {
@@ -154,7 +154,7 @@ public final class IrongoonConfigEditorSession {
         }
 
         this.draftSeed = value;
-        this.validationError = null;
+        this.validateDraft();
         this.operationError = null;
         return true;
     }
@@ -165,7 +165,8 @@ public final class IrongoonConfigEditorSession {
             final IrongoonConfigProfile profile = this.profile(filename)
                 .orElseThrow(() -> new IllegalArgumentException("Irongoon profile is unavailable: " + filename));
             final IrongoonConfigSnapshot snapshot = this.profiles.load(profile);
-            this.stage(profile, snapshot);
+            this.loadDraft(profile, snapshot);
+            if(this.validationError == null) this.stage(profile, snapshot);
             this.profileWarnings = snapshot.warnings();
             return true;
         } catch(final RuntimeException exception) {
@@ -234,6 +235,7 @@ public final class IrongoonConfigEditorSession {
         try {
             this.profiles.rescan();
             this.selectedProfile = this.profile(this.sourceProfileId).orElse(null);
+            this.validateDraft();
             this.operationError = null;
         } catch(final RuntimeException exception) {
             this.operationError = this.message(exception);
@@ -257,14 +259,30 @@ public final class IrongoonConfigEditorSession {
         this.campaignConfig.validate(snapshot);
         this.campaignConfig.stageSnapshot(this.config, this.snapshotEntry, this.rememberedProfileEntry, profile, snapshot);
         this.config.setConfig(this.seedEntry, this.draftSeed);
-        this.sourceProfileId = profile.filename();
-        this.selectedProfile = profile;
-        this.startingSnapshot = snapshot;
-        this.draftSnapshot = snapshot;
+        this.loadDraft(profile, snapshot);
         this.startingSeed = this.draftSeed;
         this.validationError = null;
         this.operationError = null;
         this.stagedForReload = true;
+    }
+
+    private void loadDraft(final IrongoonConfigProfile profile, final IrongoonConfigSnapshot snapshot) {
+        this.sourceProfileId = profile.filename();
+        this.selectedProfile = profile;
+        this.startingSnapshot = snapshot;
+        this.draftSnapshot = snapshot;
+        this.operationError = null;
+        this.stagedForReload = false;
+        this.validateDraft();
+    }
+
+    private void validateDraft() {
+        try {
+            this.campaignConfig.validate(this.draftSnapshot);
+            this.validationError = null;
+        } catch(final IllegalStateException exception) {
+            this.validationError = exception.getMessage();
+        }
     }
 
     private String message(final RuntimeException exception) {

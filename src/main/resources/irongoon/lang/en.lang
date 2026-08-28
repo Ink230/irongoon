@@ -60,6 +60,7 @@ irongoon.ui.config.root.profile_snapshot=%s (Campaign Snapshot)
 irongoon.ui.config.edit_list=Edit List
 irongoon.ui.config.random_or_skip=Random / Skip
 irongoon.ui.config.skip=Skip
+irongoon.ui.config.unavailable=Unavailable: %s
 irongoon.ui.config.back=Back
 irongoon.ui.config.help=Help
 irongoon.ui.config.section.general=GENERAL
