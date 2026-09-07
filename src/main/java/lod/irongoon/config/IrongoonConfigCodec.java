@@ -236,6 +236,13 @@ public final class IrongoonConfigCodec {
     }
 
     private static void validate(final Map<String, Object> values, final String source) {
+        validateRange(values, source, "additionUnlockLevelLowerBound", "additionUnlockLevelUpperBound", 2, 60);
+        validateRange(values, source, "additionDamageLowerPercentBound", "additionDamageUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionSpLowerPercentBound", "additionSpUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionDamageScalingLowerPercentBound", "additionDamageScalingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionSpScalingLowerPercentBound", "additionSpScalingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionHitTimingLowerPercentBound", "additionHitTimingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionStatusChanceLowerBound", "additionStatusChanceUpperBound", 0, 100);
         validateRange(values, source, "dragoonSpellPowerLowerPercentBound", "dragoonSpellPowerUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
         validateRange(values, source, "dragoonSpellMpCostLowerBound", "dragoonSpellMpCostUpperBound", 0, MAX_RANDOM_PERCENT_BOUND);
         validateRange(values, source, "dragoonSpellAccuracyLowerBound", "dragoonSpellAccuracyUpperBound", 0, 100);
@@ -279,6 +286,13 @@ public final class IrongoonConfigCodec {
     }
 
     private static void validateAllowedModes(final Map<String, Object> values, final String source) {
+        if(AdditionStatuses.RANDOMIZE.name().equals(values.get("additionStatuses")) && !anyEnabled(values,
+            "additionStatusAllowPetrify", "additionStatusAllowBewitch", "additionStatusAllowConfuse", "additionStatusAllowFear",
+            "additionStatusAllowStun", "additionStatusAllowWeaponBlock", "additionStatusAllowDispirit", "additionStatusAllowPoison"
+        )) {
+            throw new IllegalStateException(source + ": addition status randomization requires at least one additionStatusAllow* entry");
+        }
+
         final String spellEffects = (String) values.get("dragoonSpellEffects");
         if(!DragoonSpellEffects.STOCK.name().equals(spellEffects)
             && !DragoonSpellEffects.RANDOMIZE_RAW.name().equals(spellEffects)
@@ -309,6 +323,11 @@ public final class IrongoonConfigCodec {
     private static void validateEnum(final String key, final String value, final String source) {
         try {
             switch(key) {
+                case "additionUnlocks" -> AdditionUnlocks.valueOf(value);
+                case "additionBaseStats", "additionLevelScaling" -> AdditionValueMode.valueOf(value);
+                case "additionHitTiming" -> AdditionHitTiming.valueOf(value);
+                case "additionElements" -> AdditionElements.valueOf(value);
+                case "additionStatuses" -> AdditionStatuses.valueOf(value);
                 case "bodyTotalStatsPerLevel", "dragoonTotalStatsPerLevel" -> TotalStatsPerLevel.valueOf(value);
                 case "bodyTotalStatsBounds", "dragoonStatsBounds" -> TotalStatsBounds.valueOf(value);
                 case "bodyTotalStatsDistributionPerLevel", "dragoonTotalStatsDistributionPerLevel" -> TotalStatsDistributionPerLevel.valueOf(value);
