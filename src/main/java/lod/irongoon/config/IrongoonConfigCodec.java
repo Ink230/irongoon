@@ -74,17 +74,11 @@ public final class IrongoonConfigCodec {
             }
             final String canonical = IrongoonConfigSchema.canonicalKey(key);
             if(explicitKeys.contains(canonical) && !canonical.equals(key)) continue;
-            values.put(canonical, normalize(canonical, legacyValue(key, entry.getValue(), source), source));
+            values.put(canonical, normalize(canonical, entry.getValue(), source));
             explicitKeys.add(canonical);
         }
         validate(values, source);
         return new IrongoonConfigSnapshot(source, values, warnings);
-    }
-
-    private static Object legacyValue(final String key, final Object value, final String source) {
-        if(!"dragoonSpellRandomizeMpCost".equals(key)) return value;
-        if(!(value instanceof Boolean randomize)) throw invalid(source, key, "a boolean");
-        return randomize ? "RANDOM_CAMPAIGN_CHARACTER" : "STOCK";
     }
 
     /** Serializes canonical keys grouped by their stable schema sections. */
@@ -236,17 +230,6 @@ public final class IrongoonConfigCodec {
     }
 
     private static void validate(final Map<String, Object> values, final String source) {
-        validateRange(values, source, "additionUnlockLevelLowerBound", "additionUnlockLevelUpperBound", 2, 60);
-        validateRange(values, source, "additionDamageLowerPercentBound", "additionDamageUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "additionSpLowerPercentBound", "additionSpUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "additionDamageScalingLowerPercentBound", "additionDamageScalingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "additionSpScalingLowerPercentBound", "additionSpScalingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "additionHitTimingLowerPercentBound", "additionHitTimingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "additionStatusChanceLowerBound", "additionStatusChanceUpperBound", 0, 100);
-        validateRange(values, source, "dragoonSpellPowerLowerPercentBound", "dragoonSpellPowerUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "dragoonSpellMpCostLowerBound", "dragoonSpellMpCostUpperBound", 0, MAX_RANDOM_PERCENT_BOUND);
-        validateRange(values, source, "dragoonSpellAccuracyLowerBound", "dragoonSpellAccuracyUpperBound", 0, 100);
-        validateRange(values, source, "dragoonSpellStatusChanceLowerBound", "dragoonSpellStatusChanceUpperBound", 0, 100);
         validateRange(values, source, "hpStatLowerPercentBound", "hpStatUpperPercentBound", 0, Integer.MAX_VALUE - 20);
         validateRange(values, source, "speedStatLowerPercentBound", "speedStatUpperPercentBound", 0, Integer.MAX_VALUE - 20);
         validateRange(values, source, "totalStatsMonstersLowerPercentBound", "totalStatsMonstersUpperPercentBound", 0, Integer.MAX_VALUE - 20);
@@ -264,7 +247,6 @@ public final class IrongoonConfigCodec {
         if(values.containsKey("battleStageList")) for(final int stage : (List<Integer>) values.get("battleStageList")) if(stage < 0 || stage >= 95) throw new IllegalStateException(source + ": battleStageList entries must be between 0 and 94");
 
         validatePartyLists(values, source);
-        validateAllowedModes(values, source);
     }
 
     @SuppressWarnings("unchecked")
@@ -285,34 +267,6 @@ public final class IrongoonConfigCodec {
         }
     }
 
-    private static void validateAllowedModes(final Map<String, Object> values, final String source) {
-        if(AdditionStatuses.RANDOMIZE.name().equals(values.get("additionStatuses")) && !anyEnabled(values,
-            "additionStatusAllowPetrify", "additionStatusAllowBewitch", "additionStatusAllowConfuse", "additionStatusAllowFear",
-            "additionStatusAllowStun", "additionStatusAllowWeaponBlock", "additionStatusAllowDispirit", "additionStatusAllowPoison"
-        )) {
-            throw new IllegalStateException(source + ": addition status randomization requires at least one additionStatusAllow* entry");
-        }
-
-        final String spellEffects = (String) values.get("dragoonSpellEffects");
-        if(!DragoonSpellEffects.STOCK.name().equals(spellEffects)
-            && !DragoonSpellEffects.RANDOMIZE_RAW.name().equals(spellEffects)
-            && !anyEnabled(values,
-                "dragoonSpellAllowDamage", "dragoonSpellAllowHealHp", "dragoonSpellAllowRestoreMp", "dragoonSpellAllowRestoreSp",
-                "dragoonSpellAllowCleanse", "dragoonSpellAllowDrainHp", "dragoonSpellAllowDrainMp", "dragoonSpellAllowDrainSp",
-                "dragoonSpellAllowStatus", "dragoonSpellAllowBuff", "dragoonSpellAllowDebuff", "dragoonSpellAllowRegenHp",
-                "dragoonSpellAllowRegenMp", "dragoonSpellAllowRegenSp"
-            )) {
-            throw new IllegalStateException(source + ": dragoon spell effect configuration cannot produce a living-target spell");
-        }
-    }
-
-    private static boolean anyEnabled(final Map<String, Object> values, final String... keys) {
-        for(final String key : keys) {
-            if((Boolean) values.get(key)) return true;
-        }
-        return false;
-    }
-
     private static void validateRange(final Map<String, Object> values, final String source, final String lowerKey, final String upperKey, final int minimum, final int maximum) {
         if(!values.containsKey(lowerKey) || !values.containsKey(upperKey)) return;
         final int lower = (Integer) values.get(lowerKey);
@@ -323,11 +277,6 @@ public final class IrongoonConfigCodec {
     private static void validateEnum(final String key, final String value, final String source) {
         try {
             switch(key) {
-                case "additionUnlocks" -> AdditionUnlocks.valueOf(value);
-                case "additionBaseStats", "additionLevelScaling" -> AdditionValueMode.valueOf(value);
-                case "additionHitTiming" -> AdditionHitTiming.valueOf(value);
-                case "additionElements" -> AdditionElements.valueOf(value);
-                case "additionStatuses" -> AdditionStatuses.valueOf(value);
                 case "bodyTotalStatsPerLevel", "dragoonTotalStatsPerLevel" -> TotalStatsPerLevel.valueOf(value);
                 case "bodyTotalStatsBounds", "dragoonStatsBounds" -> TotalStatsBounds.valueOf(value);
                 case "bodyTotalStatsDistributionPerLevel", "dragoonTotalStatsDistributionPerLevel" -> TotalStatsDistributionPerLevel.valueOf(value);
@@ -338,12 +287,6 @@ public final class IrongoonConfigCodec {
                 case "battleParty" -> BattleParty.valueOf(value);
                 case "enableAllDragoons" -> EnableAllDragoons.valueOf(value);
                 case "dragoonElements" -> DragoonElements.valueOf(value);
-                case "dragoonSpellUnlocks" -> DragoonSpellUnlocks.valueOf(value);
-                case "dragoonSpellRandomizationPool" -> DragoonSpellRandomizationPool.valueOf(value);
-                case "dragoonSpellStats" -> DragoonSpellStats.valueOf(value);
-                case "dragoonSpellMpCosts" -> DragoonSpellMpCosts.valueOf(value);
-                case "dragoonSpellElements" -> DragoonSpellElements.valueOf(value);
-                case "dragoonSpellEffects" -> DragoonSpellEffects.valueOf(value);
                 case "monsterTotalStatsPerLevel" -> TotalStatsMonsters.valueOf(value);
                 case "hpStatMonsters" -> HPStatMonsters.valueOf(value);
                 case "speedStatMonsters" -> SpeedStatMonsters.valueOf(value);
