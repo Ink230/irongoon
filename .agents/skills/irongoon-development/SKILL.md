@@ -9,6 +9,19 @@ Preserve Irongoon's established dependency direction: engine events enter at the
 
 ## Project identity and authority
 
+Known local project locations:
+
+| User shorthand | Local path | Role |
+| --- | --- | --- |
+| `sc` | `D:\java\sc` | Upstream Severed Chains checkout |
+| `sclocal` | `D:\java\sclocal` | User's fork of Severed Chains |
+| Irongoon | `D:\java\irongoon` | Java mod repository |
+| Irongoon Wiki | `D:\java\irongoonwiki` | Irongoon GitHub Wiki checkout |
+| scmeta script | `D:\java\scmeta` | Script metadata tooling |
+| DragoonMods / LodTools | `C:\webprojects\lodtools` | Website repository; web application is under `web` |
+
+Check these paths and inspect their current remotes, branches, and working-tree state before asking where the projects live. `D:\java\inksc` is a separate older checkout, not the user's `sc` or `sclocal` shorthand. A dotted reference such as `sc.main` identifies branch `main` in the `sc` checkout; verify ambiguous testing-branch names rather than treating similarly named branches as interchangeable.
+
 - **Irongoon**: The base Java mod loaded by Severed Chains (`sc`). Its hosted repository is `https://github.com/Ink230/irongoon`, and its usual local checkout is `D:\java\irongoon`. Treat this repository as authoritative for implemented mod behavior, supported configuration, defaults, versioning, and packaging
 - **Irongoon Wiki**: The GitHub Wiki attached to the Irongoon repository at `https://github.com/Ink230/irongoon/wiki`. It contains the config reference, config templates, and other pages explaining the project. Treat it as the user-facing documentation surface and keep it synchronized with the implemented Irongoon configuration
 - **DragoonMods / LodTools / Website**: The `https://dragoonmods.com/` website is implemented by the LodTools repository at `https://github.com/Ink230/LoD-Tools`, usually checked out at `C:\webprojects\lodtools\web`. Its Irongoon page provides the config builder, field tooltips, copy-paste configuration output, how-to guidance, and the Irongoon target version. The website may host other mods, so scope Irongoon work to its Irongoon-specific page and services unless the request explicitly includes shared or other-mod behavior
