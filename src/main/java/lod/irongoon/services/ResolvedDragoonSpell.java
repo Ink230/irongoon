@@ -15,7 +15,6 @@ import java.util.List;
 public final class ResolvedDragoonSpell extends SpellStats0c {
     private final RegistryId spellId;
     private final SpellStats0c baseSpell;
-    private final List<SpellEffectPlan> effectPlans;
 
     public ResolvedDragoonSpell(
         final RegistryId spellId,
@@ -59,8 +58,7 @@ public final class ResolvedDragoonSpell extends SpellStats0c {
         if(baseSpell == null) throw new IllegalArgumentException("Resolved Dragoon base spell cannot be null");
         this.spellId = spellId;
         this.baseSpell = baseSpell;
-        this.effectPlans = List.copyOf(effectPlans);
-        SpellEffectPlans.set(this, this.effectPlans);
+        SpellEffectPlans.set(this, List.copyOf(effectPlans));
     }
 
     public ResolvedDragoonSpell withMp(final int mp) {
@@ -81,7 +79,7 @@ public final class ResolvedDragoonSpell extends SpellStats0c {
             this.statusType_09,
             this.buffType_0a,
             this._0b,
-            this.effectPlans
+            SpellEffectPlans.get(this)
         );
     }
 
