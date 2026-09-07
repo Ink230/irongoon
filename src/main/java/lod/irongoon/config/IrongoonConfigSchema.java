@@ -148,7 +148,7 @@ escapeChanceLowerBound: 1
     ) {}
     public static final List<String> KEYS = List.of(("""
         publicSeed,useRandomSeedOnNewCampaign,csvDataOverrides,
-        
+
         bodyTotalStatsPerLevel,bodyTotalStatsBounds,bodyTotalStatsDistributionPerLevel,hpStatPerLevel,hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatPerLevel,speedStatUpperPercentBound,speedStatLowerPercentBound,characterElements,characterNoElement,characterElementOverride,enableAllCharacters,battleParty,battlePartyOverride,battlePartySize,battlePartyPool,battlePartyDuplicates,
         enableAllDragoons,dragoonTotalStatsPerLevel,dragoonStatsBounds,dragoonTotalStatsDistributionPerLevel,dragoonElements,dragoonNoElement,dragoonElementOverride,
         monsterTotalStatsPerLevel,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonsters,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonsters,speedStatMonstersUpperBound,speedStatMonstersLowerBound,statsVarianceMonsters,monsterElements,noElementMonsters,
