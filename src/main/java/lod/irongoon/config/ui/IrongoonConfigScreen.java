@@ -56,7 +56,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     }
 
     private void addProfileDropdown() {
-        final Dropdown<IrongoonConfigProfile> profiles = new Dropdown<>((index, profile) -> profile.displayName());
+        final Dropdown<IrongoonConfigProfile> profiles = new Dropdown<>((index, profile) -> new RawText(profile.displayName()));
         for(final IrongoonConfigProfile profile : this.session.availableProfiles()) profiles.addOption(profile);
 
         final Optional<IrongoonConfigProfile> selected = this.session.availableProfiles().stream()

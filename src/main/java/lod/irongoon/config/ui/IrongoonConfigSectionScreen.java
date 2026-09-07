@@ -85,7 +85,7 @@ public final class IrongoonConfigSectionScreen extends VerticalLayoutScreen {
     }
 
     private Dropdown<String> dropdown(final Setting setting, final String value) {
-        final Dropdown<String> control = new Dropdown<>((index, option) -> new I18nText("irongoon.config." + setting.key() + '.' + option).get());
+        final Dropdown<String> control = new Dropdown<>((index, option) -> new I18nText("irongoon.config." + setting.key() + '.' + option));
         for(final String option : setting.choices()) control.addOption(option);
         control.setSelected(value);
         control.onSelection(index -> {

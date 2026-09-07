@@ -1,5 +1,13 @@
 # Irongoon
 
+## Engine compatibility
+
+`main` targets Severed Chains `main`. Addition and Dragoon-spell randomization from Irongoon PRs #19 and #18 are reserved for `main.future`, which requires SC `main.spike-testing` with upstream PRs #2771 and #2765. SC #2790 is optional for Irongoon; #2793 enables the new-campaign mod-menu registry flow and is not required for compilation.
+
+SC config presets preserve Irongoon's campaign snapshot. If no snapshot exists, Irongoon selects its default profile when configuring or starting a campaign; it no longer depends on SC's removed remembered-campaign-settings API. Existing campaign snapshots remain authoritative. On `main`, the 66 future-only settings are ignored with warnings when reading a future profile, and are omitted when exporting or saving that profile.
+
+Build against a JAR produced from the corresponding SC branch: copy its `build/libs/lod-game-snapshot.jar` to this checkout's ignored `lod-game-snapshot-2.jar`, then run `gradlew.bat compileJava assemble`. A stale local engine JAR does not establish branch compatibility.
+
 The Irongoon mod for [Severed Chains](https://github.com/Legend-of-Dragoon-Modding/Legend-of-Dragoon-Java) allows an "Ironmon" style of play for Legend of Dragoon.
 
 An online tool to help visually generate different settings can be found on [dragoonmods.com](https://dragoonmods.com/)

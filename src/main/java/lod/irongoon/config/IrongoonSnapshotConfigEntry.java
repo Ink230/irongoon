@@ -24,7 +24,12 @@ public final class IrongoonSnapshotConfigEntry extends StringConfigEntry {
 
     private Button createConfigureButton(final ConfigCollection config) {
         final Button button = new Button(new I18nText("irongoon.ui.config.configure"));
-        button.onPressed(() -> button.getScreen().getStack().pushScreen(new IrongoonConfigScreen(new IrongoonConfigEditorSession(config, this.seedEntry, this, this.rememberedProfileEntry))));
+        button.onPressed(() -> {
+            if(config.getConfig(this).isBlank()) {
+                IrongoonCampaignConfig.getInstance().stageNewCampaign(config, this, this.rememberedProfileEntry, false);
+            }
+            button.getScreen().getStack().pushScreen(new IrongoonConfigScreen(new IrongoonConfigEditorSession(config, this.seedEntry, this, this.rememberedProfileEntry)));
+        });
         return button;
     }
 

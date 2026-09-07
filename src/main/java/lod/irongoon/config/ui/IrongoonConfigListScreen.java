@@ -66,7 +66,7 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
         for(int slot = 0; slot < partySize; slot++) {
             final int selectedSlot = slot;
             final int current = slot < selected.size() ? selected.get(slot) : RANDOM_CHARACTER;
-            final Dropdown<Integer> dropdown = new Dropdown<>((index, character) -> this.characterOptionName(character));
+            final Dropdown<Integer> dropdown = new Dropdown<>((index, character) -> new RawText(this.characterOptionName(character)));
             dropdown.addOption(RANDOM_CHARACTER);
             for(int characterIndex = 0; characterIndex < Legacy.CHAR_IDS.length; characterIndex++) dropdown.addOption(characterIndex);
             dropdown.setSelected(current);
@@ -91,7 +91,7 @@ public final class IrongoonConfigListScreen extends VerticalLayoutScreen {
         for(int characterIndex = 0; characterIndex < Legacy.CHAR_IDS.length; characterIndex++) {
             final int selectedCharacter = characterIndex;
             final String current = characterIndex < selected.size() ? this.resolveElementId(selected.get(characterIndex), choices) : SKIP;
-            final Dropdown<String> dropdown = new Dropdown<>((index, id) -> this.choiceLabel(choices, id));
+            final Dropdown<String> dropdown = new Dropdown<>((index, id) -> new RawText(this.choiceLabel(choices, id)));
             for(final Choice choice : choices) dropdown.addOption(choice.id());
             dropdown.setSelected(current);
             dropdown.onSelection(index -> session.update(setting.key(), this.updatedStrings(this.strings(session, setting), selectedCharacter, dropdown.getSelectedOption(), Legacy.CHAR_IDS.length)));

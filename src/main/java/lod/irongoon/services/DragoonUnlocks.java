@@ -2,6 +2,7 @@ package lod.irongoon.services;
 
 import legend.game.inventory.Good;
 import legend.game.inventory.GoodsInventory;
+import legend.game.inventory.GoodsSource;
 import lod.irongoon.config.IrongoonConfig;
 import lod.irongoon.data.EnableAllDragoons;
 import org.legendofdragoon.modloader.registries.RegistryDelegate;
@@ -39,7 +40,7 @@ public final class DragoonUnlocks {
     public void initializeCampaign(final GoodsInventory goods) {
         switch(this.config.enableAllDragoons) {
             case STOCK -> { }
-            case PERMANENTLY, STORY_CONTROLLED -> BASE_DRAGOON_SPIRITS.forEach(goods::give);
+            case PERMANENTLY, STORY_CONTROLLED -> BASE_DRAGOON_SPIRITS.forEach(spirit -> goods.give(spirit, GoodsSource.INITIALIZATION));
         }
     }
 

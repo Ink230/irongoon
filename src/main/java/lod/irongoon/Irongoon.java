@@ -21,10 +21,7 @@ import legend.game.modding.events.characters.PostCharacterLevelUpEvent;
 import legend.game.modding.events.characters.PreCharacterDragoonLevelUpEvent;
 import legend.game.modding.events.characters.PreCharacterLevelUpEvent;
 import legend.game.modding.events.characters.ResolveCharacterElementEvent;
-import legend.game.modding.coremod.CoreMod;
 import legend.game.modding.events.gamestate.EncounterEvent;
-import legend.game.modding.events.config.NewCampaignConfigEvent;
-import legend.game.modding.events.config.ValidateNewCampaignConfigEvent;
 import legend.game.modding.events.gamestate.NewGameEvent;
 import legend.game.modding.events.gamestate.PartyFlagsChangeEvent;
 import legend.game.modding.events.gamestate.PrimaryPartyChangeEvent;
@@ -37,7 +34,6 @@ import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonCampaignConfig;
 import lod.irongoon.config.IrongoonConfig;
-import lod.irongoon.config.IrongoonConfigSnapshot;
 import lod.irongoon.config.IrongoonSnapshotConfigEntry;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
@@ -95,39 +91,14 @@ public class Irongoon {
         CONFIG_REGISTRAR.registryEvent(event);
     }
 
-    @EventListener
-    public void newCampaignConfig(final NewCampaignConfigEvent event) {
-        if(event.configCollection.hasConfig(IRONGOON_CONFIG_SNAPSHOT.get())
-            && !event.configCollection.getConfig(IRONGOON_CONFIG_SNAPSHOT.get()).isBlank()) return;
-
-        this.campaignConfig.stageNewCampaign(
-            event.configCollection,
-            IRONGOON_CONFIG_SNAPSHOT.get(),
-            IRONGOON_LAST_SELECTED_PROFILE.get(),
-            event.rememberDefaults
-        );
-    }
-
-    @EventListener
-    public void validateNewCampaignConfig(final ValidateNewCampaignConfigEvent event) {
-        try {
-            final IrongoonConfigSnapshot snapshot = this.campaignConfig.payload(event.configCollection, IRONGOON_CONFIG_SNAPSHOT.get()).snapshot();
-            this.campaignConfig.validate(snapshot);
-        } catch(final RuntimeException exception) {
-            final String message = exception.getMessage() == null || exception.getMessage().isBlank()
-                ? "Invalid Irongoon configuration"
-                : exception.getMessage();
-            event.addError("Irongoon: " + message);
-        }
-    }
-
     @EventListener(priority = Priority.LOW)
     public void newGame(final NewGameEvent game) {
+        // SC presets carry the campaign snapshot; only an absent snapshot selects a default profile.
         this.campaignConfig.applyNewCampaign(
             GameEngine.CONFIG,
             IRONGOON_CONFIG_SNAPSHOT.get(),
             IRONGOON_LAST_SELECTED_PROFILE.get(),
-            GameEngine.CONFIG.getConfig(CoreMod.REMEMBER_CAMPAIGN_SETTINGS_CONFIG.get())
+            false
         );
 
         if (config.useRandomSeedOnNewCampaign) {
@@ -151,7 +122,7 @@ public class Irongoon {
             GameEngine.CONFIG,
             IRONGOON_CONFIG_SNAPSHOT.get(),
             IRONGOON_LAST_SELECTED_PROFILE.get(),
-            GameEngine.CONFIG.getConfig(CoreMod.REMEMBER_CAMPAIGN_SETTINGS_CONFIG.get())
+            false
         );
         if(selection.migrated()) {
             ConfigStorage.saveConfig(GameEngine.CONFIG, ConfigStorageLocation.CAMPAIGN, game.gameState.campaign.path.resolve("campaign_config.dcnf"));
