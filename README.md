@@ -2,6 +2,10 @@
 
 ## Engine compatibility
 
+This integration branch targets SC `main` with `config-presets-fixes` merged. It uses the PR's `ConfigCollection(false)` API directly; an engine JAR from unmodified `main` is insufficient for this branch.
+
+When Irongoon is loaded, SC's built-in preset list includes **Irongoon (Blueprint)**. This read-only preset embeds all current Blueprint settings from the shipped schema, independently of local YAML profiles. Use SC's **Add** action with it selected to create an editable copy, then edit Irongoon through the mod options menu. The built-in preset leaves the random campaign seed unset; saved user presets can capture a seed, and a fixed `publicSeed` with `useRandomSeedOnNewCampaign: FALSE` remains supported. No additional SC preset discovery change or `.dpre` installation step is required.
+
 In the Irongoon config menu, **Use settings** stages edits in the configuration being edited without writing a YAML profile. When editing an SC preset, return to SC's preset editor and confirm its save prompt to persist those edits; declining that prompt discards the preset draft. **Save Existing**, **Save As New**, and **Rename** remain explicit YAML profile operations. New campaigns use staged settings on start; existing campaigns use them after saving and reloading. The preset editor requires SC's `config-presets-fixes` changes for detached drafts, and registry-based selectors before campaign start require the `load-registries-for-mod-menus` fix (#2793).
 
 `main` targets Severed Chains `main`. Addition and Dragoon-spell randomization from Irongoon PRs #19 and #18 are reserved for `main.future`, which requires SC `main.spike-testing` with upstream PRs #2771 and #2765. SC #2790 is optional for Irongoon; #2793 enables the new-campaign mod-menu registry flow and is not required for compilation.
@@ -27,6 +31,15 @@ At the moment, the mod is a glorified character and monster stat randomizer. Ele
 The [Irongoon Rules](https://gist.github.com/Ink230/76197fd8251de5e0927d99077e0c1124) is a WIP goal of capturing the Ironmon essence.
 
 Some rules are currently impossible, not implemented, or need further discussion on their worth.
+
+## Manual preset checks
+
+Use SC `main` with both `config-presets-fixes` and `load-registries-for-mod-menus` (#2793) for these checks:
+
+1. Load Irongoon and open new campaign setup. Confirm **Irongoon (Blueprint)** appears in the preset list. Select it, open Irongoon's configuration, and check the character, element, item, and equipment selectors
+2. In SC's preset editor, select **Irongoon (Blueprint)** and choose **Add**. Name the copy, open Irongoon, change a setting and campaign seed, choose **Use settings**, then confirm SC's save prompt. Reopen the preset and confirm both values remain
+3. Edit that saved preset again, change a setting, and choose **Use settings**, but decline SC's save prompt. Reopen it and confirm the previously saved value remains. Neither operation should create or overwrite a YAML profile
+4. Select the saved preset and start a campaign. Confirm its configured behavior, save, and reload. Open Irongoon from the in-game mod options, change a setting, choose **Use settings**, then save and reload again. Changes retain their documented lifecycle; new-campaign-only settings do not retroactively change an existing campaign
 
 # Irongoon Settings
 
