@@ -19,13 +19,13 @@ import legend.game.types.MessageBoxResult;
 import legend.game.types.MessageBoxType;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 import static legend.game.modding.coremod.CoreMod.INPUT_ACTION_MENU_BACK;
 
 /** Campaign-local profile editor root. File writes and campaign staging are explicit session operations. */
 public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     private final IrongoonConfigEditorSession session;
+    private Label activeConfiguration;
     private Label dirtyFeedback;
     private Label stagedFeedback;
     private Label validationFeedback;
@@ -35,16 +35,23 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     public IrongoonConfigScreen(final IrongoonConfigEditorSession session) {
         this.addControl(new Background());
         this.session = session;
+        this.addActiveConfiguration();
 
         final Textbox seed = new Textbox();
         seed.setMaxLength(15);
         seed.setText(session.draftSeed());
-        seed.onChanged(session::updateSeed);
+        seed.onChanged(value -> {
+            this.session.updateSeed(value);
+            this.updateFeedback();
+        });
         this.addRow(new I18nText("irongoon.ui.config.root.campaign_seed"), seed);
 
         final Checkbox randomSeed = new Checkbox();
         randomSeed.setChecked((Boolean)session.draft().values().get("useRandomSeedOnNewCampaign"));
-        randomSeed.onToggled(value -> session.update("useRandomSeedOnNewCampaign", value));
+        randomSeed.onToggled(value -> {
+            this.session.update("useRandomSeedOnNewCampaign", value);
+            this.updateFeedback();
+        });
         this.addRow(new I18nText("irongoon.ui.config.root.random_seed_policy"), randomSeed);
 
         this.addProfileDropdown();
@@ -55,24 +62,26 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
         this.addHotkey(new I18nText("irongoon.ui.config.back"), INPUT_ACTION_MENU_BACK, this::back);
     }
 
-    private void addProfileDropdown() {
-        final Dropdown<IrongoonConfigProfile> profiles = new Dropdown<>((index, profile) -> new RawText(profile.displayName()));
-        for(final IrongoonConfigProfile profile : this.session.availableProfiles()) profiles.addOption(profile);
+    private void addActiveConfiguration() {
+        this.activeConfiguration = new Label(this.session.activeConfiguration());
+        this.addRow(new I18nText("irongoon.ui.config.root.active_configuration"), this.activeConfiguration);
+    }
 
-        final Optional<IrongoonConfigProfile> selected = this.session.availableProfiles().stream()
-            .filter(profile -> profile.filename().equalsIgnoreCase(this.session.sourceProfileId()))
-            .findFirst();
-        if(selected.isPresent()) {
-            profiles.setSelected(selected.get());
-        } else {
-            profiles.setSelectedIndex(-1);
-        }
+    private void addProfileDropdown() {
+        final var yamlProfiles = this.session.availableProfiles().stream()
+            .filter(profile -> profile.kind() != IrongoonConfigProfile.Kind.BLUEPRINT)
+            .toList();
+        final Dropdown<IrongoonConfigProfile> profiles = new Dropdown<>((index, profile) -> profile == null
+            ? new I18nText(yamlProfiles.isEmpty() ? "irongoon.ui.config.root.no_yaml_profiles" : "irongoon.ui.config.root.choose_profile")
+            : new RawText(profile.displayName()));
+        profiles.addOption(null);
+        for(final IrongoonConfigProfile profile : yamlProfiles) profiles.addOption(profile);
+        profiles.setDisabled(yamlProfiles.isEmpty());
 
         profiles.onSelection(index -> this.selectProfile(profiles.getSelectedOption()));
-        this.addRow(new I18nText("irongoon.ui.config.root.selected_profile"), profiles);
-
-        if(selected.isEmpty()) {
-            this.addRow(new I18nText("irongoon.ui.config.root.profile_snapshot", this.session.sourceProfileId()), null);
+        this.addRow(new I18nText("irongoon.ui.config.root.load_yaml_profile"), profiles);
+        if(this.session.selectedProfileKind() != IrongoonConfigProfile.Kind.BLUEPRINT) {
+            this.addRow(new I18nText("irongoon.ui.config.root.yaml_profile_source"), new Label(new RawText(this.session.sourceProfileId())));
         }
     }
 
@@ -109,6 +118,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
         this.addRow(new I18nText("irongoon.ui.config.root.use_settings"), useSettings);
 
         final Button saveExisting = new Button(new I18nText("irongoon.ui.config.root.save_existing"));
+        saveExisting.setDisabled(this.session.selectedProfileKind() == IrongoonConfigProfile.Kind.BLUEPRINT);
         saveExisting.onPressed(this::saveExisting);
         this.addRow(new I18nText("irongoon.ui.config.root.save_existing"), saveExisting);
 
@@ -117,6 +127,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
         this.addRow(new I18nText("irongoon.ui.config.root.save_as_new"), saveAs);
 
         final Button rename = new Button(new I18nText("irongoon.ui.config.root.rename"));
+        rename.setDisabled(this.session.selectedProfileKind() == IrongoonConfigProfile.Kind.BLUEPRINT);
         rename.onPressed(this::rename);
         this.addRow(new I18nText("irongoon.ui.config.root.rename"), rename);
 
@@ -138,6 +149,7 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     }
 
     private void updateFeedback() {
+        this.activeConfiguration.setText(this.session.activeConfiguration());
         this.dirtyFeedback.setText(new I18nText(this.session.dirty()
             ? "irongoon.ui.config.root.dirty"
             : "irongoon.ui.config.root.clean"));
