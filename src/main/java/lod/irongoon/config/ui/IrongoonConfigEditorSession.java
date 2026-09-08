@@ -175,6 +175,23 @@ public final class IrongoonConfigEditorSession {
         }
     }
 
+    public boolean useSettings() {
+        if(!this.canPersistDraft()) return false;
+
+        try {
+            this.campaignConfig.stageSnapshot(this.config, this.snapshotEntry, this.sourceProfileId, this.draftSnapshot);
+            this.config.setConfig(this.seedEntry, this.draftSeed);
+            this.startingSnapshot = this.draftSnapshot;
+            this.startingSeed = this.draftSeed;
+            this.operationError = null;
+            this.stagedForReload = true;
+            return true;
+        } catch(final RuntimeException exception) {
+            this.operationError = this.message(exception);
+            return false;
+        }
+    }
+
     public boolean saveExisting() {
         if(this.selectedProfile == null || this.selectedProfile.kind() == IrongoonConfigProfile.Kind.BLUEPRINT) {
             this.operationError = "Select a saved profile before saving";

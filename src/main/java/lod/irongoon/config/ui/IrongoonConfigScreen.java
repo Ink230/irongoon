@@ -101,6 +101,13 @@ public final class IrongoonConfigScreen extends VerticalLayoutScreen {
     }
 
     private void addWorkflowButtons() {
+        final Button useSettings = new Button(new I18nText("irongoon.ui.config.root.use_settings"));
+        useSettings.onPressed(() -> {
+            this.session.useSettings();
+            this.updateFeedback();
+        });
+        this.addRow(new I18nText("irongoon.ui.config.root.use_settings"), useSettings);
+
         final Button saveExisting = new Button(new I18nText("irongoon.ui.config.root.save_existing"));
         saveExisting.onPressed(this::saveExisting);
         this.addRow(new I18nText("irongoon.ui.config.root.save_existing"), saveExisting);

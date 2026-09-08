@@ -2,6 +2,8 @@
 
 ## Engine compatibility
 
+In the Irongoon config menu, **Use settings** stages edits in the configuration being edited without writing a YAML profile. When editing an SC preset, return to SC's preset editor and confirm its save prompt to persist those edits; declining that prompt discards the preset draft. **Save Existing**, **Save As New**, and **Rename** remain explicit YAML profile operations. New campaigns use staged settings on start; existing campaigns use them after saving and reloading. The preset editor requires SC's `config-presets-fixes` changes for detached drafts, and registry-based selectors before campaign start require the `load-registries-for-mod-menus` fix (#2793).
+
 `main` targets Severed Chains `main`. Addition and Dragoon-spell randomization from Irongoon PRs #19 and #18 are reserved for `main.future`, which requires SC `main.spike-testing` with upstream PRs #2771 and #2765. SC #2790 is optional for Irongoon; #2793 enables the new-campaign mod-menu registry flow and is not required for compilation.
 
 SC config presets preserve Irongoon's campaign snapshot. If no snapshot exists, Irongoon selects its default profile when configuring or starting a campaign; it no longer depends on SC's removed remembered-campaign-settings API. Existing campaign snapshots remain authoritative. On `main`, the 66 future-only settings are ignored with warnings when reading a future profile, and are omitted when exporting or saving that profile.
