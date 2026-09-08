@@ -34,7 +34,7 @@ import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonCampaignConfig;
 import lod.irongoon.config.IrongoonConfig;
-import lod.irongoon.config.IrongoonConfigPresets;
+import lod.irongoon.config.presets.IrongoonConfigPresets;
 import lod.irongoon.config.IrongoonSnapshotConfigEntry;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;

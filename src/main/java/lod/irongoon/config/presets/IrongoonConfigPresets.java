@@ -1,10 +1,15 @@
-package lod.irongoon.config;
+package lod.irongoon.config.presets;
 
 import legend.core.lang.I18nText;
 import legend.game.saves.ConfigCollection;
 import legend.game.saves.ConfigEntry;
 import legend.game.saves.ConfigPreset;
 import legend.game.saves.ConfigPresetEntry;
+import lod.irongoon.config.IrongoonConfigCodec;
+import lod.irongoon.config.IrongoonConfigPayload;
+import lod.irongoon.config.IrongoonConfigProfile;
+import lod.irongoon.config.IrongoonConfigSchema;
+import lod.irongoon.config.IrongoonConfigSnapshot;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,7 +25,7 @@ public final class IrongoonConfigPresets {
 
     public ConfigPresetEntry blueprint(final ConfigEntry<String> snapshotEntry) {
         final IrongoonConfigSnapshot snapshot = IrongoonConfigCodec.fromValues("Blueprint", IrongoonConfigSchema.blueprintValues());
-        final ConfigCollection config = new ConfigCollection(false);
+        final ConfigCollection config = new ConfigCollection();
         config.setConfig(snapshotEntry, IrongoonConfigPayload.fromSnapshot(IrongoonConfigProfile.blueprint(), snapshot).encode());
 
         // Leave the campaign seed unset so new campaigns use the current seed entry default.
