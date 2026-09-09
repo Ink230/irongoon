@@ -2,7 +2,11 @@
 
 ## Automated builds
 
-[Latest Irongoon Build](https://github.com/Ink230/irongoon/releases/tag/irongoon-latest) contains the latest successful `main` build. The first release appears after the bundle workflow merges and succeeds on `main`.
+[Latest Irongoon Build](https://github.com/Ink230/irongoon/releases/tag/irongoon-latest) packages `main` only, compiled against SC `main`. Download `irongoon-v<version>.zip` for the shaded mod JAR and `irongoon` config/data folder, or `irongoon-v<version>-source.zip` for the tracked source from the same commit. SC is not bundled in this channel.
+
+The main prerelease version is the latest **stable GitHub release** plus one patch: `v0.4.16` produces `v0.4.17`, even when a `v0.5.0` prerelease exists. The rolling tag stays `irongoon-latest`; automation does not create version tags or stable releases. Actual releases remain manual.
+
+[Latest Irongoon Future](https://github.com/Ink230/irongoon/releases/tag/irongoon-future) packages `main.future` against SC `main.spike-testing`, including the complete platform bundles:
 
 - Download `sc-modified-irongoon-<platform>.zip` for Windows x64, Steam Deck, Linux x64/ARM64, or macOS Intel/Apple Silicon, then extract into a new directory
 - Supply your own disc images in `isos`; launch SC using `launch.bat` on Windows or `launch` on Linux/macOS
@@ -11,17 +15,21 @@
 
 The bundles retain SC's launchers, automatic JDK download, game unpacking, and upstream development updater. SC updates preserve `mods`, but can replace the bundled spike-testing engine with an official development build; they do not update Irongoon. The initial bundle is built against the exact SC commit recorded in the release notes. Cross-platform packaging does not establish runtime compatibility on every operating system.
 
-The [Irongoon bundles workflow](https://github.com/Ink230/irongoon/actions/workflows/build-bundles.yml) also builds PRs targeting `main` and supports manual runs. Those runs upload test artifacts without publishing a release. Actions downloads wrap each distribution ZIP in an artifact ZIP; extract the outer archive first. Unix executable permissions are preserved inside the distribution ZIP. Artifacts use the repository's retention policy and generally require a GitHub login; prerelease assets provide the public downloads.
+Every push to `main` starts both workflows independently. [Latest Irongoon Future](https://github.com/Ink230/irongoon/actions/workflows/build-bundles.yml) first rebases `main.future` onto the triggering main commit, then builds that exact future revision. [Latest Irongoon Build](https://github.com/Ink230/irongoon/actions/workflows/build-main.yml) builds the triggering main commit without waiting for future synchronization. A future conflict does not block the main prerelease.
+
+Future synchronization replays first-parent changes onto main, retaining each merge's recorded changes as an ordinary commit with original author/message and source-commit attribution. This intentionally linearizes future history so old merge resolutions are preserved instead of reconstructed. Empty first-parent deltas are skipped. The complete result must equal Git's clean merge tree before publishing. Conflicts or a tree mismatch stop the job without changing remote `main.future`; an explicit expected-head lease prevents overwriting concurrent branch updates. After a successful rewrite, local future checkouts must be realigned with `origin/main.future` after preserving any local work. No SC branches are modified.
+
+Both workflows also build PRs targeting `main` and support manual runs. Those runs upload test artifacts without publishing or updating `main.future`; the future workflow uses the current remote future tip in these cases. Actions downloads wrap distribution ZIPs in an artifact ZIP; extract the outer archive first. Unix executable permissions are preserved inside the distribution ZIP. Artifacts use the repository's retention policy and generally require a GitHub login; prerelease assets provide public downloads.
 
 Maintainer settings:
 
 - `.github/workflows/build-bundles.yml` selects SC's repository and target branch, currently `Legend-of-Dragoon-Modding/Severed-Chains` / `main.spike-testing`; the workflow resolves that branch once and uses the same commit for the mod and all six platforms
-- `.github/build-version.txt` controls package naming, initially `0.5.1`; bump it when changing the advertised mod version
-- Only successful pushes to `main` update the rolling `irongoon-latest` prerelease and its seven ZIP assets; no `v0.x.x` tags are created
+- `.github/build-version.txt` controls future package naming, initially `0.5.1`; main package naming is calculated from the latest stable release instead
+- Successful pushes to `main` update `irongoon-future` with seven ZIPs and `irongoon-latest` with the main mod/source ZIPs; no `v0.x.x` tags are created
 - Manual version-tag releases remain a separate, Irongoon-only process; this workflow does not run on tag pushes
 - No SC repository writes or SC release credentials are needed; builds use SC's committed patch metadata without running its private metadata scraper
 
-The existing `shadowJar` task remains the mod build. CI supplies a fresh SC dependency as `lod-game-snapshot-2.jar`, then packages the shaded JAR and tracked `mods/irongoon` directory. The workflow uses Java 25 and each repository's checked-in Gradle wrapper. Packaging fails if required mod classes, SC libraries/support directories, processed launchers, or the updater are missing.
+The existing `shadowJar` task remains the mod build. CI supplies a fresh SC dependency as `lod-game-snapshot-2.jar`, then packages the shaded JAR and `mods/irongoon` directory from the selected Irongoon revision. Both workflows use Java 25 and each repository's checked-in Gradle wrapper. Packaging fails if required mod classes, SC libraries/support directories, processed launchers, or the updater are missing. `.github/scripts/test_release_tools.py` exercises version selection, source/config packaging, preserved merge resolutions, repeated rebases, and conflict/concurrent-update refusal using disposable local repositories.
 
 ## Engine compatibility
 

@@ -1,4 +1,4 @@
-name: Irongoon bundles
+name: Latest Irongoon Future
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: irongoon-bundles-${{ github.ref }}
+  group: irongoon-future-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -19,15 +19,47 @@ env:
   SC_REF: main.spike-testing
 
 jobs:
+  sync:
+    name: Rebase main.future onto main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      irongoon_sha: ${{ steps.rebase.outputs.irongoon_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check release packaging and rebase safeguards
+        run: python .github/scripts/test_release_tools.py
+      - name: Rebase future without replacing concurrent work
+        id: rebase
+        env:
+          MAIN_SHA: ${{ github.sha }}
+          PUBLISH_FUTURE: ${{ github.event_name == 'push' }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          bash .github/scripts/rebase_future.sh
+
   mod:
-    name: Build Irongoon against target SC
+    name: Build main.future against target SC
+    needs: sync
+    if: ${{ !cancelled() && (needs.sync.result == 'success' || github.event_name != 'push') }}
     runs-on: ubuntu-latest
     outputs:
       sc_sha: ${{ steps.metadata.outputs.sc_sha }}
       version: ${{ steps.metadata.outputs.version }}
+      irongoon_sha: ${{ steps.metadata.outputs.irongoon_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.sync.outputs.irongoon_sha || 'main.future' }}
+          path: irongoon
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
@@ -46,6 +78,7 @@ jobs:
         run: |
           echo "sc_sha=$(git -C sc rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "version=$(cat .github/build-version.txt)" >> "$GITHUB_OUTPUT"
+          echo "irongoon_sha=$(git -C irongoon rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Build SC dependency
         working-directory: sc
         env:
@@ -55,10 +88,14 @@ jobs:
       - name: Build shaded Irongoon JAR
         env:
           SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
+          IRONGOON_SHA: ${{ steps.metadata.outputs.irongoon_sha }}
         run: |
-          cp "sc/build/libs/lod-game-${SC_SHA}.jar" lod-game-snapshot-2.jar
-          java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain --no-daemon compileJava assemble shadowJar
-          python .github/scripts/package_bundles.py mod --jar "build/libs/irongoon-${GITHUB_SHA}-all.jar"
+          cp "sc/build/libs/lod-game-${SC_SHA}.jar" irongoon/lod-game-snapshot-2.jar
+          (
+            cd irongoon
+            env GITHUB_SHA="$IRONGOON_SHA" java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain --no-daemon compileJava assemble shadowJar
+          )
+          python .github/scripts/package_bundles.py mod --source irongoon --jar "irongoon/build/libs/irongoon-${IRONGOON_SHA}-all.jar"
       - uses: actions/upload-artifact@v4
         with:
           name: irongoon-v${{ steps.metadata.outputs.version }}
@@ -69,10 +106,12 @@ jobs:
         env:
           SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
           VERSION: ${{ steps.metadata.outputs.version }}
+          IRONGOON_SHA: ${{ steps.metadata.outputs.irongoon_sha }}
         run: |
           {
-            echo "## Irongoon v${VERSION}"
-            echo "Irongoon: ${GITHUB_SHA}"
+            echo "## Latest Irongoon Future v${VERSION}"
+            echo "Irongoon main.future: ${IRONGOON_SHA}"
+            echo "Triggered by main: ${GITHUB_SHA}"
             echo "SC: ${SC_REPOSITORY}@${SC_SHA} (resolved from ${SC_REF})"
             echo "Standalone ZIP: extract into an existing SC mods directory."
           } >> "$GITHUB_STEP_SUMMARY"
@@ -80,6 +119,7 @@ jobs:
   platforms:
     name: Bundle ${{ matrix.platform }}
     needs: mod
+    if: ${{ !cancelled() && needs.mod.result == 'success' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -127,13 +167,16 @@ jobs:
           compression-level: 0
 
   publish:
-    name: Update latest prerelease
+    name: Update future prerelease
     needs: [mod, platforms]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           path: bundles
@@ -144,11 +187,18 @@ jobs:
           GH_REPO: ${{ github.repository }}
           VERSION: ${{ needs.mod.outputs.version }}
           SC_SHA: ${{ needs.mod.outputs.sc_sha }}
+          RELEASE_TAG: irongoon-future
+          RELEASE_TITLE: Latest Irongoon Future
+          RELEASE_SHA: ${{ needs.mod.outputs.irongoon_sha }}
+          BUNDLE_DIR: bundles
+          ASSET_COUNT: '7'
+          NOTES_FILE: notes.md
         shell: bash
         run: |
-          test "$(find bundles -maxdepth 1 -name '*.zip' | wc -l)" -eq 7
           cat > notes.md <<EOF
-          Automated Irongoon v${VERSION} build from ${GITHUB_SHA}.
+          Automated Irongoon v${VERSION} future build from main.future commit ${RELEASE_SHA}.
+
+          Triggered by main commit ${GITHUB_SHA}, after rebasing main.future onto main.
 
           SC source: ${SC_REPOSITORY}@${SC_SHA} (${SC_REF}).
 
@@ -160,17 +210,4 @@ jobs:
 
           These assets are replaced after successful main builds. Manual version-tag releases remain separate.
           EOF
-          if gh release view irongoon-latest > /dev/null 2>&1; then
-            gh api --method PATCH "repos/${GH_REPO}/git/refs/tags/irongoon-latest" -f sha="$GITHUB_SHA" -F force=true
-            gh release upload irongoon-latest bundles/*.zip --clobber
-            gh release edit irongoon-latest --title "Latest Irongoon Build" --notes-file notes.md --prerelease
-            # Remove old version/platform assets only after all new uploads succeed.
-            gh release view irongoon-latest --json assets --jq '.assets[].name' > assets.txt
-            while IFS= read -r asset; do
-              if [[ ! -f "bundles/$asset" ]]; then
-                gh release delete-asset irongoon-latest "$asset" --yes
-              fi
-            done < assets.txt
-          else
-            gh release create irongoon-latest bundles/*.zip --target "$GITHUB_SHA" --title "Latest Irongoon Build" --notes-file notes.md --prerelease
-          fi
+          bash .github/scripts/publish_prerelease.sh

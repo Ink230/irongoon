@@ -1,0 +1,114 @@
+name: Latest Irongoon Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: irongoon-main-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  SC_REPOSITORY: Legend-of-Dragoon-Modding/Severed-Chains
+
+jobs:
+  mod:
+    name: Package main mod and source
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.metadata.outputs.version }}
+      sc_sha: ${{ steps.metadata.outputs.sc_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check release packaging and rebase safeguards
+        run: python .github/scripts/test_release_tools.py
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SC_REPOSITORY }}
+          ref: main
+          path: sc
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Resolve stable release and SC revision
+        id: metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          stable_tag=$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" --jq .tag_name)
+          version=$(python .github/scripts/package_bundles.py next-version --tag "$stable_tag")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "sc_sha=$(git -C sc rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "Main prerelease: v${version} (latest stable: ${stable_tag})" >> "$GITHUB_STEP_SUMMARY"
+      - name: Build SC main dependency
+        working-directory: sc
+        env:
+          SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
+        run: env GITHUB_SHA="$SC_SHA" ./gradlew --no-daemon assemble -Pos=linux -Parch=x86_64
+      - name: Build shaded Irongoon JAR and source ZIP
+        env:
+          SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
+          VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          cp "sc/build/libs/lod-game-${SC_SHA}.jar" lod-game-snapshot-2.jar
+          java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain --no-daemon compileJava assemble shadowJar
+          python .github/scripts/package_bundles.py mod --jar "build/libs/irongoon-${GITHUB_SHA}-all.jar" --version "$VERSION"
+          python .github/scripts/package_bundles.py sources --version "$VERSION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: irongoon-main-v${{ steps.metadata.outputs.version }}
+          path: build/bundles/*.zip
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    name: Update main prerelease
+    needs: mod
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: irongoon-main-v${{ needs.mod.outputs.version }}
+          path: bundles
+      - name: Publish Latest Irongoon Build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.mod.outputs.version }}
+          SC_SHA: ${{ needs.mod.outputs.sc_sha }}
+          RELEASE_TAG: irongoon-latest
+          RELEASE_TITLE: Latest Irongoon Build
+          RELEASE_SHA: ${{ github.sha }}
+          BUNDLE_DIR: bundles
+          ASSET_COUNT: '2'
+          NOTES_FILE: notes.md
+        run: |
+          cat > notes.md <<EOF
+          Irongoon v${VERSION} prerelease from main commit ${GITHUB_SHA}.
+
+          Built against SC main: ${SC_REPOSITORY}@${SC_SHA}.
+
+          Extract irongoon-v${VERSION}.zip into your SC mods directory. Remove the previous Irongoon JAR and back up your config before replacing the irongoon folder.
+
+          irongoon-v${VERSION}-source.zip contains the tracked source from this exact main commit. SC is not bundled.
+
+          The version is the latest stable release plus one patch. This rolling prerelease does not create a v${VERSION} tag or publish a stable release; actual releases remain manual.
+          EOF
+          bash .github/scripts/publish_prerelease.sh
