@@ -17,6 +17,8 @@ The bundles retain SC's launchers, automatic JDK download, game unpacking, and u
 
 Every push to `main` starts both workflows independently. [Latest Irongoon Future](https://github.com/Ink230/irongoon/actions/workflows/build-bundles.yml) first rebases `main.future` onto the triggering main commit, then builds that exact future revision. [Latest Irongoon Build](https://github.com/Ink230/irongoon/actions/workflows/build-main.yml) builds the triggering main commit without waiting for future synchronization. A future conflict does not block the main prerelease.
 
+Every push to `main.future` also builds and publishes **Latest Irongoon Future**, using the exact pushed commit without rebasing. Both push paths fetch the latest SC `main.spike-testing` revision and serialize future runs so publication cannot overlap. The automated rebase uses `GITHUB_TOKEN`, whose branch pushes do not trigger another workflow run; the original main-triggered run performs the future build and publication.
+
 Future synchronization replays first-parent changes onto main, retaining each merge's recorded changes as an ordinary commit with original author/message and source-commit attribution. This intentionally linearizes future history so old merge resolutions are preserved instead of reconstructed. Empty first-parent deltas are skipped. The complete result must equal Git's clean merge tree before publishing. Conflicts or a tree mismatch stop the job without changing remote `main.future`; an explicit expected-head lease prevents overwriting concurrent branch updates. After a successful rewrite, local future checkouts must be realigned with `origin/main.future` after preserving any local work. No SC branches are modified.
 
 Both workflows also build PRs targeting `main` and support manual runs. Those runs upload test artifacts without publishing or updating `main.future`; the future workflow uses the current remote future tip in these cases. Actions downloads wrap distribution ZIPs in an artifact ZIP; extract the outer archive first. Unix executable permissions are preserved inside the distribution ZIP. Artifacts use the repository's retention policy and generally require a GitHub login; prerelease assets provide public downloads.
@@ -25,7 +27,7 @@ Maintainer settings:
 
 - `.github/workflows/build-bundles.yml` selects SC's repository and target branch, currently `Legend-of-Dragoon-Modding/Severed-Chains` / `main.spike-testing`; the workflow resolves that branch once and uses the same commit for the mod and all six platforms
 - `.github/build-version.txt` controls future package naming, initially `0.5.1`; main package naming is calculated from the latest stable release instead
-- Successful pushes to `main` update `irongoon-future` with seven ZIPs and `irongoon-latest` with the main mod/source ZIPs; no `v0.x.x` tags are created
+- Successful pushes to `main` update `irongoon-future` with seven ZIPs and `irongoon-latest` with the main mod/source ZIPs; pushes to `main.future` update only `irongoon-future`; no `v0.x.x` tags are created
 - Manual version-tag releases remain a separate, Irongoon-only process; this workflow does not run on tag pushes
 - No SC repository writes or SC release credentials are needed; builds use SC's committed patch metadata without running its private metadata scraper
 

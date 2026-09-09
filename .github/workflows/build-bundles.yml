@@ -2,7 +2,7 @@ name: Latest Irongoon Future
 
 on:
   push:
-    branches: [main]
+    branches: [main, main.future]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: irongoon-future-${{ github.ref }}
+  group: irongoon-future-${{ github.event_name == 'push' && 'publish' || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -46,7 +46,7 @@ jobs:
   mod:
     name: Build main.future against target SC
     needs: sync
-    if: ${{ !cancelled() && (needs.sync.result == 'success' || github.event_name != 'push') }}
+    if: ${{ !cancelled() && (needs.sync.result == 'success' || github.ref == 'refs/heads/main.future' || github.event_name != 'push') }}
     runs-on: ubuntu-latest
     outputs:
       sc_sha: ${{ steps.metadata.outputs.sc_sha }}
@@ -58,7 +58,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.sync.outputs.irongoon_sha || 'main.future' }}
+          ref: ${{ needs.sync.outputs.irongoon_sha || (github.event_name == 'push' && github.ref == 'refs/heads/main.future' && github.sha) || 'main.future' }}
           path: irongoon
           persist-credentials: false
       - uses: actions/checkout@v4
@@ -111,7 +111,7 @@ jobs:
           {
             echo "## Latest Irongoon Future v${VERSION}"
             echo "Irongoon main.future: ${IRONGOON_SHA}"
-            echo "Triggered by main: ${GITHUB_SHA}"
+            echo "Triggered by ${GITHUB_REF_NAME}: ${GITHUB_SHA}"
             echo "SC: ${SC_REPOSITORY}@${SC_SHA} (resolved from ${SC_REF})"
             echo "Standalone ZIP: extract into an existing SC mods directory."
           } >> "$GITHUB_STEP_SUMMARY"
@@ -169,7 +169,7 @@ jobs:
   publish:
     name: Update future prerelease
     needs: [mod, platforms]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: ${{ !cancelled() && needs.mod.result == 'success' && needs.platforms.result == 'success' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main.future') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -198,7 +198,7 @@ jobs:
           cat > notes.md <<EOF
           Automated Irongoon v${VERSION} future build from main.future commit ${RELEASE_SHA}.
 
-          Triggered by main commit ${GITHUB_SHA}, after rebasing main.future onto main.
+          Triggered by ${GITHUB_REF_NAME} commit ${GITHUB_SHA}. Main pushes rebase main.future before building; future pushes build their exact commit without rebasing.
 
           SC source: ${SC_REPOSITORY}@${SC_SHA} (${SC_REF}).
 
@@ -208,6 +208,6 @@ jobs:
 
           SC's standard JDK setup and upstream development updater remain enabled. An SC update can replace spike-testing engine changes; it preserves mods but does not update Irongoon.
 
-          These assets are replaced after successful main builds. Manual version-tag releases remain separate.
+          These assets are replaced after successful main or main.future builds. Manual version-tag releases remain separate.
           EOF
           bash .github/scripts/publish_prerelease.sh
