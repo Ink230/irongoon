@@ -47,6 +47,39 @@ dragoonTotalStatsDistributionPerLevel: RANDOM
 dragoonElements: RANDOM_CAMPAIGN
 dragoonNoElement: FALSE
 dragoonElementOverride: [] # positional by character id; built-in aliases or full registry ids such as mod_id:element_id
+dragoonSpellUnlocks: RANDOMIZE_SEQUENCE
+dragoonSpellRandomizationPool: GLOBAL
+dragoonSpellStats: RANDOMIZE_BOUNDS
+dragoonSpellRandomizePower: TRUE
+dragoonSpellPowerLowerPercentBound: 50
+dragoonSpellPowerUpperPercentBound: 250
+dragoonSpellMpCosts: RANDOM_CAMPAIGN_CHARACTER
+dragoonSpellMpCostLowerBound: 5
+dragoonSpellMpCostUpperBound: 120
+dragoonSpellRandomizeAccuracy: FALSE
+dragoonSpellAccuracyLowerBound: 90
+dragoonSpellAccuracyUpperBound: 100
+dragoonSpellRandomizeStatusChance: TRUE
+dragoonSpellStatusChanceLowerBound: 35
+dragoonSpellStatusChanceUpperBound: 100
+dragoonSpellElements: SHUFFLE
+dragoonSpellNoElement: FALSE
+dragoonSpellEffects: RANDOMIZE_INDEPENDENT
+dragoonSpellAllowDamage: TRUE
+dragoonSpellAllowHealHp: TRUE
+dragoonSpellAllowRestoreMp: TRUE
+dragoonSpellAllowRestoreSp: TRUE
+dragoonSpellAllowRevive: TRUE
+dragoonSpellAllowCleanse: TRUE
+dragoonSpellAllowDrainHp: TRUE
+dragoonSpellAllowDrainMp: TRUE
+dragoonSpellAllowDrainSp: TRUE
+dragoonSpellAllowStatus: TRUE
+dragoonSpellAllowBuff: TRUE
+dragoonSpellAllowDebuff: TRUE
+dragoonSpellAllowRegenHp: TRUE
+dragoonSpellAllowRegenMp: TRUE
+dragoonSpellAllowRegenSp: TRUE
 # Monsters
 monsterTotalStatsPerLevel: RANDOMIZE_BOUNDS
 totalStatsMonstersUpperPercentBound: 150
@@ -99,7 +132,7 @@ escapeChanceUpperBound: 99
 escapeChanceLowerBound: 1
         """;
     public enum Section {
-        GENERAL, CHARACTER_STATS, CHARACTER_ELEMENTS, PARTY, DRAGOON_STATS, DRAGOON_ACCESS_AND_ELEMENTS, MONSTER_STATS_AND_ELEMENTS, SHOPS, ITEMS, ENCOUNTERS
+        GENERAL, CHARACTER_STATS, CHARACTER_ELEMENTS, PARTY, DRAGOON_STATS, DRAGOON_ACCESS_AND_ELEMENTS, DRAGOON_SPELLS, MONSTER_STATS_AND_ELEMENTS, SHOPS, ITEMS, ENCOUNTERS
     }
 
     public enum ControlKind {
@@ -150,27 +183,27 @@ escapeChanceLowerBound: 1
         publicSeed,useRandomSeedOnNewCampaign,csvDataOverrides,
 
         bodyTotalStatsPerLevel,bodyTotalStatsBounds,bodyTotalStatsDistributionPerLevel,hpStatPerLevel,hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatPerLevel,speedStatUpperPercentBound,speedStatLowerPercentBound,characterElements,characterNoElement,characterElementOverride,enableAllCharacters,battleParty,battlePartyOverride,battlePartySize,battlePartyPool,battlePartyDuplicates,
-        enableAllDragoons,dragoonTotalStatsPerLevel,dragoonStatsBounds,dragoonTotalStatsDistributionPerLevel,dragoonElements,dragoonNoElement,dragoonElementOverride,
+        enableAllDragoons,dragoonTotalStatsPerLevel,dragoonStatsBounds,dragoonTotalStatsDistributionPerLevel,dragoonElements,dragoonNoElement,dragoonElementOverride,dragoonSpellUnlocks,dragoonSpellRandomizationPool,dragoonSpellStats,dragoonSpellRandomizePower,dragoonSpellPowerLowerPercentBound,dragoonSpellPowerUpperPercentBound,dragoonSpellMpCosts,dragoonSpellMpCostLowerBound,dragoonSpellMpCostUpperBound,dragoonSpellRandomizeAccuracy,dragoonSpellAccuracyLowerBound,dragoonSpellAccuracyUpperBound,dragoonSpellRandomizeStatusChance,dragoonSpellStatusChanceLowerBound,dragoonSpellStatusChanceUpperBound,dragoonSpellElements,dragoonSpellNoElement,dragoonSpellEffects,dragoonSpellAllowDamage,dragoonSpellAllowHealHp,dragoonSpellAllowRestoreMp,dragoonSpellAllowRestoreSp,dragoonSpellAllowRevive,dragoonSpellAllowCleanse,dragoonSpellAllowDrainHp,dragoonSpellAllowDrainMp,dragoonSpellAllowDrainSp,dragoonSpellAllowStatus,dragoonSpellAllowBuff,dragoonSpellAllowDebuff,dragoonSpellAllowRegenHp,dragoonSpellAllowRegenMp,dragoonSpellAllowRegenSp,
         monsterTotalStatsPerLevel,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonsters,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonsters,speedStatMonstersUpperBound,speedStatMonstersLowerBound,statsVarianceMonsters,monsterElements,noElementMonsters,
         shopAvailability,shopQuantity,shopQuantityUpperBound,shopQuantityLowerBound,shopQuantityLogic,shopContents,shopContentsItemPool,shopContentsEquipmentPool,shopContentsRecalled,shopDuplicates,itemCarryLimit,battleStage,battleStageList,battleMusic,escapeChance,escapeChanceUpperBound,escapeChanceLowerBound
         """).replaceAll("\\s", "").split(","));
     public static final Set<String> KEY_SET = Set.copyOf(new LinkedHashSet<>(KEYS));
     public static final Set<String> BOOLEAN_KEYS = Set.of(("""
-        useRandomSeedOnNewCampaign,csvDataOverrides,characterNoElement,battlePartyDuplicates,dragoonNoElement,
+        useRandomSeedOnNewCampaign,csvDataOverrides,characterNoElement,battlePartyDuplicates,dragoonNoElement,dragoonSpellRandomizePower,dragoonSpellRandomizeAccuracy,dragoonSpellRandomizeStatusChance,dragoonSpellNoElement,dragoonSpellAllowDamage,dragoonSpellAllowHealHp,dragoonSpellAllowRestoreMp,dragoonSpellAllowRestoreSp,dragoonSpellAllowRevive,dragoonSpellAllowCleanse,dragoonSpellAllowDrainHp,dragoonSpellAllowDrainMp,dragoonSpellAllowDrainSp,dragoonSpellAllowStatus,dragoonSpellAllowBuff,dragoonSpellAllowDebuff,dragoonSpellAllowRegenHp,dragoonSpellAllowRegenMp,dragoonSpellAllowRegenSp
         """).replaceAll("\\s", "").split(","));
     public static final Set<String> INTEGER_KEYS = Set.of(("""
-        hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatUpperPercentBound,speedStatLowerPercentBound,battlePartySize,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonstersUpperBound,speedStatMonstersLowerBound,shopQuantityUpperBound,shopQuantityLowerBound,itemCarryLimit,escapeChanceUpperBound,escapeChanceLowerBound
+        hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatUpperPercentBound,speedStatLowerPercentBound,battlePartySize,dragoonSpellPowerLowerPercentBound,dragoonSpellPowerUpperPercentBound,dragoonSpellMpCostLowerBound,dragoonSpellMpCostUpperBound,dragoonSpellAccuracyLowerBound,dragoonSpellAccuracyUpperBound,dragoonSpellStatusChanceLowerBound,dragoonSpellStatusChanceUpperBound,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonstersUpperBound,speedStatMonstersLowerBound,shopQuantityUpperBound,shopQuantityLowerBound,itemCarryLimit,escapeChanceUpperBound,escapeChanceLowerBound
         """).replaceAll("\\s", "").split(","));
     public static final Set<String> INTEGER_LIST_KEYS = Set.of("battlePartyOverride", "battlePartyPool", "battleStageList");
     public static final Set<String> STRING_LIST_KEYS = Set.of("characterElementOverride", "dragoonElementOverride", "shopContentsItemPool", "shopContentsEquipmentPool", "shopContentsRecalled");
-    public static final Set<String> LEGACY_KEYS = Set.of("hpStatMonster", "speedStatMonster");
+    public static final Set<String> LEGACY_KEYS = Set.of("hpStatMonster", "speedStatMonster", "dragoonSpellRandomizeMpCost");
     private static final Map<String, Object> BLUEPRINT_VALUES = loadBlueprint();
     private static final Map<String, Setting> SETTINGS = buildSettings();
 
     static {
-        if(KEYS.size() != 59 || KEY_SET.size() != 59) throw new IllegalStateException("Irongoon config schema must contain exactly 59 unique keys");
-        if(BLUEPRINT_VALUES.size() != 59 || !BLUEPRINT_VALUES.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config blueprint must contain every canonical setting exactly once");
-        if(SETTINGS.size() != 59 || !SETTINGS.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config metadata must contain every canonical setting exactly once");
+        if(KEYS.size() != 92 || KEY_SET.size() != 92) throw new IllegalStateException("Irongoon config schema must contain exactly 92 unique keys");
+        if(BLUEPRINT_VALUES.size() != 92 || !BLUEPRINT_VALUES.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config blueprint must contain every canonical setting exactly once");
+        if(SETTINGS.size() != 92 || !SETTINGS.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config metadata must contain every canonical setting exactly once");
     }
 
     private IrongoonConfigSchema() {}
@@ -179,6 +212,7 @@ escapeChanceLowerBound: 1
         return switch(key) {
             case "hpStatMonster" -> "hpStatMonsters";
             case "speedStatMonster" -> "speedStatMonsters";
+            case "dragoonSpellRandomizeMpCost" -> "dragoonSpellMpCosts";
             default -> key;
         };
     }
@@ -202,6 +236,7 @@ escapeChanceLowerBound: 1
     }
 
     private static Section section(final String key) {
+        if(key.startsWith("dragoonSpell")) return Section.DRAGOON_SPELLS;
         if(key.equals("enableAllDragoons") || key.equals("dragoonElements") || key.equals("dragoonNoElement") || key.equals("dragoonElementOverride")) return Section.DRAGOON_ACCESS_AND_ELEMENTS;
         if(key.startsWith("dragoon")) return Section.DRAGOON_STATS;
         if(key.startsWith("monster") || key.startsWith("hpStatMonsters") || key.startsWith("speedStatMonsters") || key.startsWith("totalStatsMonsters") || key.startsWith("statsVariance") || key.startsWith("noElementMonsters")) return Section.MONSTER_STATS_AND_ELEMENTS;
@@ -340,6 +375,12 @@ escapeChanceLowerBound: 1
             case "battleParty" -> BattleParty.class;
             case "enableAllDragoons" -> EnableAllDragoons.class;
             case "dragoonElements" -> DragoonElements.class;
+            case "dragoonSpellUnlocks" -> DragoonSpellUnlocks.class;
+            case "dragoonSpellRandomizationPool" -> DragoonSpellRandomizationPool.class;
+            case "dragoonSpellStats" -> DragoonSpellStats.class;
+            case "dragoonSpellMpCosts" -> DragoonSpellMpCosts.class;
+            case "dragoonSpellElements" -> DragoonSpellElements.class;
+            case "dragoonSpellEffects" -> DragoonSpellEffects.class;
             case "monsterTotalStatsPerLevel" -> TotalStatsMonsters.class;
             case "hpStatMonsters" -> HPStatMonsters.class;
             case "speedStatMonsters" -> SpeedStatMonsters.class;
