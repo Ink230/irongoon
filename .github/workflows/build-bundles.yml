@@ -1,0 +1,175 @@
+name: Irongoon bundles
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: irongoon-bundles-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  SC_REPOSITORY: Legend-of-Dragoon-Modding/Severed-Chains
+  SC_REF: main.spike-testing
+
+jobs:
+  mod:
+    name: Build Irongoon against target SC
+    runs-on: ubuntu-latest
+    outputs:
+      sc_sha: ${{ steps.metadata.outputs.sc_sha }}
+      version: ${{ steps.metadata.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SC_REPOSITORY }}
+          ref: ${{ env.SC_REF }}
+          path: sc
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Resolve build inputs
+        id: metadata
+        shell: bash
+        run: |
+          echo "sc_sha=$(git -C sc rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "version=$(cat .github/build-version.txt)" >> "$GITHUB_OUTPUT"
+      - name: Build SC dependency
+        working-directory: sc
+        env:
+          GITHUB_SHA: ${{ steps.metadata.outputs.sc_sha }}
+        run: ./gradlew --no-daemon assemble -Pos=linux -Parch=x86_64
+      - name: Build shaded Irongoon JAR
+        env:
+          SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
+        run: |
+          cp "sc/build/libs/lod-game-${SC_SHA}.jar" lod-game-snapshot-2.jar
+          java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain --no-daemon compileJava assemble shadowJar
+          python .github/scripts/package_bundles.py mod --jar "build/libs/irongoon-${GITHUB_SHA}-all.jar"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: irongoon-v${{ steps.metadata.outputs.version }}
+          path: build/bundles/irongoon-v${{ steps.metadata.outputs.version }}.zip
+          if-no-files-found: error
+          compression-level: 0
+      - name: Record source revisions
+        env:
+          SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
+          VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          {
+            echo "## Irongoon v${VERSION}"
+            echo "Irongoon: ${GITHUB_SHA}"
+            echo "SC: ${SC_REPOSITORY}@${SC_SHA} (resolved from ${SC_REF})"
+            echo "Standalone ZIP: extract into an existing SC mods directory."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  platforms:
+    name: Bundle ${{ matrix.platform }}
+    needs: mod
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: Windows, os: windows, arch: x86_64, steamdeck: 'false' }
+          - { platform: Steam_Deck, os: linux, arch: x86_64, steamdeck: 'true' }
+          - { platform: Linux, os: linux, arch: x86_64, steamdeck: 'false' }
+          - { platform: Linux_ARM64, os: linux, arch: aarch64, steamdeck: 'false' }
+          - { platform: MacOS_Intel, os: osx, arch: x86_64, steamdeck: 'false' }
+          - { platform: MacOS_M1, os: osx, arch: aarch64, steamdeck: 'false' }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.SC_REPOSITORY }}
+          ref: ${{ needs.mod.outputs.sc_sha }}
+          path: sc
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: irongoon-v${{ needs.mod.outputs.version }}
+          path: build/bundles
+      - name: Stamp SC build metadata
+        run: python .github/scripts/package_bundles.py stamp --sc sc --sha "${{ needs.mod.outputs.sc_sha }}" --build "${{ github.run_number }}"
+      - name: Build SC platform distribution
+        working-directory: sc
+        env:
+          GITHUB_SHA: ${{ needs.mod.outputs.sc_sha }}
+        run: ./gradlew --no-daemon assemble -Pos=${{ matrix.os }} -Parch=${{ matrix.arch }} -Psteamdeck=${{ matrix.steamdeck }}
+      - name: Package and verify bundle
+        run: python .github/scripts/package_bundles.py bundle --sc sc --sha "${{ needs.mod.outputs.sc_sha }}" --platform "${{ matrix.platform }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sc-modified-irongoon-${{ matrix.platform }}
+          path: build/bundles/sc-modified-irongoon-${{ matrix.platform }}.zip
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    name: Update latest prerelease
+    needs: [mod, platforms]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: bundles
+          merge-multiple: true
+      - name: Update rolling release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.mod.outputs.version }}
+          SC_SHA: ${{ needs.mod.outputs.sc_sha }}
+        shell: bash
+        run: |
+          test "$(find bundles -maxdepth 1 -name '*.zip' | wc -l)" -eq 7
+          cat > notes.md <<EOF
+          Automated Irongoon v${VERSION} build from ${GITHUB_SHA}.
+
+          SC source: ${SC_REPOSITORY}@${SC_SHA} (${SC_REF}).
+
+          Download the sc-modified-irongoon ZIP for your platform and extract it into a new directory. Supply your own disc images in isos. Irongoon is already installed under mods.
+
+          For an existing SC installation, extract irongoon-v${VERSION}.zip into mods, replacing the previous Irongoon JAR. Back up your configuration before replacing the irongoon folder.
+
+          SC's standard JDK setup and upstream development updater remain enabled. An SC update can replace spike-testing engine changes; it preserves mods but does not update Irongoon.
+
+          These assets are replaced after successful main builds. Manual version-tag releases remain separate.
+          EOF
+          if gh release view irongoon-latest > /dev/null 2>&1; then
+            gh api --method PATCH "repos/${GH_REPO}/git/refs/tags/irongoon-latest" -f sha="$GITHUB_SHA" -F force=true
+            gh release upload irongoon-latest bundles/*.zip --clobber
+            gh release edit irongoon-latest --title "Latest Irongoon Build" --notes-file notes.md --prerelease
+            # Remove old version/platform assets only after all new uploads succeed.
+            gh release view irongoon-latest --json assets --jq '.assets[].name' > assets.txt
+            while IFS= read -r asset; do
+              if [[ ! -f "bundles/$asset" ]]; then
+                gh release delete-asset irongoon-latest "$asset" --yes
+              fi
+            done < assets.txt
+          else
+            gh release create irongoon-latest bundles/*.zip --target "$GITHUB_SHA" --title "Latest Irongoon Build" --notes-file notes.md --prerelease
+          fi

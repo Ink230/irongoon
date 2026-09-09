@@ -1,5 +1,28 @@
 # Irongoon
 
+## Automated builds
+
+[Latest Irongoon Build](https://github.com/Ink230/irongoon/releases/tag/irongoon-latest) contains the latest successful `main` build. The first release appears after the bundle workflow merges and succeeds on `main`.
+
+- Download `sc-modified-irongoon-<platform>.zip` for Windows x64, Steam Deck, Linux x64/ARM64, or macOS Intel/Apple Silicon, then extract into a new directory
+- Supply your own disc images in `isos`; launch SC using `launch.bat` on Windows or `launch` on Linux/macOS
+- Irongoon is already installed as `mods/irongoon-v<version>.jar` and `mods/irongoon/`, including its default config and CSV data
+- To install only the mod, extract `irongoon-v<version>.zip` into an existing SC `mods` directory; remove the previous Irongoon JAR and back up your config before replacing the `irongoon` folder
+
+The bundles retain SC's launchers, automatic JDK download, game unpacking, and upstream development updater. SC updates preserve `mods`, but can replace the bundled spike-testing engine with an official development build; they do not update Irongoon. The initial bundle is built against the exact SC commit recorded in the release notes. Cross-platform packaging does not establish runtime compatibility on every operating system.
+
+The [Irongoon bundles workflow](https://github.com/Ink230/irongoon/actions/workflows/build-bundles.yml) also builds PRs targeting `main` and supports manual runs. Those runs upload test artifacts without publishing a release. Actions downloads wrap each distribution ZIP in an artifact ZIP; extract the outer archive first. Unix executable permissions are preserved inside the distribution ZIP. Artifacts use the repository's retention policy and generally require a GitHub login; prerelease assets provide the public downloads.
+
+Maintainer settings:
+
+- `.github/workflows/build-bundles.yml` selects SC's repository and target branch, currently `Legend-of-Dragoon-Modding/Severed-Chains` / `main.spike-testing`; the workflow resolves that branch once and uses the same commit for the mod and all six platforms
+- `.github/build-version.txt` controls package naming, initially `0.5.1`; bump it when changing the advertised mod version
+- Only successful pushes to `main` update the rolling `irongoon-latest` prerelease and its seven ZIP assets; no `v0.x.x` tags are created
+- Manual version-tag releases remain a separate, Irongoon-only process; this workflow does not run on tag pushes
+- No SC repository writes or SC release credentials are needed; builds use SC's committed patch metadata without running its private metadata scraper
+
+The existing `shadowJar` task remains the mod build. CI supplies a fresh SC dependency as `lod-game-snapshot-2.jar`, then packages the shaded JAR and tracked `mods/irongoon` directory. The workflow uses Java 25 and each repository's checked-in Gradle wrapper. Packaging fails if required mod classes, SC libraries/support directories, processed launchers, or the updater are missing.
+
 ## Engine compatibility
 
 `main` targets Severed Chains `main`. Addition and Dragoon-spell randomization from Irongoon PRs #19 and #18 are reserved for `main.future`, which requires SC `main.spike-testing` with upstream PRs #2771 and #2765. SC #2790 is optional for Irongoon; #2793 enables the new-campaign mod-menu registry flow and is not required for compilation.
