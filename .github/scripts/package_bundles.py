@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import shutil
 import stat
+import subprocess
 import zipfile
 
 
@@ -14,8 +15,9 @@ OUTPUT = ROOT / "build/bundles"
 PLATFORMS = ("Windows", "Steam_Deck", "Linux", "Linux_ARM64", "MacOS_Intel", "MacOS_M1")
 
 
-def version():
-    value = (ROOT / ".github/build-version.txt").read_text().strip()
+def version(value=None):
+    if value is None:
+        value = (ROOT / ".github/build-version.txt").read_text().strip()
     if not re.fullmatch(r"0\.\d+\.\d+", value):
         raise ValueError(f"Expected a 0.x.x build version, got {value!r}")
     return value
@@ -71,6 +73,7 @@ def stamp(args):
 
 
 def mod(args):
+    release_version = version(args.version)
     require_file(args.jar)
     with zipfile.ZipFile(args.jar) as archive:
         names = set(archive.namelist())
@@ -82,11 +85,31 @@ def mod(args):
     stage = ROOT / "build/package-irongoon"
     reset_stage(stage)
     stage.mkdir(parents=True)
-    shutil.copy2(args.jar, stage / f"irongoon-v{version()}.jar")
-    shutil.copytree(ROOT / "mods/irongoon", stage / "irongoon")
+    shutil.copy2(args.jar, stage / f"irongoon-v{release_version}.jar")
+    shutil.copytree(args.source / "mods/irongoon", stage / "irongoon")
     require_file(stage / "irongoon/config.yaml")
     require_file(stage / "irongoon/irongoon-data/scdk-character-stats.csv")
-    write_zip(stage, OUTPUT / f"irongoon-v{version()}.zip")
+    write_zip(stage, OUTPUT / f"irongoon-v{release_version}.zip")
+
+
+def next_version(args):
+    stable = version(args.tag.removeprefix("v"))
+    major, minor, patch = map(int, stable.split("."))
+    print(f"{major}.{minor}.{patch + 1}")
+
+
+def sources(args):
+    release_version = version(args.version)
+    OUTPUT.mkdir(parents=True, exist_ok=True)
+    destination = OUTPUT / f"irongoon-v{release_version}-source.zip"
+    subprocess.run([
+        "git", "-C", str(args.source), "archive", "--format=zip",
+        f"--prefix=irongoon-v{release_version}/", f"--output={destination}", "HEAD",
+    ], check=True)
+    with zipfile.ZipFile(destination) as archive:
+        if archive.testzip() is not None:
+            raise ValueError(f"Corrupt source ZIP: {destination}")
+    print(f"Verified {destination.name}")
 
 
 def bundle(args):
@@ -136,9 +159,16 @@ if __name__ == "__main__":
     stamp_parser.add_argument("--build", required=True)
     mod_parser = commands.add_parser("mod")
     mod_parser.add_argument("--jar", type=Path, required=True)
+    mod_parser.add_argument("--source", type=Path, default=ROOT)
+    mod_parser.add_argument("--version")
+    version_parser = commands.add_parser("next-version")
+    version_parser.add_argument("--tag", required=True)
+    sources_parser = commands.add_parser("sources")
+    sources_parser.add_argument("--source", type=Path, default=ROOT)
+    sources_parser.add_argument("--version", required=True)
     bundle_parser = commands.add_parser("bundle")
     bundle_parser.add_argument("--sc", type=Path, required=True)
     bundle_parser.add_argument("--sha", required=True)
     bundle_parser.add_argument("--platform", choices=PLATFORMS, required=True)
     arguments = parser.parse_args()
-    {"stamp": stamp, "mod": mod, "bundle": bundle}[arguments.command](arguments)
+    {"stamp": stamp, "mod": mod, "bundle": bundle, "next-version": next_version, "sources": sources}[arguments.command](arguments)
