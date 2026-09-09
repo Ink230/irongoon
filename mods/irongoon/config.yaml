@@ -137,7 +137,6 @@ csvDataOverrides: FALSE
 # Options
 # Custom
 # Scaling
-# Additions
 # Randomizer
 useRandomSeedOnNewCampaign: TRUE
 # Encounters
