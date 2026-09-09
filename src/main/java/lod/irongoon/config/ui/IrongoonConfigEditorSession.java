@@ -7,6 +7,8 @@ import lod.irongoon.config.IrongoonConfigProfile;
 import lod.irongoon.config.IrongoonConfigProfiles;
 import lod.irongoon.config.IrongoonConfigSchema;
 import lod.irongoon.config.IrongoonConfigSnapshot;
+import legend.core.lang.I18nText;
+import legend.core.lang.TextComponent;
 import legend.game.saves.ConfigCollection;
 import legend.game.saves.ConfigEntry;
 
@@ -44,6 +46,7 @@ public final class IrongoonConfigEditorSession {
         this.seedEntry = seedEntry;
         this.snapshotEntry = snapshotEntry;
         this.rememberedProfileEntry = rememberedProfileEntry;
+        this.config.refreshPreset();
 
         final String payload = config.getConfig(snapshotEntry);
         if(payload == null || payload.isBlank()) {
@@ -63,6 +66,16 @@ public final class IrongoonConfigEditorSession {
 
     public ConfigCollection config() {
         return this.config;
+    }
+
+    public TextComponent activeConfiguration() {
+        final TextComponent presetName = this.config.getPresetName();
+        final TextComponent preset = presetName == null ? this.config.getPresetDisplayName() : presetName;
+        if(this.config.isPresetModified() || this.dirty()) {
+            return new I18nText("lod_core.config_presets.modified", preset.get());
+        }
+
+        return preset;
     }
 
     public ConfigEntry<String> seedEntry() {
@@ -168,6 +181,23 @@ public final class IrongoonConfigEditorSession {
             this.loadDraft(profile, snapshot);
             if(this.validationError == null) this.stage(profile, snapshot);
             this.profileWarnings = snapshot.warnings();
+            return true;
+        } catch(final RuntimeException exception) {
+            this.operationError = this.message(exception);
+            return false;
+        }
+    }
+
+    public boolean useSettings() {
+        if(!this.canPersistDraft()) return false;
+
+        try {
+            this.campaignConfig.stageSnapshot(this.config, this.snapshotEntry, this.sourceProfileId, this.draftSnapshot);
+            this.config.setConfig(this.seedEntry, this.draftSeed);
+            this.startingSnapshot = this.draftSnapshot;
+            this.startingSeed = this.draftSeed;
+            this.operationError = null;
+            this.stagedForReload = true;
             return true;
         } catch(final RuntimeException exception) {
             this.operationError = this.message(exception);

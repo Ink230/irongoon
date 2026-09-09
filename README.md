@@ -75,6 +75,16 @@ For option names, modes, and examples, see the [Config Reference](https://github
 
 Addition and Dragoon-spell randomization are currently found in the Latest Irongoon Future build.
 
+## Future preset integration
+
+This branch requires SC `main.spike-testing`, including the `config-presets-fixes` APIs for shared preset names, modified state, and detached drafts. Registry-based selectors before campaign start also require `load-registries-for-mod-menus` (#2793). Use the matching Future bundle; an engine JAR from unmodified SC `main` is insufficient.
+
+When Irongoon is loaded, SC's built-in preset list includes **Irongoon (Blueprint)**. This read-only preset embeds all current Blueprint settings from the shipped schema, independently of local YAML profiles. Use SC's **Add** action with it selected to create an editable copy, then edit Irongoon through the mod options menu. The built-in preset leaves the random campaign seed unset; saved user presets can capture a seed, and a fixed `publicSeed` with `useRandomSeedOnNewCampaign: FALSE` remains supported. No additional SC preset discovery change or `.dpre` installation step is required.
+
+In Irongoon's config menu, **Active Configuration** is the SC preset currently being edited. It is marked **(Modified)** when SC settings differ from that preset or when Irongoon has local, uncommitted edits. **Use settings** stages Irongoon edits in that configuration without writing a YAML file; when editing an SC preset, return to SC's preset editor and confirm its save prompt to persist them. Declining that prompt discards the preset draft and its original preset identity returns.
+
+**Load YAML Profile** is separate: it shows **Choose a profile...** when files are available, or a disabled **No YAML profiles found** when none exist. Loading one stages its settings without claiming that a YAML file is the active SC preset. **Save YAML Profile**, **Save YAML As...**, and **Rename YAML Profile** remain explicit file operations; the YAML File / Source row identifies their target. New campaigns use staged settings on start; existing campaigns use them after saving and reloading.
+
 # Game data sources
 
 Game data provides the starting values that your randomizer settings transform. Irongoon selects a source separately for each dataset:
@@ -97,6 +107,17 @@ Some rules are currently impossible, not implemented, or need further discussion
 # Contributing
 
 Anyone is welcome to contribute via Pull Requests or ideas on [Discord](https://discord.gg/legendofdragoon).
+
+## Manual preset checks
+
+Use the matching SC `main.spike-testing` build with `config-presets-fixes` and `load-registries-for-mod-menus` (#2793) for these checks:
+
+1. Load Irongoon and open new campaign setup. Confirm **Irongoon (Blueprint)** appears in the preset list. Select it, open Irongoon's configuration, and check the character, element, item, and equipment selectors
+2. In SC's preset editor, select **Irongoon (Blueprint)** and choose **Add**. Name the copy, open Irongoon, change a setting and campaign seed, choose **Use settings**, then confirm SC's save prompt. Reopen the preset and confirm both values remain
+3. Edit that saved preset again, change a setting, and choose **Use settings**, but decline SC's save prompt. Reopen it and confirm the previously saved value remains. Neither operation should create or overwrite a YAML profile
+4. Select the saved preset and start a campaign. Confirm its configured behavior, save, and reload. Open Irongoon from the in-game mod options, change a setting, choose **Use settings**, then save and reload again. Changes retain their documented lifecycle; new-campaign-only settings do not retroactively change an existing campaign
+5. Select an SC preset with Irongoon settings. In Irongoon, confirm **Active Configuration** shows that SC preset and the YAML loader shows **Choose a profile...** or **No YAML profiles found**. Change an SC setting and reopen Irongoon: the active name is marked **(Modified)**. Revert or cancel the SC draft and confirm the original preset name returns
+6. In new-campaign setup, change an Irongoon setting: **Active Configuration** is immediately marked **(Modified)**. Choose **Use settings** without saving the SC preset and confirm the active name remains modified. Save the preset, reopen it, and confirm it is clean. Load a YAML profile and confirm it appears only as the YAML file/source, never as the active SC preset
 
 # Credits / Resources
 

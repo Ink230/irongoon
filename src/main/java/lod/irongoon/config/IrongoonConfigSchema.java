@@ -1,5 +1,6 @@
 package lod.irongoon.config;
 
+import lod.irongoon.config.presets.IrongoonBlueprint;
 import lod.irongoon.data.*;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -15,157 +16,6 @@ import org.yaml.snakeyaml.Yaml;
  * therefore deliberately follows the shipped blueprint rather than Java field order.
  */
 public final class IrongoonConfigSchema {
-    private static final String BLUEPRINT_YAML = """
-# Seed
-publicSeed: 2F055604
-
-# Additions
-additionUnlocks: RANDOMIZE_SEQUENCE
-additionUnlockLevelLowerBound: 2
-additionUnlockLevelUpperBound: 30
-additionBaseStats: RANDOMIZE_BOUNDS
-additionRandomizeDamage: TRUE
-additionDamageLowerPercentBound: 50
-additionDamageUpperPercentBound: 150
-additionRandomizeSp: TRUE
-additionSpLowerPercentBound: 50
-additionSpUpperPercentBound: 250
-additionLevelScaling: RANDOMIZE_BOUNDS
-additionRandomizeDamageScaling: TRUE
-additionDamageScalingLowerPercentBound: 50
-additionDamageScalingUpperPercentBound: 150
-additionRandomizeSpScaling: TRUE
-additionSpScalingLowerPercentBound: 50
-additionSpScalingUpperPercentBound: 250
-additionHitTiming: STOCK
-additionHitTimingLowerPercentBound: 50
-additionHitTimingUpperPercentBound: 150
-additionElements: RANDOMIZE
-additionNoElement: FALSE
-additionStatuses: RANDOMIZE
-additionStatusChanceLowerBound: 35
-additionStatusChanceUpperBound: 100
-additionStatusAllowPetrify: TRUE
-additionStatusAllowBewitch: TRUE
-additionStatusAllowConfuse: TRUE
-additionStatusAllowFear: TRUE
-additionStatusAllowStun: TRUE
-additionStatusAllowWeaponBlock: TRUE
-additionStatusAllowDispirit: TRUE
-additionStatusAllowPoison: TRUE
-# Characters
-bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
-bodyTotalStatsBounds: STOCK
-bodyTotalStatsDistributionPerLevel: RANDOM
-hpStatPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
-hpStatUpperPercentBound: 150
-hpStatLowerPercentBound: 75
-speedStatPerLevel: RANDOMIZE_BOUNDS
-speedStatUpperPercentBound: 150
-speedStatLowerPercentBound: 30
-characterElements: RANDOM_CAMPAIGN
-characterNoElement: FALSE
-characterElementOverride: [] # positional (ex dart first): ["skip", "fire", "water", "wind", "earth", "dark", "light", "thunder", "noelement", "divine"]
-# Party
-enableAllCharacters: PERMANENTLY # only works on new campaign start
-battleParty: RANDOM_BATTLE
-battlePartyOverride: [] # slot0: rose, slot1: meru, slot2: randomized would be ex: [3, 6]
-battlePartySize: 3
-battlePartyPool: [] # list of char ids to randomize from ex: [4,0,2,5], empty is all available
-battlePartyDuplicates: TRUE
-# Dragoons
-enableAllDragoons: PERMANENTLY # only works on new campaign start
-dragoonTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
-dragoonStatsBounds: STOCK
-dragoonTotalStatsDistributionPerLevel: RANDOM
-dragoonElements: RANDOM_CAMPAIGN
-dragoonNoElement: FALSE
-dragoonElementOverride: [] # positional by character id; built-in aliases or full registry ids such as mod_id:element_id
-dragoonSpellUnlocks: RANDOMIZE_SEQUENCE
-dragoonSpellRandomizationPool: GLOBAL
-dragoonSpellStats: RANDOMIZE_BOUNDS
-dragoonSpellRandomizePower: TRUE
-dragoonSpellPowerLowerPercentBound: 50
-dragoonSpellPowerUpperPercentBound: 250
-dragoonSpellMpCosts: RANDOM_CAMPAIGN_CHARACTER
-dragoonSpellMpCostLowerBound: 5
-dragoonSpellMpCostUpperBound: 120
-dragoonSpellRandomizeAccuracy: FALSE
-dragoonSpellAccuracyLowerBound: 90
-dragoonSpellAccuracyUpperBound: 100
-dragoonSpellRandomizeStatusChance: TRUE
-dragoonSpellStatusChanceLowerBound: 35
-dragoonSpellStatusChanceUpperBound: 100
-dragoonSpellElements: SHUFFLE
-dragoonSpellNoElement: FALSE
-dragoonSpellEffects: RANDOMIZE_INDEPENDENT
-dragoonSpellAllowDamage: TRUE
-dragoonSpellAllowHealHp: TRUE
-dragoonSpellAllowRestoreMp: TRUE
-dragoonSpellAllowRestoreSp: TRUE
-dragoonSpellAllowRevive: TRUE
-dragoonSpellAllowCleanse: TRUE
-dragoonSpellAllowDrainHp: TRUE
-dragoonSpellAllowDrainMp: TRUE
-dragoonSpellAllowDrainSp: TRUE
-dragoonSpellAllowStatus: TRUE
-dragoonSpellAllowBuff: TRUE
-dragoonSpellAllowDebuff: TRUE
-dragoonSpellAllowRegenHp: TRUE
-dragoonSpellAllowRegenMp: TRUE
-dragoonSpellAllowRegenSp: TRUE
-# Monsters
-monsterTotalStatsPerLevel: RANDOMIZE_BOUNDS
-totalStatsMonstersUpperPercentBound: 150
-totalStatsMonstersLowerPercentBound: 50
-monsterDefenseFloor: 50
-monsterMagicDefenseFloor: 50
-hpStatMonsters: RANDOMIZE_BOUNDS
-hpStatMonstersUpperPercentBound: 150
-hpStatMonstersLowerPercentBound: 50
-speedStatMonsters: RANDOMIZE_BOUNDS
-speedStatMonstersUpperBound: 70
-speedStatMonstersLowerBound: 30
-statsVarianceMonsters: RANDOM_PERCENT_BOUNDS
-monsterElements: RANDOMIZE
-noElementMonsters: EXCLUDE
-# Shops
-shopAvailability: STOCK
-shopQuantity: RANDOMIZE_BOUNDS
-shopQuantityUpperBound: 8
-shopQuantityLowerBound: 1
-shopQuantityLogic: RESPECT_SHOP_CONTENTS
-shopContents: RANDOMIZE_ALL
-shopContentsItemPool: []
-shopContentsEquipmentPool: []
-shopContentsRecalled: [
-  "lod:sachet", "lod:enemy_healing_potion", "lod:psyche_bomb",
-  "lod:psyche_bomb_x", "lod:soul_eater", "lod:ultimate_wargod",
-  "lod:legend_casque", "lod:armor_of_legend", "lod:phantom_shield"
-]
-shopDuplicates: NONE
-# Chests
-# Drops
-# Items
-itemCarryLimit: 2
-# Enemies
-# Sound
-# Data sources
-csvDataOverrides: FALSE
-# Options
-# Custom
-# Scaling
-# Additions
-# Randomizer
-useRandomSeedOnNewCampaign: TRUE
-# Encounters
-battleStage: RANDOM
-battleStageList: []
-battleMusic: RANDOM
-escapeChance: RANDOMIZE_BOUNDS
-escapeChanceUpperBound: 99
-escapeChanceLowerBound: 1
-        """;
     public enum Section {
         GENERAL, ADDITIONS, CHARACTER_STATS, CHARACTER_ELEMENTS, PARTY, DRAGOON_STATS, DRAGOON_ACCESS_AND_ELEMENTS, DRAGOON_SPELLS, MONSTER_STATS_AND_ELEMENTS, SHOPS, ITEMS, ENCOUNTERS
     }
@@ -489,7 +339,7 @@ escapeChanceLowerBound: 1
 
     @SuppressWarnings("unchecked")
     private static Map<String, Object> loadBlueprint() {
-        final Object document = new Yaml().load(BLUEPRINT_YAML);
+        final Object document = new Yaml().load(IrongoonBlueprint.YAML);
         if(!(document instanceof Map<?, ?> raw)) throw new IllegalStateException("Irongoon config blueprint is not a YAML mapping");
         final Map<String, Object> values = new LinkedHashMap<>();
         for(final var entry : raw.entrySet()) values.put((String) entry.getKey(), entry.getValue());
