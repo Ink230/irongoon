@@ -49,8 +49,9 @@ jobs:
       - name: Build SC dependency
         working-directory: sc
         env:
-          GITHUB_SHA: ${{ steps.metadata.outputs.sc_sha }}
-        run: ./gradlew --no-daemon assemble -Pos=linux -Parch=x86_64
+          SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
+        # The runner supplies reserved GITHUB_* variables after YAML env values.
+        run: env GITHUB_SHA="$SC_SHA" ./gradlew --no-daemon assemble -Pos=linux -Parch=x86_64
       - name: Build shaded Irongoon JAR
         env:
           SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
@@ -114,8 +115,8 @@ jobs:
       - name: Build SC platform distribution
         working-directory: sc
         env:
-          GITHUB_SHA: ${{ needs.mod.outputs.sc_sha }}
-        run: ./gradlew --no-daemon assemble -Pos=${{ matrix.os }} -Parch=${{ matrix.arch }} -Psteamdeck=${{ matrix.steamdeck }}
+          SC_SHA: ${{ needs.mod.outputs.sc_sha }}
+        run: env GITHUB_SHA="$SC_SHA" ./gradlew --no-daemon assemble -Pos=${{ matrix.os }} -Parch=${{ matrix.arch }} -Psteamdeck=${{ matrix.steamdeck }}
       - name: Package and verify bundle
         run: python .github/scripts/package_bundles.py bundle --sc sc --sha "${{ needs.mod.outputs.sc_sha }}" --platform "${{ matrix.platform }}"
       - uses: actions/upload-artifact@v4
