@@ -33,6 +33,33 @@ See the [Wiki Config Reference](https://github.com/Ink230/irongoon/wiki/Config-R
 - Use a stable release with the SC version specified in its release notes; the rolling Latest and Future builds are prereleases
 - SC RB3 compatibility: the pinned Irongoon version is still TBD
 
+# Visuals
+
+<img width="2554" height="1380" alt="image" src="https://github.com/user-attachments/assets/b2d4c1e5-568d-43c9-af06-aca6782f5841" />
+<details>
+  <summary>Expand more battle screens</summary>
+  <img width="2554" height="1377" alt="image" src="https://github.com/user-attachments/assets/94797625-cc86-4ac2-8b59-5d82171d8668" />
+  <img width="2555" height="1384" alt="image" src="https://github.com/user-attachments/assets/b58cded0-616f-4f11-95cf-a47ffd6973c6" />
+</details>
+
+<img width="1922" height="1373" alt="image" src="https://github.com/user-attachments/assets/5dcc7961-a835-42b7-bdbd-dabd08dba09a" />
+<details>
+  <summary>Expand more character stats</summary>
+
+  <img width="1929" height="1362" alt="image" src="https://github.com/user-attachments/assets/76951e6b-b9b1-459b-84d3-a850f670aef5" />
+  <img width="1923" height="1365" alt="image" src="https://github.com/user-attachments/assets/82c66e94-6f2a-4953-95aa-48ded169533c" />
+</details>
+
+
+<img width="1903" height="1373" alt="image" src="https://github.com/user-attachments/assets/02a24d45-22d7-4324-8271-dfe77d1f42e9" />
+<details>
+  <summary>Expand more menu settings</summary>
+  
+  <img width="1903" height="1369" alt="image" src="https://github.com/user-attachments/assets/fd2c5ba9-42ec-4f80-a364-05d0f2df22b6" />
+  <img width="1903" height="1370" alt="image" src="https://github.com/user-attachments/assets/1ef4859b-d439-4e23-8b9b-8ebab41f3732" />
+  <img width="1903" height="1372" alt="image" src="https://github.com/user-attachments/assets/fb0688e2-59c5-4b34-beb7-4a186deaae3c" />
+</details>
+
 # Irongoon Settings
 
 Customize individual randomization options in-game or load a YAML profile. On current `main`, settings are selected in this order:
