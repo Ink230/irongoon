@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" name="Severed Chains Updater" monitorInterval="5">
+  <Appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t %c:%L] %highlight{%-5level}: %msg%n%throwable" />
+    </Console>
+    <File name="file" fileName="debug-updater.log" immediateFlush="false" append="false">
+      <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t %c:%L] %-5level: %msg%n%throwable"/>
+    </File>
+  </Appenders>
+  <Loggers>
+    <Root level="info" additivity="false">
+      <AppenderRef ref="console"/>
+      <AppenderRef ref="file"/>
+    </Root>
+  </Loggers>
+</Configuration>
