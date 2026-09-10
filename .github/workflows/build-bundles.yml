@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: irongoon-future-${{ github.event_name == 'push' && 'publish' || github.ref }}
+  group: irongoon-future-${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && 'publish' || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
@@ -169,7 +169,7 @@ jobs:
   publish:
     name: Update future prerelease
     needs: [mod, platforms]
-    if: ${{ !cancelled() && needs.mod.result == 'success' && needs.platforms.result == 'success' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main.future') }}
+    if: ${{ !cancelled() && needs.mod.result == 'success' && needs.platforms.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main.future') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -208,6 +208,6 @@ jobs:
 
           SC's standard JDK setup and upstream development updater remain enabled. An SC update can replace spike-testing engine changes; it preserves mods but does not update Irongoon.
 
-          These assets are replaced after successful main or main.future builds. Manual version-tag releases remain separate.
+          These assets are replaced after successful push or manual builds on main or main.future. Manual version-tag releases remain separate.
           EOF
           bash .github/scripts/publish_prerelease.sh
