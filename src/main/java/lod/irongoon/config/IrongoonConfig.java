@@ -74,6 +74,39 @@ public class IrongoonConfig {
     public DragoonElements dragoonElements;
     public boolean dragoonNoElement;
     public List<String> dragoonElementOverride;
+    public DragoonSpellUnlocks dragoonSpellUnlocks;
+    public DragoonSpellRandomizationPool dragoonSpellRandomizationPool;
+    public DragoonSpellStats dragoonSpellStats;
+    public boolean dragoonSpellRandomizePower;
+    public int dragoonSpellPowerLowerPercentBound;
+    public int dragoonSpellPowerUpperPercentBound;
+    public DragoonSpellMpCosts dragoonSpellMpCosts;
+    public int dragoonSpellMpCostLowerBound;
+    public int dragoonSpellMpCostUpperBound;
+    public boolean dragoonSpellRandomizeAccuracy;
+    public int dragoonSpellAccuracyLowerBound;
+    public int dragoonSpellAccuracyUpperBound;
+    public boolean dragoonSpellRandomizeStatusChance;
+    public int dragoonSpellStatusChanceLowerBound;
+    public int dragoonSpellStatusChanceUpperBound;
+    public DragoonSpellElements dragoonSpellElements;
+    public boolean dragoonSpellNoElement;
+    public DragoonSpellEffects dragoonSpellEffects;
+    public boolean dragoonSpellAllowDamage;
+    public boolean dragoonSpellAllowHealHp;
+    public boolean dragoonSpellAllowRestoreMp;
+    public boolean dragoonSpellAllowRestoreSp;
+    public boolean dragoonSpellAllowRevive;
+    public boolean dragoonSpellAllowCleanse;
+    public boolean dragoonSpellAllowDrainHp;
+    public boolean dragoonSpellAllowDrainMp;
+    public boolean dragoonSpellAllowDrainSp;
+    public boolean dragoonSpellAllowStatus;
+    public boolean dragoonSpellAllowBuff;
+    public boolean dragoonSpellAllowDebuff;
+    public boolean dragoonSpellAllowRegenHp;
+    public boolean dragoonSpellAllowRegenMp;
+    public boolean dragoonSpellAllowRegenSp;
     public EnableAllCharacters enableAllCharacters;
     public BattleParty battleParty;
     public List<Integer> battlePartyOverride;
@@ -107,6 +140,40 @@ public class IrongoonConfig {
         this.shopContentsEquipmentPool = this.shopContentsEquipmentPool.stream()
             .filter(entry -> !this.shopContentsRecalled.contains(entry))
             .collect(Collectors.toList());
+        this.validateDragoonSpellConfig();
     }
 
+    private void validateDragoonSpellConfig() {
+        this.validateBounds("dragoonSpellPowerPercent", this.dragoonSpellPowerLowerPercentBound, this.dragoonSpellPowerUpperPercentBound, 0, Integer.MAX_VALUE);
+        this.validateBounds("dragoonSpellMpCost", this.dragoonSpellMpCostLowerBound, this.dragoonSpellMpCostUpperBound, 0, Integer.MAX_VALUE);
+        this.validateBounds("dragoonSpellAccuracy", this.dragoonSpellAccuracyLowerBound, this.dragoonSpellAccuracyUpperBound, 0, 100);
+        this.validateBounds("dragoonSpellStatusChance", this.dragoonSpellStatusChanceLowerBound, this.dragoonSpellStatusChanceUpperBound, 0, 100);
+
+        if(this.dragoonSpellEffects != DragoonSpellEffects.STOCK && this.dragoonSpellEffects != DragoonSpellEffects.RANDOMIZE_RAW && !this.hasSafeDragoonSpellEffect()) {
+            throw new IllegalStateException("Dragoon spell effect configuration cannot produce a living-target spell; enable damage, healing, restore, cleanse, drain, status, buff, debuff, or regeneration");
+        }
+    }
+
+    private void validateBounds(final String name, final int lower, final int upper, final int minimum, final int maximum) {
+        if(lower < minimum || upper > maximum || lower > upper) {
+            throw new IllegalStateException(name + " bounds must satisfy " + minimum + " <= lower <= upper <= " + maximum + "; received " + lower + " to " + upper);
+        }
+    }
+
+    private boolean hasSafeDragoonSpellEffect() {
+        return this.dragoonSpellAllowDamage
+            || this.dragoonSpellAllowHealHp
+            || this.dragoonSpellAllowRestoreMp
+            || this.dragoonSpellAllowRestoreSp
+            || this.dragoonSpellAllowCleanse
+            || this.dragoonSpellAllowDrainHp
+            || this.dragoonSpellAllowDrainMp
+            || this.dragoonSpellAllowDrainSp
+            || this.dragoonSpellAllowStatus
+            || this.dragoonSpellAllowBuff
+            || this.dragoonSpellAllowDebuff
+            || this.dragoonSpellAllowRegenHp
+            || this.dragoonSpellAllowRegenMp
+            || this.dragoonSpellAllowRegenSp;
+    }
 }
