@@ -19,6 +19,40 @@ public final class IrongoonConfigSchema {
 # Seed
 publicSeed: 2F055604
 
+# Additions
+additionUnlocks: RANDOMIZE_SEQUENCE
+additionUnlockLevelLowerBound: 2
+additionUnlockLevelUpperBound: 30
+additionBaseStats: RANDOMIZE_BOUNDS
+additionRandomizeDamage: TRUE
+additionDamageLowerPercentBound: 50
+additionDamageUpperPercentBound: 150
+additionRandomizeSp: TRUE
+additionSpLowerPercentBound: 50
+additionSpUpperPercentBound: 250
+additionLevelScaling: RANDOMIZE_BOUNDS
+additionRandomizeDamageScaling: TRUE
+additionDamageScalingLowerPercentBound: 50
+additionDamageScalingUpperPercentBound: 150
+additionRandomizeSpScaling: TRUE
+additionSpScalingLowerPercentBound: 50
+additionSpScalingUpperPercentBound: 250
+additionHitTiming: STOCK
+additionHitTimingLowerPercentBound: 50
+additionHitTimingUpperPercentBound: 150
+additionElements: RANDOMIZE
+additionNoElement: FALSE
+additionStatuses: RANDOMIZE
+additionStatusChanceLowerBound: 35
+additionStatusChanceUpperBound: 100
+additionStatusAllowPetrify: TRUE
+additionStatusAllowBewitch: TRUE
+additionStatusAllowConfuse: TRUE
+additionStatusAllowFear: TRUE
+additionStatusAllowStun: TRUE
+additionStatusAllowWeaponBlock: TRUE
+additionStatusAllowDispirit: TRUE
+additionStatusAllowPoison: TRUE
 # Characters
 bodyTotalStatsPerLevel: RANDOMIZE_BOUNDS_PER_LEVEL
 bodyTotalStatsBounds: STOCK
@@ -88,6 +122,7 @@ csvDataOverrides: FALSE
 # Options
 # Custom
 # Scaling
+# Additions
 # Randomizer
 useRandomSeedOnNewCampaign: TRUE
 # Encounters
@@ -99,7 +134,7 @@ escapeChanceUpperBound: 99
 escapeChanceLowerBound: 1
         """;
     public enum Section {
-        GENERAL, CHARACTER_STATS, CHARACTER_ELEMENTS, PARTY, DRAGOON_STATS, DRAGOON_ACCESS_AND_ELEMENTS, MONSTER_STATS_AND_ELEMENTS, SHOPS, ITEMS, ENCOUNTERS
+        GENERAL, ADDITIONS, CHARACTER_STATS, CHARACTER_ELEMENTS, PARTY, DRAGOON_STATS, DRAGOON_ACCESS_AND_ELEMENTS, MONSTER_STATS_AND_ELEMENTS, SHOPS, ITEMS, ENCOUNTERS
     }
 
     public enum ControlKind {
@@ -148,7 +183,7 @@ escapeChanceLowerBound: 1
     ) {}
     public static final List<String> KEYS = List.of(("""
         publicSeed,useRandomSeedOnNewCampaign,csvDataOverrides,
-
+        additionUnlocks,additionUnlockLevelLowerBound,additionUnlockLevelUpperBound,additionBaseStats,additionRandomizeDamage,additionDamageLowerPercentBound,additionDamageUpperPercentBound,additionRandomizeSp,additionSpLowerPercentBound,additionSpUpperPercentBound,additionLevelScaling,additionRandomizeDamageScaling,additionDamageScalingLowerPercentBound,additionDamageScalingUpperPercentBound,additionRandomizeSpScaling,additionSpScalingLowerPercentBound,additionSpScalingUpperPercentBound,additionHitTiming,additionHitTimingLowerPercentBound,additionHitTimingUpperPercentBound,additionElements,additionNoElement,additionStatuses,additionStatusChanceLowerBound,additionStatusChanceUpperBound,additionStatusAllowPetrify,additionStatusAllowBewitch,additionStatusAllowConfuse,additionStatusAllowFear,additionStatusAllowStun,additionStatusAllowWeaponBlock,additionStatusAllowDispirit,additionStatusAllowPoison,
         bodyTotalStatsPerLevel,bodyTotalStatsBounds,bodyTotalStatsDistributionPerLevel,hpStatPerLevel,hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatPerLevel,speedStatUpperPercentBound,speedStatLowerPercentBound,characterElements,characterNoElement,characterElementOverride,enableAllCharacters,battleParty,battlePartyOverride,battlePartySize,battlePartyPool,battlePartyDuplicates,
         enableAllDragoons,dragoonTotalStatsPerLevel,dragoonStatsBounds,dragoonTotalStatsDistributionPerLevel,dragoonElements,dragoonNoElement,dragoonElementOverride,
         monsterTotalStatsPerLevel,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonsters,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonsters,speedStatMonstersUpperBound,speedStatMonstersLowerBound,statsVarianceMonsters,monsterElements,noElementMonsters,
@@ -156,10 +191,10 @@ escapeChanceLowerBound: 1
         """).replaceAll("\\s", "").split(","));
     public static final Set<String> KEY_SET = Set.copyOf(new LinkedHashSet<>(KEYS));
     public static final Set<String> BOOLEAN_KEYS = Set.of(("""
-        useRandomSeedOnNewCampaign,csvDataOverrides,characterNoElement,battlePartyDuplicates,dragoonNoElement,
+        useRandomSeedOnNewCampaign,csvDataOverrides,additionRandomizeDamage,additionRandomizeSp,additionRandomizeDamageScaling,additionRandomizeSpScaling,additionNoElement,additionStatusAllowPetrify,additionStatusAllowBewitch,additionStatusAllowConfuse,additionStatusAllowFear,additionStatusAllowStun,additionStatusAllowWeaponBlock,additionStatusAllowDispirit,additionStatusAllowPoison,characterNoElement,battlePartyDuplicates,dragoonNoElement,
         """).replaceAll("\\s", "").split(","));
     public static final Set<String> INTEGER_KEYS = Set.of(("""
-        hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatUpperPercentBound,speedStatLowerPercentBound,battlePartySize,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonstersUpperBound,speedStatMonstersLowerBound,shopQuantityUpperBound,shopQuantityLowerBound,itemCarryLimit,escapeChanceUpperBound,escapeChanceLowerBound
+        additionUnlockLevelLowerBound,additionUnlockLevelUpperBound,additionDamageLowerPercentBound,additionDamageUpperPercentBound,additionSpLowerPercentBound,additionSpUpperPercentBound,additionDamageScalingLowerPercentBound,additionDamageScalingUpperPercentBound,additionSpScalingLowerPercentBound,additionSpScalingUpperPercentBound,additionHitTimingLowerPercentBound,additionHitTimingUpperPercentBound,additionStatusChanceLowerBound,additionStatusChanceUpperBound,hpStatUpperPercentBound,hpStatLowerPercentBound,speedStatUpperPercentBound,speedStatLowerPercentBound,battlePartySize,totalStatsMonstersUpperPercentBound,totalStatsMonstersLowerPercentBound,monsterDefenseFloor,monsterMagicDefenseFloor,hpStatMonstersUpperPercentBound,hpStatMonstersLowerPercentBound,speedStatMonstersUpperBound,speedStatMonstersLowerBound,shopQuantityUpperBound,shopQuantityLowerBound,itemCarryLimit,escapeChanceUpperBound,escapeChanceLowerBound
         """).replaceAll("\\s", "").split(","));
     public static final Set<String> INTEGER_LIST_KEYS = Set.of("battlePartyOverride", "battlePartyPool", "battleStageList");
     public static final Set<String> STRING_LIST_KEYS = Set.of("characterElementOverride", "dragoonElementOverride", "shopContentsItemPool", "shopContentsEquipmentPool", "shopContentsRecalled");
@@ -168,9 +203,9 @@ escapeChanceLowerBound: 1
     private static final Map<String, Setting> SETTINGS = buildSettings();
 
     static {
-        if(KEYS.size() != 59 || KEY_SET.size() != 59) throw new IllegalStateException("Irongoon config schema must contain exactly 59 unique keys");
-        if(BLUEPRINT_VALUES.size() != 59 || !BLUEPRINT_VALUES.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config blueprint must contain every canonical setting exactly once");
-        if(SETTINGS.size() != 59 || !SETTINGS.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config metadata must contain every canonical setting exactly once");
+        if(KEYS.size() != 92 || KEY_SET.size() != 92) throw new IllegalStateException("Irongoon config schema must contain exactly 92 unique keys");
+        if(BLUEPRINT_VALUES.size() != 92 || !BLUEPRINT_VALUES.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config blueprint must contain every canonical setting exactly once");
+        if(SETTINGS.size() != 92 || !SETTINGS.keySet().equals(KEY_SET)) throw new IllegalStateException("Irongoon config metadata must contain every canonical setting exactly once");
     }
 
     private IrongoonConfigSchema() {}
@@ -202,6 +237,7 @@ escapeChanceLowerBound: 1
     }
 
     private static Section section(final String key) {
+        if(key.startsWith("addition")) return Section.ADDITIONS;
         if(key.equals("enableAllDragoons") || key.equals("dragoonElements") || key.equals("dragoonNoElement") || key.equals("dragoonElementOverride")) return Section.DRAGOON_ACCESS_AND_ELEMENTS;
         if(key.startsWith("dragoon")) return Section.DRAGOON_STATS;
         if(key.startsWith("monster") || key.startsWith("hpStatMonsters") || key.startsWith("speedStatMonsters") || key.startsWith("totalStatsMonsters") || key.startsWith("statsVariance") || key.startsWith("noElementMonsters")) return Section.MONSTER_STATS_AND_ELEMENTS;
@@ -330,6 +366,11 @@ escapeChanceLowerBound: 1
 
     private static Class<? extends Enum<?>> enumType(final String key) {
         return switch(key) {
+            case "additionUnlocks" -> AdditionUnlocks.class;
+            case "additionBaseStats", "additionLevelScaling" -> AdditionValueMode.class;
+            case "additionHitTiming" -> AdditionHitTiming.class;
+            case "additionElements" -> AdditionElements.class;
+            case "additionStatuses" -> AdditionStatuses.class;
             case "bodyTotalStatsPerLevel", "dragoonTotalStatsPerLevel" -> TotalStatsPerLevel.class;
             case "bodyTotalStatsBounds", "dragoonStatsBounds" -> TotalStatsBounds.class;
             case "bodyTotalStatsDistributionPerLevel", "dragoonTotalStatsDistributionPerLevel" -> TotalStatsDistributionPerLevel.class;
@@ -360,12 +401,14 @@ escapeChanceLowerBound: 1
 
     private static Integer minimum(final String key) {
         if(!INTEGER_KEYS.contains(key)) return null;
+        if(key.startsWith("additionUnlockLevel")) return 2;
         if(key.equals("battlePartySize")) return 1;
         return 0;
     }
 
     private static Integer maximum(final String key) {
         if(!INTEGER_KEYS.contains(key)) return null;
+        if(key.startsWith("additionUnlockLevel")) return 60;
         if(key.equals("battlePartySize")) return 3;
         if(key.contains("Accuracy") || key.contains("StatusChance") || key.startsWith("escapeChance")) return 100;
         if(key.startsWith("hpStat") || key.startsWith("speedStat") || key.startsWith("totalStatsMonsters")) return Integer.MAX_VALUE - 20;

@@ -230,6 +230,13 @@ public final class IrongoonConfigCodec {
     }
 
     private static void validate(final Map<String, Object> values, final String source) {
+        validateRange(values, source, "additionUnlockLevelLowerBound", "additionUnlockLevelUpperBound", 2, 60);
+        validateRange(values, source, "additionDamageLowerPercentBound", "additionDamageUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionSpLowerPercentBound", "additionSpUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionDamageScalingLowerPercentBound", "additionDamageScalingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionSpScalingLowerPercentBound", "additionSpScalingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionHitTimingLowerPercentBound", "additionHitTimingUpperPercentBound", 0, MAX_RANDOM_PERCENT_BOUND);
+        validateRange(values, source, "additionStatusChanceLowerBound", "additionStatusChanceUpperBound", 0, 100);
         validateRange(values, source, "hpStatLowerPercentBound", "hpStatUpperPercentBound", 0, Integer.MAX_VALUE - 20);
         validateRange(values, source, "speedStatLowerPercentBound", "speedStatUpperPercentBound", 0, Integer.MAX_VALUE - 20);
         validateRange(values, source, "totalStatsMonstersLowerPercentBound", "totalStatsMonstersUpperPercentBound", 0, Integer.MAX_VALUE - 20);
@@ -247,6 +254,7 @@ public final class IrongoonConfigCodec {
         if(values.containsKey("battleStageList")) for(final int stage : (List<Integer>) values.get("battleStageList")) if(stage < 0 || stage >= 95) throw new IllegalStateException(source + ": battleStageList entries must be between 0 and 94");
 
         validatePartyLists(values, source);
+        validateAllowedModes(values, source);
     }
 
     @SuppressWarnings("unchecked")
@@ -267,6 +275,24 @@ public final class IrongoonConfigCodec {
         }
     }
 
+    private static void validateAllowedModes(final Map<String, Object> values, final String source) {
+        if(AdditionStatuses.RANDOMIZE.name().equals(values.get("additionStatuses")) && !anyEnabled(values,
+            "additionStatusAllowPetrify", "additionStatusAllowBewitch", "additionStatusAllowConfuse", "additionStatusAllowFear",
+            "additionStatusAllowStun", "additionStatusAllowWeaponBlock", "additionStatusAllowDispirit", "additionStatusAllowPoison"
+        )) {
+            throw new IllegalStateException(source + ": addition status randomization requires at least one additionStatusAllow* entry");
+        }
+
+
+    }
+
+    private static boolean anyEnabled(final Map<String, Object> values, final String... keys) {
+        for(final String key : keys) {
+            if((Boolean) values.get(key)) return true;
+        }
+        return false;
+    }
+
     private static void validateRange(final Map<String, Object> values, final String source, final String lowerKey, final String upperKey, final int minimum, final int maximum) {
         if(!values.containsKey(lowerKey) || !values.containsKey(upperKey)) return;
         final int lower = (Integer) values.get(lowerKey);
@@ -277,6 +303,11 @@ public final class IrongoonConfigCodec {
     private static void validateEnum(final String key, final String value, final String source) {
         try {
             switch(key) {
+                case "additionUnlocks" -> AdditionUnlocks.valueOf(value);
+                case "additionBaseStats", "additionLevelScaling" -> AdditionValueMode.valueOf(value);
+                case "additionHitTiming" -> AdditionHitTiming.valueOf(value);
+                case "additionElements" -> AdditionElements.valueOf(value);
+                case "additionStatuses" -> AdditionStatuses.valueOf(value);
                 case "bodyTotalStatsPerLevel", "dragoonTotalStatsPerLevel" -> TotalStatsPerLevel.valueOf(value);
                 case "bodyTotalStatsBounds", "dragoonStatsBounds" -> TotalStatsBounds.valueOf(value);
                 case "bodyTotalStatsDistributionPerLevel", "dragoonTotalStatsDistributionPerLevel" -> TotalStatsDistributionPerLevel.valueOf(value);
