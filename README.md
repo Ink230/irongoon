@@ -71,6 +71,12 @@ Customize individual randomization options in-game or load a YAML profile. On cu
 
 In the in-game editor, **Use settings** applies your choices to the campaign; saving a profile makes those settings reusable. Editing a YAML file does not automatically replace settings already saved into a campaign. Older campaigns without a snapshot migrate from `config.yaml` first when that file exists.
 
+SC's preset list includes **Irongoon (Blueprint)**, which embeds the shipped defaults independently of local YAML profiles. Select it and use SC's **Add** action to create an editable copy. The built-in preset leaves the campaign seed unset so new campaigns use the current seed default.
+
+**Active Configuration** shows the SC preset being edited and marks it **(Modified)** when SC settings or unapplied Irongoon edits differ. **Use settings** stages the draft without writing YAML. When editing an SC preset, return to SC's editor and accept its save prompt to persist the draft; declining discards it. **Load YAML Profile** stages a profile's values, while **Save YAML Profile**, **Save YAML As...**, and **Rename YAML Profile** explicitly manage files.
+
+Preset integration uses SC #2811, now included in `main`. Registry-based selectors before campaign start still require the unmerged SC #2793, available in `main.spike-testing`; starting a campaign does not require that change.
+
 For option names, modes, and examples, see the [Config Reference](https://github.com/Ink230/irongoon/wiki/Config-Reference) and [Config Template](https://github.com/Ink230/irongoon/wiki/Config-Template).
 
 Addition and Dragoon-spell randomization are currently found in the Latest Irongoon Future build.

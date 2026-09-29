@@ -25,7 +25,7 @@ public final class IrongoonConfigPresets {
 
     public ConfigPresetEntry blueprint(final ConfigEntry<String> snapshotEntry) {
         final IrongoonConfigSnapshot snapshot = IrongoonConfigCodec.fromValues("Blueprint", IrongoonConfigSchema.blueprintValues());
-        final ConfigCollection config = new ConfigCollection();
+        final ConfigCollection config = new ConfigCollection(false);
         config.setConfig(snapshotEntry, IrongoonConfigPayload.fromSnapshot(IrongoonConfigProfile.blueprint(), snapshot).encode());
 
         // Leave the campaign seed unset so new campaigns use the current seed entry default.
