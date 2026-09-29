@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  SC_REPOSITORY: Legend-of-Dragoon-Modding/Severed-Chains
+  SC_REPOSITORY: Ink230/Legend-of-Dragoon-Java
   SC_REF: main.spike-testing
 
 jobs:
