@@ -79,10 +79,19 @@ public final class IrongoonCampaignConfig {
         final IrongoonConfigProfile profile,
         final IrongoonConfigSnapshot snapshot
     ) {
-        this.validate(snapshot);
-        final String payload = IrongoonConfigPayload.fromSnapshot(profile, snapshot).encode();
-        configCollection.setConfig(snapshotEntry, payload);
+        this.stageSnapshot(configCollection, snapshotEntry, profile.filename(), snapshot);
         configCollection.setConfig(rememberedProfileEntry, profile.filename());
+    }
+
+    public void stageSnapshot(
+        final ConfigCollection configCollection,
+        final ConfigEntry<String> snapshotEntry,
+        final String sourceProfileId,
+        final IrongoonConfigSnapshot snapshot
+    ) {
+        this.validate(snapshot);
+        final String payload = new IrongoonConfigPayload(1, sourceProfileId, IrongoonConfigCodec.serializeCanonical(snapshot)).encode();
+        configCollection.setConfig(snapshotEntry, payload);
     }
 
     public IrongoonConfigPayload payload(final ConfigCollection configCollection, final ConfigEntry<String> snapshotEntry) {

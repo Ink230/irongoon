@@ -34,6 +34,7 @@ import legend.game.modding.events.worldmap.WorldMapEncounterEvent;
 import legend.game.saves.*;
 import lod.irongoon.config.IrongoonCampaignConfig;
 import lod.irongoon.config.IrongoonConfig;
+import lod.irongoon.config.presets.IrongoonConfigPresets;
 import lod.irongoon.config.IrongoonSnapshotConfigEntry;
 import lod.irongoon.config.SeedConfigEntry;
 import lod.irongoon.registries.IrongoonEquipment;
@@ -89,6 +90,11 @@ public class Irongoon {
     @EventListener
     public void gameConfig(final ConfigRegistryEvent event) {
         CONFIG_REGISTRAR.registryEvent(event);
+    }
+
+    @EventListener
+    public void configPresets(final ConfigDefaultPresetsEvent event) {
+        event.presetEntries.add(IrongoonConfigPresets.getInstance().blueprint(IRONGOON_CONFIG_SNAPSHOT.get()));
     }
 
     @EventListener(priority = Priority.LOW)
