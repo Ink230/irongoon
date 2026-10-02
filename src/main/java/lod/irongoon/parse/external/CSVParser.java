@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 
 public class CSVParser implements DataParser {
@@ -16,9 +17,17 @@ public class CSVParser implements DataParser {
 
     private CSVParser() {}
 
-    public List<String[]> load(String filePath) {
+    public List<String[]> load(final String filePath) {
         try (FileReader fileReader = new FileReader(filePath);
              CSVReader csv = new CSVReader(fileReader)) {
+            return csv.readAll();
+        } catch (IOException | CsvException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public List<String[]> load(final Reader reader) {
+        try (CSVReader csv = new CSVReader(reader)) {
             return csv.readAll();
         } catch (IOException | CsvException exception) {
             throw new RuntimeException(exception);

@@ -199,6 +199,17 @@ sourceSets {
   }
 }
 
+processResources {
+  from("mods/irongoon/irongoon-data") {
+    include "scdk-addition-stats.csv"
+    include "scdk-addition-unlock-levels.csv"
+    include "scdk-character-stats.csv"
+    include "scdk-dragoon-stats.csv"
+    include "scdk-monster-stats.csv"
+    into "irongoon-data"
+  }
+}
+
 shadowJar {
     configurations = [project.configurations.irongoonShadow]
 }

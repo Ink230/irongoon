@@ -15,23 +15,27 @@ public final class DataTableSourceResolver {
     private final IrongoonConfig config;
     private final CSVDataTableSource csvSource;
     private final DataTableSource severedChainsSource;
+    private final DataTableSource bundledSource;
 
     private DataTableSourceResolver() {
         this(
             IrongoonConfig.getInstance(),
             CSVDataTableSource.getInstance(),
-            SeveredChainsDataTableSource.getInstance()
+            SeveredChainsDataTableSource.getInstance(),
+            BundledDataTableSource.getInstance()
         );
     }
 
     private DataTableSourceResolver(
         final IrongoonConfig config,
         final CSVDataTableSource csvSource,
-        final DataTableSource severedChainsSource
+        final DataTableSource severedChainsSource,
+        final DataTableSource bundledSource
     ) {
         this.config = config;
         this.csvSource = csvSource;
         this.severedChainsSource = severedChainsSource;
+        this.bundledSource = bundledSource;
     }
 
     public LoadedDataTable load(final ExternalData data) {
@@ -69,9 +73,20 @@ public final class DataTableSourceResolver {
             );
         }
 
+        if (this.bundledSource.supports(data)) {
+            return this.loadAndValidate(
+                data,
+                this.bundledSource,
+                DataSourceKind.BUNDLED_COMPATIBILITY,
+                "current SC has no side-effect-free complete table and no external CSV exists at " + this.csvSource.path(data),
+                this.supportsLiveUpdates(data)
+            );
+        }
+
         throw new IllegalStateException(
             "Required data " + data + " is unavailable: expected CSV " + this.csvSource.path(data)
                 + "; " + this.severedChainsSource.name() + " does not provide a complete table"
+                + "; bundled compatibility data is unavailable"
                 + "; csvDataOverrides=" + this.config.csvDataOverrides
         );
     }
