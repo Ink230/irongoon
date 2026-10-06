@@ -76,7 +76,7 @@ def mod(args):
     require_file(args.jar)
     with zipfile.ZipFile(args.jar) as archive:
         names = set(archive.namelist())
-        for required in ("lod/irongoon/Irongoon.class", "org/yaml/snakeyaml/Yaml.class", "com/opencsv/CSVReader.class"):
+        for required in ("lod/irongoon/Irongoon.class", "org/yaml/snakeyaml/Yaml.class"):
             if required not in names:
                 raise ValueError(f"Shaded Irongoon JAR is missing {required}")
         if "legend/game/Main.class" in names:
@@ -85,7 +85,7 @@ def mod(args):
     reset_stage(stage)
     stage.mkdir(parents=True)
     shutil.copy2(args.jar, stage / f"irongoon-v{release_version}.jar")
-    shutil.copytree(args.source / "mods/irongoon", stage / "irongoon")
+    shutil.copytree(args.source / "mods/irongoon", stage / "irongoon", ignore=shutil.ignore_patterns("unused-*.csv"))
     require_file(stage / "irongoon/config.yaml")
     require_file(stage / "irongoon/irongoon-data/scdk-character-stats.csv")
     write_zip(stage, OUTPUT / f"irongoon-v{release_version}.zip")

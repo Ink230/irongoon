@@ -55,15 +55,19 @@ class ReleaseToolsTest(unittest.TestCase):
         data = source / "mods/irongoon/irongoon-data"
         data.mkdir(parents=True)
         (data / "scdk-character-stats.csv").write_text("future data")
+        (data / "unused-scdk-equip-stats.csv").write_text("unused data")
         (source / "mods/irongoon/config.yaml").write_text("future config")
         jar = self.root / "future.jar"
         with zipfile.ZipFile(jar, "w") as archive:
-            for name in ("lod/irongoon/Irongoon.class", "org/yaml/snakeyaml/Yaml.class", "com/opencsv/CSVReader.class"):
+            for name in ("lod/irongoon/Irongoon.class", "org/yaml/snakeyaml/Yaml.class"):
                 archive.writestr(name, b"fixture")
         packaging.mod(argparse.Namespace(source=source, jar=jar, version="0.4.17"))
         with zipfile.ZipFile(packaging.OUTPUT / "irongoon-v0.4.17.zip") as archive:
             self.assertEqual(archive.read("irongoon/config.yaml"), b"future config")
             self.assertEqual(archive.read("irongoon-v0.4.17.jar"), jar.read_bytes())
+            self.assertEqual(archive.read("irongoon/irongoon-data/scdk-character-stats.csv"), b"future data")
+            self.assertNotIn("irongoon/irongoon-data/unused-scdk-equip-stats.csv", archive.namelist())
+        self.assertTrue((data / "unused-scdk-equip-stats.csv").is_file())
 
     def repository(self):
         repo = self.root / "repo"
