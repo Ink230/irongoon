@@ -76,14 +76,6 @@ class ReleaseToolsTest(unittest.TestCase):
         git(repo, "commit", "-m", "add base")
         return repo
 
-    def test_sources_are_exact_tracked_commit(self):
-        repo = self.repository()
-        (repo / "untracked.txt").write_text("exclude me")
-        packaging.sources(argparse.Namespace(source=repo, version="0.4.17"))
-        with zipfile.ZipFile(packaging.OUTPUT / "irongoon-v0.4.17-source.zip") as archive:
-            self.assertEqual(archive.read("irongoon-v0.4.17/shared.txt"), b"base\n")
-            self.assertNotIn("irongoon-v0.4.17/untracked.txt", archive.namelist())
-
     def sync_fixture(self, conflict=False):
         repo = self.repository()
         git(repo, "checkout", "-b", "main.future")

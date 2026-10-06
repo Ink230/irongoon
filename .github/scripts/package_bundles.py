@@ -6,7 +6,6 @@ from pathlib import Path
 import re
 import shutil
 import stat
-import subprocess
 import zipfile
 
 
@@ -98,20 +97,6 @@ def next_version(args):
     print(f"{major}.{minor}.{patch + 1}")
 
 
-def sources(args):
-    release_version = version(args.version)
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-    destination = OUTPUT / f"irongoon-v{release_version}-source.zip"
-    subprocess.run([
-        "git", "-C", str(args.source), "archive", "--format=zip",
-        f"--prefix=irongoon-v{release_version}/", f"--output={destination}", "HEAD",
-    ], check=True)
-    with zipfile.ZipFile(destination) as archive:
-        if archive.testzip() is not None:
-            raise ValueError(f"Corrupt source ZIP: {destination}")
-    print(f"Verified {destination.name}")
-
-
 def bundle(args):
     source = args.sc / "build/libs"
     engine = f"lod-game-{args.sha}.jar"
@@ -163,12 +148,9 @@ if __name__ == "__main__":
     mod_parser.add_argument("--version")
     version_parser = commands.add_parser("next-version")
     version_parser.add_argument("--tag", required=True)
-    sources_parser = commands.add_parser("sources")
-    sources_parser.add_argument("--source", type=Path, default=ROOT)
-    sources_parser.add_argument("--version", required=True)
     bundle_parser = commands.add_parser("bundle")
     bundle_parser.add_argument("--sc", type=Path, required=True)
     bundle_parser.add_argument("--sha", required=True)
     bundle_parser.add_argument("--platform", choices=PLATFORMS, required=True)
     arguments = parser.parse_args()
-    {"stamp": stamp, "mod": mod, "bundle": bundle, "next-version": next_version, "sources": sources}[arguments.command](arguments)
+    {"stamp": stamp, "mod": mod, "bundle": bundle, "next-version": next_version}[arguments.command](arguments)

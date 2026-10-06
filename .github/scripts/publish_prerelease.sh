@@ -9,6 +9,12 @@ esac
 
 shopt -s nullglob
 assets=("$BUNDLE_DIR"/*.zip)
+for asset in "${assets[@]}"; do
+  if [[ "$asset" == *-source.zip ]]; then
+    echo "Custom source ZIPs are not release assets: $asset" >&2
+    exit 1
+  fi
+done
 if [[ ${#assets[@]} -ne "$ASSET_COUNT" ]]; then
   echo "Expected $ASSET_COUNT ZIPs; found ${#assets[@]}" >&2
   exit 1

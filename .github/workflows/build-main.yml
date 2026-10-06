@@ -19,7 +19,7 @@ env:
 
 jobs:
   mod:
-    name: Package main mod and source
+    name: Package main mod
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.metadata.outputs.version }}
@@ -56,7 +56,7 @@ jobs:
         env:
           SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
         run: env GITHUB_SHA="$SC_SHA" ./gradlew --no-daemon assemble -Pos=linux -Parch=x86_64
-      - name: Build shaded Irongoon JAR and source ZIP
+      - name: Build shaded Irongoon JAR and mod ZIP
         env:
           SC_SHA: ${{ steps.metadata.outputs.sc_sha }}
           VERSION: ${{ steps.metadata.outputs.version }}
@@ -64,11 +64,10 @@ jobs:
           cp "sc/build/libs/lod-game-${SC_SHA}.jar" lod-game-snapshot-2.jar
           java -classpath gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain --no-daemon compileJava assemble shadowJar
           python .github/scripts/package_bundles.py mod --jar "build/libs/irongoon-${GITHUB_SHA}-all.jar" --version "$VERSION"
-          python .github/scripts/package_bundles.py sources --version "$VERSION"
       - uses: actions/upload-artifact@v4
         with:
           name: irongoon-main-v${{ steps.metadata.outputs.version }}
-          path: build/bundles/*.zip
+          path: build/bundles/irongoon-v${{ steps.metadata.outputs.version }}.zip
           if-no-files-found: error
           compression-level: 0
 
@@ -97,7 +96,7 @@ jobs:
           RELEASE_TITLE: Latest Irongoon Build
           RELEASE_SHA: ${{ github.sha }}
           BUNDLE_DIR: bundles
-          ASSET_COUNT: '2'
+          ASSET_COUNT: '1'
           NOTES_FILE: notes.md
         run: |
           cat > notes.md <<EOF
@@ -107,7 +106,7 @@ jobs:
 
           Extract irongoon-v${VERSION}.zip into your SC mods directory. Remove the previous Irongoon JAR and back up your config before replacing the irongoon folder.
 
-          irongoon-v${VERSION}-source.zip contains the tracked source from this exact main commit. SC is not bundled.
+          SC is not bundled. Source is available through GitHub's standard source downloads.
 
           The version is the latest stable release plus one patch. This rolling prerelease does not create a v${VERSION} tag or publish a stable release; actual releases remain manual.
           EOF
