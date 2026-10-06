@@ -52,6 +52,7 @@ dependencies {
     compileOnly 'com.opencsv:opencsv:5.9'
     compileOnly 'com.github.slugify:slugify:3.0.7'
     compileOnly 'it.unimi.dsi:fastutil:8.5.15'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 
     irongoonShadow 'org.yaml:snakeyaml:2.2'
 
