@@ -105,4 +105,9 @@ processResources {
 
 shadowJar {
     configurations = [project.configurations.irongoonShadow]
+    // Irongoon uses the standard YAML constructor; these optional constructors are unused.
+    exclude 'org/yaml/snakeyaml/env/**',
+            'org/yaml/snakeyaml/extensions/**',
+            'org/yaml/snakeyaml/constructor/CustomClassLoaderConstructor.class',
+            'org/yaml/snakeyaml/error/MissingEnvironmentVariableException.class'
 }
